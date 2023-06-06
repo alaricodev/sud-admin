@@ -13,7 +13,7 @@
 
         <q-toolbar-title>Administrador SUD </q-toolbar-title>
 
-        <div>Serião mesmo</div>
+        <div>Algum dado vai aqui</div>
       </q-toolbar>
     </q-header>
 

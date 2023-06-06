@@ -1,0 +1,107 @@
+[
+  {
+    "id": 3333,
+    "tipo": 1,
+    "aberto": false,
+    "codigo": "INFO-11987612/2023",
+    "data": "06 Fev 2023 - 15h16m",
+    "arquivos": ["arq1.jpeg", "plan1.xlsx", "video1.mp4"],
+    "descricao": "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Consequatur eligendi et nam delectus exercitationem earum error quaerat optio voluptates dolor unde voluptate nisi quos saepe officia, quasi cupiditate sunt ad?",
+    "tramitacao": [
+      {
+        "id": 4653,
+        "data": "06 Fev 2023 - 15h16m",
+        "caption": "Caso cadastrado no sistema SUD"
+      },
+      {
+        "id": 6353,
+        "data": "07 Fev 2023 - 17h01m",
+        "caption": "Caso recebido por João Cleber"
+      },
+      {
+        "id": 6351,
+        "data": "08 Fev 2023 - 08h12m",
+        "caption": "Caso encaminhado para a DINT de Chapeco"
+      }
+    ]
+  },
+  {
+    "id": 3334,
+    "tipo": 1,
+    "aberto": true,
+    "codigo": "INFO-119801232/2023",
+    "data": "06 Fev 2023 - 15h16m",
+    "arquivos": ["arq1.jpeg", "plan1.xlsx", "video1.mp4"],
+    "descricao": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum beatae nam ipsa impedit autem tempora necessitatibus pariatur tenetur modi sunt explicabo enim, quaerat voluptates laboriosam minima vero repudiandae doloremque cumque!",
+    "tramitacao": [
+      {
+        "id": 4653,
+        "data": "06 Fev 2023 - 15h16m",
+        "caption": "Caso cadastrado no sistema SUD"
+      },
+      {
+        "id": 6353,
+        "data": "07 Fev 2023 - 17h01m",
+        "caption": "Caso recebido por Marina Silva"
+      }
+    ]
+  },
+  {
+    "id": 3334,
+    "tipo": 2,
+    "aberto": true,
+    "codigo": "INFO-1209887765/2023",
+    "data": "09 Fev 2023 - 15h16m",
+    "arquivos": [],
+    "descricao": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsam voluptate consequatur quasi quia consequuntur natus dolore blanditiis tenetur, exercitationem nemo possimus atque minima doloribus, excepturi quibusdam enim, id molestias maiores!",
+    "tramitacao": [
+      {
+        "id": 4613,
+        "data": "06 Fev 2023 - 15h16m",
+        "caption": "Caso cadastrado no sistema SUD"
+      }
+    ]
+  },
+  {
+    "id": 3334,
+    "tipo": 3,
+    "aberto": false,
+    "codigo": "INFO-139801232/2023",
+    "data": "06 Fev 2023 - 15h16m",
+    "arquivos": ["arq1.jpeg", "plan1.xlsx", "video1.mp4"],
+    "descricao": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum beatae nam ipsa impedit autem tempora necessitatibus pariatur tenetur modi sunt explicabo enim, quaerat voluptates laboriosam minima vero repudiandae doloremque cumque!",
+    "tramitacao": [
+      {
+        "id": 4653,
+        "data": "06 Fev 2023 - 15h16m",
+        "caption": "Caso cadastrado no sistema SUD"
+      },
+      {
+        "id": 6353,
+        "data": "07 Fev 2023 - 17h01m",
+        "caption": "Caso recebido por Marina Silva"
+      }
+    ]
+  },
+  {
+    "id": 3334,
+    "tipo": 3,
+    "aberto": false,
+    "codigo": "INFO-139801232/2023",
+    "data": "06 Fev 2023 - 15h16m",
+    "arquivos": ["arq1.jpeg", "plan1.xlsx", "video1.mp4"],
+    "descricao": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum beatae nam ipsa impedit autem tempora necessitatibus pariatur tenetur modi sunt explicabo enim, quaerat voluptates laboriosam minima vero repudiandae doloremque cumque!",
+    "tramitacao": [
+      {
+        "id": 4653,
+        "data": "06 Fev 2023 - 15h16m",
+        "caption": "Caso cadastrado no sistema SUD"
+      },
+      {
+        "id": 6353,
+        "data": "07 Fev 2023 - 17h01m",
+        "caption": "Caso recebido por Marina Silva"
+      }
+    ]
+  }
+]

@@ -37,7 +37,7 @@
   <!-- Código principal começa aqui   -->
 
   <q-card class="my-card q-my-sm" flat bordered style="border-radius: 10px">
-    <q-badge color="green" floating>NOVO</q-badge>
+    <q-badge v-if="!dados.aberto" color="green" floating>NOVO</q-badge>
 
     <q-expansion-item
       expand-separator
@@ -54,14 +54,18 @@
           />
         </q-item-section>
         <q-item-section>{{ avatar.nome.toUpperCase() }}</q-item-section>
-        <q-item-section> INFO-9872-9837-2023 </q-item-section>
+        <q-item-section> {{ dados.codigo }} </q-item-section>
 
         <q-item-section class="text-subtitle2">
-          01/01/2023 19h15m
+          {{ dados.data }}
         </q-item-section>
 
         <q-item-section side>
-          <q-icon name="fa-solid fa-paperclip" color="blue-grey">
+          <q-icon
+            v-show="dados.arquivos.length > 0"
+            name="fa-solid fa-paperclip"
+            color="blue-grey"
+          >
             <q-tooltip>Existe arquivos anexados</q-tooltip>
           </q-icon>
         </q-item-section>
@@ -86,14 +90,7 @@
             <q-tab-panel name="resumo">
               <div class="text-body1 text-grey-10 text-container">
                 <p :class="abertoDesc ? '' : 'text-overflow'">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  Atque qui dolor veniam rerum ducimus voluptates assumenda
-                  quasi reprehenderit deserunt pariatur? Eius dolore molestias
-                  error qui debitis recusandae reprehenderit doloribus tenetur.
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo
-                  velit repellendus qui architecto consequuntur assumenda
-                  quisquam autem aliquid voluptas, obcaecati deserunt eveniet
-                  perferendis, beatae doloremque, fugit ipsam voluptate id cum!
+                  {{ dados.descricao }}
                 </p>
               </div>
               <q-separator color="primary" />
@@ -109,13 +106,12 @@
             <q-tab-panel name="tramitacao">
               <q-timeline color="secondary">
                 <q-timeline-entry heading>Tramitações</q-timeline-entry>
-                <q-timeline-entry>
-                  <template v-slot:title> Caso recebido pela DIPC </template>
-                  <template v-slot:subtitle> 01/01/2023 - 19h15m </template>
-                </q-timeline-entry>
-                <q-timeline-entry>
-                  <template v-slot:title> Caso recebido pela DIPC </template>
-                  <template v-slot:subtitle> 01/01/2023 - 19h15m </template>
+                <q-timeline-entry
+                  v-for="info in dados.tramitacao"
+                  :key="info.id"
+                >
+                  <template v-slot:title> {{ info.caption }}</template>
+                  <template v-slot:subtitle> {{ info.data }} </template>
                 </q-timeline-entry>
               </q-timeline>
             </q-tab-panel>
@@ -129,6 +125,7 @@
           icon="fa-solid fa-circle-info"
           label="Mais informações"
           color="primary"
+          @click="maisInfo()"
         />
         <q-btn
           flat
@@ -146,7 +143,7 @@
 import { ref } from "vue";
 export default {
   name: "cardShow",
-  props: { tipo: String },
+  props: { dados: Object },
   setup() {
     return {
       tab: ref("resumo"),
@@ -157,19 +154,19 @@ export default {
   },
   computed: {
     avatar() {
-      if (this.tipo == "whatsapp") {
+      if (this.dados.tipo == 1) {
         return {
           icon: "fa-brands fa-whatsapp",
           color: "green",
           nome: "Whatsapp",
         };
-      } else if (this.tipo == "sud") {
+      } else if (this.dados.tipo == 3) {
         return {
           icon: "fa-solid fa-cloud",
           color: "amber-10",
           nome: "SUD",
         };
-      } else if (this.tipo == "disque") {
+      } else if (this.dados.tipo == 2) {
         return {
           icon: "fa-solid fa-phone",
           color: "indigo-10",
@@ -185,8 +182,11 @@ export default {
       this.promptConfirma = true;
     },
     arquivarCaso() {
-      console.log("Arquivou !");
+      console.log(`Arquivou o caso ${this.dados.id}`);
       this.promptConfirma = false;
+    },
+    maisInfo() {
+      console.log(`Abriu todas informações do caso ${this.dados.id}`);
     },
   },
 };

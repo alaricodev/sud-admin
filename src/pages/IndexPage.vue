@@ -4,46 +4,7 @@
       <filtro-index />
     </div>
     <div class="q-px-md">
-      <card-show tipo="whatsapp" />
-      <card-show tipo="sud" />
-      <card-show tipo="disque" />
-      <card-show tipo="sud" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="disque" />
-      <card-show tipo="disque" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="sud" />
-      <card-show tipo="disque" />
-      <card-show tipo="sud" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="disque" />
-      <card-show tipo="disque" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="sud" />
-      <card-show tipo="disque" />
-      <card-show tipo="sud" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="disque" />
-      <card-show tipo="disque" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="sud" />
-      <card-show tipo="disque" />
-      <card-show tipo="sud" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="disque" />
-      <card-show tipo="disque" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="sud" />
-      <card-show tipo="disque" />
-      <card-show tipo="sud" />
-      <card-show tipo="whatsapp" />
-      <card-show tipo="disque" />
-      <card-show tipo="disque" />
-      <card-show tipo="whatsapp" />
+      <card-show v-for="dado in dados" :key="dado.id" :dados="dado" />
     </div>
   </div>
 </template>
@@ -51,10 +12,16 @@
 <script>
 import CardShow from "src/components/cardShow.vue";
 import FiltroIndex from "src/components/FiltroIndex.vue";
+import dados from "../assets/dados.json";
 import { defineComponent } from "vue";
 
 export default defineComponent({
   components: { FiltroIndex, CardShow },
   name: "IndexPage",
+  setup() {
+    return {
+      dados,
+    };
+  },
 });
 </script>
