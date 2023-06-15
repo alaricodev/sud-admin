@@ -42,7 +42,42 @@
         <span>SUD - Adminitrador</span>
       </div>
       <q-list>
-        <q-item-label header> Essential Links </q-item-label>
+        <q-item-label header class="text-primary text-bold text-center">
+          MENU</q-item-label
+        >
+      </q-list>
+      <q-list style="min-width: 100px">
+        <q-separator color="primary" />
+        <q-item clickable @click="voltar()">
+          <q-item-section avatar>
+            <q-icon
+              v-show="nrDenuncia == 0"
+              color="primary"
+              name="record_voice_over"
+            />
+            <q-badge v-show="nrDenuncia > 0" class="q-pa-sm" color="red">{{
+              nrDenuncia
+            }}</q-badge>
+          </q-item-section>
+          <q-item-section class="text-white">Denúncias </q-item-section>
+        </q-item>
+        <q-separator color="primary" />
+        <q-item clickable>
+          <q-item-section avatar
+            ><q-icon color="primary" name="dashboard"
+          /></q-item-section>
+          <q-item-section class="text-white">Dashboard</q-item-section>
+        </q-item>
+        <q-separator color="primary" />
+        <q-item clickable>
+          <q-item-section avatar
+            ><q-icon color="green" name="sms"
+          /></q-item-section>
+          <q-item-section class="text-white"
+            >Nova denúncia whatsapp</q-item-section
+          >
+        </q-item>
+        <q-separator color="primary" />
       </q-list>
     </q-drawer>
 
@@ -59,7 +94,11 @@ export default defineComponent({
   name: "MainLayout",
 
   components: {},
-
+  methods: {
+    voltar() {
+      this.$router.push("/");
+    },
+  },
   setup() {
     const leftDrawerOpen = ref(false);
 
@@ -68,6 +107,7 @@ export default defineComponent({
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
+      nrDenuncia: ref(3),
     };
   },
 });

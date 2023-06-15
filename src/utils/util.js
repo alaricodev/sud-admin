@@ -1,4 +1,4 @@
-function getTopWords(text, top) {
+export function getTopWords(text, top) {
   // Lista de palavras comuns a serem excluídas
   const commonWords = [
     "ante",
@@ -9,6 +9,7 @@ function getTopWords(text, top) {
     "para",
     "perante",
     "sobre",
+    "durante",
     "trás",
     "porém",
     "contudo",
@@ -97,4 +98,18 @@ function getTopWords(text, top) {
 
   // Retorna as palavras mais usadas
   return wordCountArray.slice(0, top).map((pair) => pair[0]);
+}
+
+export function formatarDataExtenso(timestamp) {
+  const options = {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  };
+  const data = new Date(timestamp);
+  const dataFormatada = data.toLocaleString("pt-BR", options);
+
+  return dataFormatada;
 }

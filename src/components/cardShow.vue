@@ -125,7 +125,7 @@
           icon="fa-solid fa-circle-info"
           label="Mais informações"
           color="primary"
-          @click="maisInfo()"
+          @click="maisInfo(dados.id)"
         />
         <q-btn
           flat
@@ -185,8 +185,9 @@ export default {
       console.log(`Arquivou o caso ${this.dados.id}`);
       this.promptConfirma = false;
     },
-    maisInfo() {
-      console.log(`Abriu todas informações do caso ${this.dados.id}`);
+    maisInfo(id) {
+      console.log(id);
+      this.$router.push(`/sudmaisinfo/${id}`);
     },
   },
 };
