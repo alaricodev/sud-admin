@@ -103,5 +103,15 @@
         "caption": "Caso recebido por Marina Silva"
       }
     ]
+  },
+  {
+    "id": 9854,
+    "tipo": 4,
+    "aberto": false,
+    "codigo": "INFO-856542/2023",
+    "data": "06 Fev 2023 - 15h16m",
+    "arquivos": ["arq1.jpeg", "plan1.xlsx", "video1.mp4"],
+    "descricao": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum beatae nam ipsa impedit autem tempora necessitatibus pariatur tenetur modi sunt explicabo enim, quaerat voluptates laboriosam minima vero repudiandae doloremque cumque!",
+    "tramitacao": []
   }
 ]

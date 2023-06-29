@@ -7,17 +7,13 @@
           v-for="envolvido in envolvidos"
           :key="envolvido.nome"
           expand-separator
+          class="text-h6"
           icon="perm_identity"
           :label="envolvido.nome"
           caption="Envolvido"
         >
           <q-card>
             <q-card-section>
-              <label-data
-                class="q-my-sm"
-                label="Nome:"
-                :texto="envolvido.nome"
-              />
               <label-data
                 class="q-my-sm"
                 label="Telefone:"

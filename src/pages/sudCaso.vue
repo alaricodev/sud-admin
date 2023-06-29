@@ -87,7 +87,7 @@
 
             <q-tab-panels v-model="tabInfo" animated>
               <q-tab-panel name="1">
-                <sud-info-texto-denuncia :texto="registro.descricao" />
+                <sud-info-texto-denuncia :texto="registro.relato" />
               </q-tab-panel>
 
               <q-tab-panel name="2">

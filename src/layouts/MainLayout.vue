@@ -73,7 +73,9 @@
           <q-item-section avatar
             ><q-icon color="green" name="sms"
           /></q-item-section>
-          <q-item-section class="text-white"
+          <q-item-section
+            class="text-white"
+            @click="$router.push(`/cadwhatsapp`)"
             >Nova denúncia whatsapp</q-item-section
           >
         </q-item>
@@ -89,6 +91,7 @@
 
 <script>
 import { defineComponent, ref } from "vue";
+import { useStore } from "src/stores/store";
 
 export default defineComponent({
   name: "MainLayout",
@@ -101,14 +104,20 @@ export default defineComponent({
   },
   setup() {
     const leftDrawerOpen = ref(false);
+    const store = useStore();
 
     return {
+      store,
       leftDrawerOpen,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
-      nrDenuncia: ref(3),
     };
+  },
+  computed: {
+    nrDenuncia() {
+      return this.store.novasDenuncias;
+    },
   },
 });
 </script>

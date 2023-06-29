@@ -37,7 +37,9 @@
   <!-- Código principal começa aqui   -->
 
   <q-card class="my-card q-my-sm" flat bordered style="border-radius: 10px">
-    <q-badge v-if="!dados.aberto" color="green" floating>NOVO</q-badge>
+    <q-badge v-if="!dados.data_recebimento" color="green" floating
+      >NOVO</q-badge
+    >
 
     <q-expansion-item
       expand-separator
@@ -53,44 +55,36 @@
             text-color="white"
           />
         </q-item-section>
-        <q-item-section>{{ avatar.nome.toUpperCase() }}</q-item-section>
-        <q-item-section> {{ dados.codigo }} </q-item-section>
+        <q-item-section>{{ avatar.nome }}</q-item-section>
+        <q-item-section> {{ dados.protocolo }} </q-item-section>
 
         <q-item-section class="text-subtitle2">
-          {{ dados.data }}
+          {{ formatarDataGrid(dados.data_caso) }}
         </q-item-section>
 
         <q-item-section side>
           <q-icon
-            v-show="dados.arquivos.length > 0"
             name="fa-solid fa-paperclip"
-            color="blue-grey"
+            :color="dados.tem_arquivos ? 'blue-grey' : 'red'"
           >
-            <q-tooltip>Existe arquivos anexados</q-tooltip>
+            <q-tooltip v-if="dados.tem_arquivos"
+              >Existe arquivos anexados</q-tooltip
+            >
+            <q-tooltip v-else>Não existe arquivos anexados</q-tooltip>
           </q-icon>
         </q-item-section>
       </template>
       <q-separator />
       <q-card-section>
         <div class="q-gutter-y-md" style="max-width: 100%">
-          <q-tabs
-            v-model="tab"
-            dense
-            class="bg-grey-4 text-grey-10"
-            active-color="primary"
-            indicator-color="primary"
-            align="justify"
-            narrow-indicator
-          >
-            <q-tab name="resumo" label="Resumo" />
-            <q-tab name="tramitacao" label="Tramitação" />
-          </q-tabs>
-
-          <q-tab-panels v-model="tab" animated>
-            <q-tab-panel name="resumo">
+          <q-card>
+            <q-card-section>
+              <div class="text-h5 text-title1 text-grey-6">Resumo...</div>
+            </q-card-section>
+            <q-card-section>
               <div class="text-body1 text-grey-10 text-container">
                 <p :class="abertoDesc ? '' : 'text-overflow'">
-                  {{ dados.descricao }}
+                  {{ dados.relato }}
                 </p>
               </div>
               <q-separator color="primary" />
@@ -101,21 +95,8 @@
                   @click="abertoDesc = !abertoDesc"
                 />
               </div>
-            </q-tab-panel>
-
-            <q-tab-panel name="tramitacao">
-              <q-timeline color="secondary">
-                <q-timeline-entry heading>Tramitações</q-timeline-entry>
-                <q-timeline-entry
-                  v-for="info in dados.tramitacao"
-                  :key="info.id"
-                >
-                  <template v-slot:title> {{ info.caption }}</template>
-                  <template v-slot:subtitle> {{ info.data }} </template>
-                </q-timeline-entry>
-              </q-timeline>
-            </q-tab-panel>
-          </q-tab-panels>
+            </q-card-section>
+          </q-card>
         </div>
       </q-card-section>
       <q-separator />
@@ -125,13 +106,13 @@
           icon="fa-solid fa-circle-info"
           label="Mais informações"
           color="primary"
-          @click="maisInfo(dados.id)"
+          @click="maisInfo(dados.id, dados.tipo)"
         />
         <q-btn
           flat
           icon="fa-solid fa-box-archive"
           label="Arquivar denúncia"
-          color="secondary"
+          color="red-4"
           @click="janelaArquivarCaso()"
         />
       </q-card-actions>
@@ -141,11 +122,15 @@
 
 <script>
 import { ref } from "vue";
+import { formatarDataGrid } from "../utils/util.js";
 export default {
   name: "cardShow",
   props: { dados: Object },
   setup() {
     return {
+      // FUNÇÕES
+      formatarDataGrid,
+      // VARIÁVEIS
       tab: ref("resumo"),
       abertoDesc: ref(false),
       promptConfirma: ref(false),
@@ -154,23 +139,29 @@ export default {
   },
   computed: {
     avatar() {
-      if (this.dados.tipo == 1) {
+      if (this.dados.tipo == "WHATSAPP") {
         return {
           icon: "fa-brands fa-whatsapp",
           color: "green",
           nome: "Whatsapp",
         };
-      } else if (this.dados.tipo == 3) {
+      } else if (this.dados.tipo == "SUD") {
         return {
           icon: "fa-solid fa-cloud",
           color: "amber-10",
           nome: "SUD",
         };
-      } else if (this.dados.tipo == 2) {
+      } else if (this.dados.tipo == "DISQUE_DENUNCIA") {
         return {
           icon: "fa-solid fa-phone",
           color: "indigo-10",
-          nome: "Dique Denúncia",
+          nome: "Disque Denúncia",
+        };
+      } else if (this.dados.tipo == "SOS_ESCOLA") {
+        return {
+          icon: "fa-solid fa-graduation-cap",
+          color: "red-9",
+          nome: "SOS Escola",
         };
       } else {
         return {};
@@ -185,9 +176,14 @@ export default {
       console.log(`Arquivou o caso ${this.dados.id}`);
       this.promptConfirma = false;
     },
-    maisInfo(id) {
-      console.log(id);
-      this.$router.push(`/sudmaisinfo/${id}`);
+    maisInfo(id, tipo) {
+      if (tipo == "1") {
+        this.$router.push(`/whatsappmaisinfo/${id}`);
+      } else if (tipo == "DISQUE_DENUNCIA") {
+        this.$router.push(`/disquedenunciamaisinfo/${id}`);
+      } else {
+        this.$router.push(`/sudmaisinfo/${id}`);
+      }
     },
   },
 };
