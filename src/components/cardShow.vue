@@ -64,7 +64,7 @@
 
         <q-item-section side>
           <q-icon
-            name="fa-solid fa-paperclip"
+            :name="dados.tem_arquivos ? 'fa-solid fa-paperclip' : 'block'"
             :color="dados.tem_arquivos ? 'blue-grey' : 'red'"
           >
             <q-tooltip v-if="dados.tem_arquivos"

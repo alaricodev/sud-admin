@@ -43,12 +43,7 @@
           </div>
         </q-chip>
         <div class="q-pa-sm">
-          <q-rating
-            v-model="qualidade_info"
-            size="2em"
-            :max="5"
-            color="primary"
-          />
+          <q-rating :v-model="3" size="2em" :max="5" color="primary" readonly />
         </div>
         <q-space />
         <q-btn

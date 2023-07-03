@@ -5,7 +5,7 @@
       border-radius: 20px;
       border: 1px solid #616161;
       width: 98%;
-      height: 400px;
+      height: 700px;
     "
   >
     <div class="row" style="width: 100%">
@@ -24,6 +24,7 @@
       <div class="q-ma-md" style="width: 98%">
         <q-input
           label="TELEFONE"
+          class="q-pa-md"
           v-model="telefone"
           outlined
           mask="(##) ##### - ####"
@@ -33,15 +34,37 @@
       </div>
       <div class="q-ma-md" style="width: 98%">
         <q-file
-          label="CLIQUE AQUI PARA INSERIR ARQUIVOS ANEXOS"
+          class="q-pa-md"
           v-model="arquivos"
-          icon="file"
+          label="Clique aqui para selecione os Arquivos"
           outlined
-          dense
-        />
+          counter
+          :counter-label="counterLabelFn"
+          max-files="10"
+          multiple
+        >
+          <template v-slot:prepend>
+            <q-icon name="attach_file" />
+          </template>
+        </q-file>
       </div>
       <div class="q-ma-md" style="width: 98%">
-        <q-input type="text" outlined v-model="relato" class="height: 300px" />
+        <div class="q-pa-sm">
+          <q-input
+            ref="txtDescricaoRef"
+            v-model="relato"
+            outlined
+            type="textarea"
+          />
+          <q-avatar
+            color="white"
+            :text-color="relato.length >= 120 ? 'blue' : 'red'"
+          >
+            {{ relato.length }}</q-avatar
+          >
+          Caracteres - {{ relato.split(" ").length }} palavras
+          <q-chip color="white"> </q-chip>
+        </div>
       </div>
       <div
         class="q-ma-md"
@@ -61,14 +84,15 @@
 </template>
 
 <script>
+import { ref } from "vue";
 export default {
   name: "CadWhatsappDenuncia",
   created() {},
-  data() {
+  setup() {
     return {
-      telefone: null,
-      arquivos: null,
-      relato: null,
+      telefone: ref(null),
+      arquivos: ref(null),
+      relato: ref(""),
     };
   },
   props: {},

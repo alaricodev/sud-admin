@@ -46,6 +46,7 @@
             size="2em"
             :max="5"
             color="primary"
+            readonly
           />
         </div>
         <q-space />

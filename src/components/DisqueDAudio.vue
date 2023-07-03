@@ -1,5 +1,14 @@
 <template>
   <div class="q-pa-md">
+    <div class="text-h5">Relato da Denúncia</div>
+  </div>
+  <q-separator color="primary" />
+  <div class="flex flex-center">
+    <div class="q-pa-md" style="max-width: 90%">
+      {{ dados.relato }}
+    </div>
+  </div>
+  <div class="q-pa-md">
     <div class="text-h5">Áudio da Denúncia</div>
   </div>
   <q-separator color="primary" />
