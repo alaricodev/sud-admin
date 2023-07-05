@@ -35,7 +35,7 @@
       <div class="q-ma-md" style="width: 98%">
         <q-file
           class="q-pa-md"
-          v-model="arquivos"
+          v-model="files"
           label="Clique aqui para selecione os Arquivos"
           outlined
           counter
@@ -77,6 +77,7 @@
           color="primary"
           label="Salvar"
           icon="fa-solid fa-floppy-disk"
+          @click="salvarDados"
         />
       </div>
     </div>
@@ -85,18 +86,108 @@
 
 <script>
 import { ref } from "vue";
+import { api } from "src/boot/axios";
+import { validarTelefone } from "src/utils/validacoes.js";
+import { useStore } from "src/stores/store";
+import { useQuasar } from "quasar";
+
 export default {
   name: "CadWhatsappDenuncia",
   created() {},
   setup() {
+    const store = useStore();
+    const $q = useQuasar();
+    function alerta(msg) {
+      $q.dialog({
+        title: "Aviso",
+        message: msg,
+        html: true,
+      }).onOk(() => {
+        // console.log('OK')
+      });
+    }
+
     return {
+      // API
+      api,
+      store,
+      alerta,
+      // CAMPOS
       telefone: ref(null),
-      arquivos: ref(null),
+      files: ref(null),
       relato: ref(""),
     };
   },
   props: {},
-  methods: {},
+
+  methods: {
+    gerarParams() {
+      const ret = {
+        //FUNC
+        codigo_sys_func: "20001",
+        sys_func: "20001",
+        tipo_crud: 1,
+        tipo: "WHATSAPP",
+        cpf_log: this.store.cpf_log,
+        //INFO
+        telefone: this.telefone,
+        // RELATO
+        relato: this.relato,
+      };
+      return ret;
+    },
+
+    validarDados() {
+      if (!validarTelefone(this.telefone)) {
+        this.alerta("O <b>TELEFONE</b> informado parece ser inválido");
+        return false;
+      }
+      if (this.relato.length < 120) {
+        this.alerta("O <b>RELATO</b> tem que ter no mínimo 120 caracteres");
+        return false;
+      }
+      return true;
+    },
+    async salvarDados() {
+      if (this.validarDados()) {
+        // Headers
+
+        const headers = {
+          "Content-Type": "multipart/form-data",
+        };
+
+        let formData = new FormData();
+
+        // Arquivos
+        if (this.files) {
+          for (let arquivo of this.files) {
+            formData.append("files", arquivo);
+          }
+        }
+
+        // Dados da denúncia dentro do formdata
+        formData.append("data", JSON.stringify(this.gerarParams()));
+
+        try {
+          const res = await api.post(
+            "/denuncias", // url
+            formData, // arquivos e dados
+            { headers } // headers
+          );
+          console.log(res.data);
+          this.alerta("REGISTRO FEITO COM SUCESSO !");
+          this.files = null;
+          this.telefone = null;
+          this.relato = "";
+        } catch (erro) {
+          console.log(res.data);
+          console.error(erro);
+        }
+
+        return true;
+      }
+    },
+  },
 };
 </script>
 

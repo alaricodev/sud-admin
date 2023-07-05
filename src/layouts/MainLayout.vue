@@ -18,6 +18,7 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-black">
+      <usuario-info />
       <div style="width: 100%" class="q-mt-md q-px-sm text-right">
         <q-btn
           round
@@ -92,11 +93,12 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useStore } from "src/stores/store";
+import UsuarioInfo from "src/components/UsuarioInfo.vue";
 
 export default defineComponent({
   name: "MainLayout",
 
-  components: {},
+  components: { UsuarioInfo },
   methods: {
     voltar() {
       this.$router.push("/");
@@ -121,3 +123,12 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss">
+.dialogBrasaoClass {
+  .q-loading__message {
+    margin: 0px 0px 0;
+    transform: translateY(-115px);
+  }
+}
+</style>

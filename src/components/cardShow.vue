@@ -177,7 +177,7 @@ export default {
       this.promptConfirma = false;
     },
     maisInfo(id, tipo) {
-      if (tipo == "1") {
+      if (tipo == "WHATSAPP") {
         this.$router.push(`/whatsappmaisinfo/${id}`);
       } else if (tipo == "DISQUE_DENUNCIA") {
         this.$router.push(`/disquedenunciamaisinfo/${id}`);

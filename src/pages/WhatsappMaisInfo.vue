@@ -5,44 +5,18 @@
       style="border-radius: 5px; box-shadow: 1px; width: 98%"
     >
       <div class="q-pa-md row">
-        <q-btn flat icon="menu">
-          <!-- Estrutura de menu -->
-          <q-menu transition-show="flip-right" transition-hide="flip-left">
-            <q-list style="min-width: 100px">
-              <q-item clickable>
-                <q-item-section avatar
-                  ><q-icon color="orange" name="inventory_2"
-                /></q-item-section>
-                <q-item-section>Arquivar Denúncia</q-item-section>
-              </q-item>
-              <q-separator />
-              <q-item clickable>
-                <q-item-section avatar
-                  ><q-icon color="green" name="podcasts"
-                /></q-item-section>
-                <q-item-section>Tramitar informação</q-item-section>
-              </q-item>
-
-              <q-item clickable>
-                <q-item-section avatar
-                  ><q-icon color="red" name="cell_tower"
-                /></q-item-section>
-                <q-item-section>Receber a informação</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
+        <menu-acao :idCaso="dados.id" />
         <q-chip class="q-ma-sm">
           <q-avatar
             icon="fa-brands fa-whatsapp"
             color="green"
             text-color="white"
           />
-          <div class="q-pa-md text-h5">INFO-29209/29983</div>
+          <div v-if="dados" class="q-pa-md text-h5">{{ dados.protocolo }}</div>
         </q-chip>
         <div class="q-pa-sm">
           <q-rating
-            v-model="qualidade_info"
+            v-model="dados.qualidade_info"
             size="2em"
             :max="5"
             color="primary"
@@ -78,7 +52,7 @@
 
             <q-tab-panels v-model="tabInfo" animated>
               <q-tab-panel name="1">
-                <sud-info-texto-denuncia :texto="registro.descricao" />
+                <sud-info-texto-denuncia :texto="dados.relato" />
               </q-tab-panel>
 
               <q-tab-panel name="6">
@@ -86,7 +60,7 @@
               </q-tab-panel>
 
               <q-tab-panel name="8">
-                <sud-info-acompanhamento />
+                <sud-info-acompanhamento :id="dados.id" />
               </q-tab-panel>
 
               <q-tab-panel name="9">
@@ -106,41 +80,50 @@
 
 <script>
 import { ref } from "vue";
-import dados from "../assets/dados.json";
 import SudInfoTextoDenuncia from "src/components/SudInfoTextoDenuncia.vue";
 import SudInfoMaisInformacoes from "src/components/SudInfoMaisInformacoes.vue";
 import SudInfoArquivos from "src/components/SudInfoArquivos.vue";
 import SudInfoAcompanhamento from "src/components/SudInfoAcompanhamento.vue";
+import MenuAcao from "src/components/MenuAcao.vue";
 export default {
   components: {
     SudInfoTextoDenuncia,
     SudInfoMaisInformacoes,
     SudInfoArquivos,
     SudInfoAcompanhamento,
+    MenuAcao,
   },
   name: "WhatsappMaisInfo",
-  created() {},
+  created() {
+    this.carregarCaso(this.$route.params.id);
+  },
   setup() {
     return {
-      dados,
       registro: ref(null),
       qualidade_info: ref(0),
       tabInfo: ref("1"),
       idCaso: ref(null),
+      dados: ref({
+        id: null,
+        relato: "",
+      }),
     };
   },
-  beforeMount() {
-    this.idCaso = this.$route.params.id;
 
-    const temp = dados.filter((elemento) => {
-      return elemento.id == this.idCaso;
-    });
-
-    this.registro = temp[0];
-  },
   methods: {
     voltar() {
       this.$router.push("/");
+    },
+    async carregarCaso(idCaso) {
+      const params = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "10005",
+        id_caso: idCaso,
+      };
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params);
+      this.store.telaCarregamento(false);
+      this.dados = resposta.data[0];
     },
   },
 };

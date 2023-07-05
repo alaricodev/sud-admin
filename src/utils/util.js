@@ -151,7 +151,23 @@ export function getTopWords(text, top) {
     "fôsseis",
     "fossem",
     "sejais",
+    "você",
+    "hoje",
+    "mim",
+    "mesmo",
+    "não",
+    "sim",
+    "acho",
+    "queria",
+    "tantas",
+    "tanto",
+    "tantos",
   ];
+
+  // Caso não tenha sido passado
+  if (!text) {
+    return [];
+  }
 
   // Remove caracteres especiais e converte para letras minúsculas
   const cleanText = text.toLowerCase();
@@ -161,6 +177,11 @@ export function getTopWords(text, top) {
 
   // Retiro as palavras com menos de 4 caracteres
   const words = palavras.filter((palavra) => palavra.length >= 4);
+
+  //retiro caracteres especiais do final de cada palavra ou do inicio
+  words.forEach((palavra, index) => {
+    words[index] = palavra.replace(/^[.,;]+|[.,;]+$/g, "");
+  });
 
   // Contagem das palavras
   const wordCount = {};

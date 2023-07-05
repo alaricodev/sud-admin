@@ -55,20 +55,10 @@ export default defineComponent({
       });
     }
 
-    function telaCarrega(carrega, msg) {
-      if (carrega) {
-        $q.loading.show({
-          message: msg,
-        });
-      } else {
-        $q.loading.hide();
-      }
-    }
-
     return {
       //FUNÇÔES INTERNAS
       showNotify,
-      telaCarrega,
+
       // FUNÇÔES EXTERNAS
       consultaDB,
       // UTILIDADES
@@ -100,7 +90,7 @@ export default defineComponent({
   },
 
   async created() {
-    this.telaCarrega(true, "Buscando denúnicas");
+    this.store.telaCarregamento(true);
 
     this.store.denuncias = await consultaDB({
       cpf_log: this.store.login.cpf_log,
@@ -111,7 +101,7 @@ export default defineComponent({
 
     this.store.denuncias = paginacaoJson(this.store.denuncias, 10);
 
-    this.telaCarrega(false, "");
+    this.store.telaCarregamento(false);
 
     // Inicia a função de consulta a cada segundo quando o componente é criado
     //this.iniciarConsultaPeriodica();

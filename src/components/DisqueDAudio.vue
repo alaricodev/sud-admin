@@ -3,9 +3,20 @@
     <div class="text-h5">Relato da Denúncia</div>
   </div>
   <q-separator color="primary" />
-  <div class="flex flex-center">
+  <div v-if="dados" class="flex flex-center">
     <div class="q-pa-md" style="max-width: 90%">
       {{ dados.relato }}
+    </div>
+    <div class="q-pa-md" style="max-width: 90%">
+      <q-chip
+        v-for="palavra in getTopWords(this.dados.relato, 5)"
+        :key="palavra"
+        outline
+        :label="palavra"
+        color="grey-8"
+        text-color="grey-2"
+        icon="tag"
+      />
     </div>
   </div>
   <div class="q-pa-md">
@@ -30,16 +41,29 @@
 
 <script>
 import { api } from "boot/axios";
+import { ref } from "vue";
+import { getTopWords } from "../utils/util";
 export default {
   name: "DisqueDAudio",
 
-  data() {
-    return {};
+  setup() {
+    return {
+      // PALAVRAS CHAVES
+      palavrasChave: ref([]),
+      getTopWords,
+    };
   },
   props: {
     dados: {
       type: Object,
       required: true,
+    },
+  },
+
+  watch: {
+    dados() {
+      this.palavrasChave = this.getTopWords(this.dados.relato, 5);
+      console.log(this.palavrasChave);
     },
   },
 
