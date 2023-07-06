@@ -6,9 +6,14 @@
 
 export function mascaraTelefone(telefone) {
   // dado esse formato: 12987651234, ele retorna esse: (12)98765-1234
-  return `(${telefone.slice(0, 2)}) ${telefone.slice(2, -4)} - ${telefone.slice(
-    -4
-  )}`;
+  if (telefone) {
+    return `(${telefone.slice(0, 2)}) ${telefone.slice(
+      2,
+      -4
+    )} - ${telefone.slice(-4)}`;
+  } else {
+    return "";
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

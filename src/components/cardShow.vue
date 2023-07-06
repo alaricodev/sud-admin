@@ -177,10 +177,14 @@ export default {
       this.promptConfirma = false;
     },
     maisInfo(id, tipo) {
+      console.log(id);
+      console.log(tipo);
       if (tipo == "WHATSAPP") {
         this.$router.push(`/whatsappmaisinfo/${id}`);
       } else if (tipo == "DISQUE_DENUNCIA") {
         this.$router.push(`/disquedenunciamaisinfo/${id}`);
+      } else if (tipo == "SUD") {
+        this.$router.push(`/sudmaisinfo/${id}`);
       } else {
         this.$router.push(`/sudmaisinfo/${id}`);
       }

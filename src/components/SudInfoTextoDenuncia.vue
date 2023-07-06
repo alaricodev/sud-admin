@@ -1,8 +1,21 @@
 <template>
   <div class="text-h5 q-pa-md">Texto da Denúncia</div>
-  <div class="q-pa-sm"><q-separator color="primary" /></div>
+  <q-separator color="primary" />
   <div class="q-pa-md" style="max-width: 90%">
     {{ texto }}
+  </div>
+  <div class="text-h5 q-pa-md">Palavras mais usadas</div>
+  <q-separator color="primary" />
+  <div class="q-pa-md" style="max-width: 90%">
+    <q-chip
+      v-for="palavra in getTopWords(texto, 5)"
+      :key="palavra"
+      outline
+      :label="palavra"
+      color="grey-8"
+      text-color="grey-2"
+      icon="tag"
+    />
   </div>
 </template>
 

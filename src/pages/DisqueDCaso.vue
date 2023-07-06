@@ -1,29 +1,31 @@
 <template>
-  <q-page class="bg-grey-4">
+  <q-page v-if="dadosCarregados" class="bg-grey-4">
     <div
       class="bg-white q-ma-md"
       style="border-radius: 5px; box-shadow: 1px; width: 98%"
     >
       <div class="q-pa-md row">
-        <menu-acao :idCaso="dados.id" />
+        <menu-acao :idCaso="dados.casos[0].id" />
         <q-chip class="q-ma-sm">
           <q-avatar
             icon="fa-solid fa-phone"
             color="indigo-10"
             text-color="white"
           />
-          <div v-if="dados" class="q-pa-md text-h5">
-            {{ dados.protocolo }}
+          <div class="q-pa-md text-h5">
+            {{ dados.casos[0].protocolo }}
           </div>
         </q-chip>
         <div class="q-pa-sm">
-          <q-rating
-            :v-model="dados.qualidade_info"
-            size="2em"
-            :max="5"
-            color="primary"
-            readonly
-          />
+          <q-icon
+            :name="retornaIconeCor(dados.casos[0].nivel_sigilo, true)"
+            :color="retornaIconeCor(dados.casos[0].nivel_sigilo, false)"
+            size="md"
+          >
+            <q-tooltip
+              >Nível de sígilo: {{ dados.casos[0].nivel_sigilo }}</q-tooltip
+            >
+          </q-icon>
         </div>
         <q-space />
         <q-btn
@@ -55,19 +57,19 @@
 
             <q-tab-panels v-model="tabInfo" animated>
               <q-tab-panel name="1">
-                <div v-if="dados">
+                <div>
                   <disque-d-audio :dados="dados" />
                 </div>
               </q-tab-panel>
 
               <q-tab-panel name="8">
-                <div v-if="dados">
-                  <sud-info-acompanhamento :id="dados.id" />
+                <div>
+                  <sud-info-acompanhamento :id="dados.casos[0].id" />
                 </div>
               </q-tab-panel>
 
               <q-tab-panel name="9">
-                <div v-if="dados">
+                <div>
                   <disque-d-mais-informacoes :dados="dados" />
                 </div>
               </q-tab-panel>
@@ -109,6 +111,7 @@ export default {
 
     return {
       store,
+      dadosCarregados: ref(false),
       registro: ref(null),
       qualidade_info: ref(0),
       tabInfo: ref("1"),
@@ -116,23 +119,76 @@ export default {
       dados: ref({
         id: null,
       }),
+      qualidadeInfo: ref(null),
     };
+  },
+
+  watch: {
+    dados() {
+      this.dados.casos[0].qualidade_info !== null
+        ? (this.qualidadeInfo = this.dados.casos[0].qualidade_info)
+        : 0;
+    },
   },
 
   methods: {
     voltar() {
       this.$router.push("/");
     },
+
     async carregarCaso(idCaso) {
       const params = {
         cpf_log: this.store.login.cpf_log,
         codigo_sys_func: "10005",
         id_caso: idCaso,
       };
+      console.log(params);
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
       this.store.telaCarregamento(false);
-      this.dados = resposta.data[0];
+
+      this.dados = resposta.data;
+
+      if (this.dados.status_ret == 1) {
+        this.store.alerta(this.dados.retorno);
+      } else {
+        this.dadosCarregados = true;
+        console.log(this.dados);
+      }
+    },
+
+    retornaIconeCor(sigilo, icone) {
+      if (icone) {
+        switch (sigilo) {
+          case 1:
+            return "fa-solid fa-1";
+          case 2:
+            return "fa-solid fa-2";
+          case 3:
+            return "fa-solid fa-3";
+          case 4:
+            return "fa-solid fa-4";
+          case 5:
+            return "fa-solid fa-5";
+          default:
+            return "fa-solid fa-0";
+        }
+      } else {
+        switch (sigilo) {
+          case 1:
+            return "green";
+          case 2:
+            return "green";
+          case 3:
+            return "green";
+          case 4:
+            return "orange";
+          case 5:
+            return "red";
+          default:
+            return "grey-8";
+        }
+      }
     },
   },
 };

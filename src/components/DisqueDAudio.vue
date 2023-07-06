@@ -5,11 +5,11 @@
   <q-separator color="primary" />
   <div v-if="dados" class="flex flex-center">
     <div class="q-pa-md" style="max-width: 90%">
-      {{ dados.relato }}
+      {{ dados.casos[0].relato }}
     </div>
     <div class="q-pa-md" style="max-width: 90%">
       <q-chip
-        v-for="palavra in getTopWords(this.dados.relato, 5)"
+        v-for="palavra in getTopWords(this.dados.casos[0].relato, 5)"
         :key="palavra"
         outline
         :label="palavra"
@@ -60,17 +60,10 @@ export default {
     },
   },
 
-  watch: {
-    dados() {
-      this.palavrasChave = this.getTopWords(this.dados.relato, 5);
-      console.log(this.palavrasChave);
-    },
-  },
-
   methods: {
     async recebeAudio() {
       // Chama a rota para obter o áudio
-      const dados = { nome_original: this.dados.nome_original };
+      const dados = { nome_original: this.dados.arquivos[0].nome_original };
       const headers = { responseType: "blob" };
       const rota = "/audio181";
 

@@ -51,15 +51,29 @@ import LabelData from "./LabelData.vue";
 export default {
   components: { LabelData },
   name: "SudInfoLocalFatos",
-  created() {},
+  mounted() {
+    console.log(this.endereco);
+    this.cep = this.endereco.cep;
+    this.logradouro = this.endereco.logradouro;
+    this.numero = this.endereco.numero;
+    this.complemento = this.endereco.complemento;
+    this.bairro = this.endereco.bairro;
+    this.cidade = this.endereco.cidade;
+  },
+  props: {
+    endereco: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
-      cep: ref("88.095-700"),
-      logradouro: ref("Avenida Atlântica, 623"),
-      numero: ref("623"),
-      complemento: ref(""),
-      bairro: ref("Jardim Atlântico"),
-      cidade: ref("Florianópolis"),
+      cep: ref(null),
+      logradouro: ref(null),
+      numero: ref(null),
+      complemento: ref(null),
+      bairro: ref(null),
+      cidade: ref(null),
     };
   },
   computed: {

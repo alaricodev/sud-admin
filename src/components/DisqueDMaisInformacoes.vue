@@ -5,15 +5,29 @@
       <label-data label="Data da denúncia:" :texto="dataCaso" />
     </div>
 
-    <div class="q-mb-sm" style="width: 100%">
-      <label-data label="Telefone:" :texto="mascaraTelefone(dados.telefone)" />
+    <div
+      v-if="dados.casos[0].data_arquivamento"
+      class="q-mb-sm"
+      style="width: 100%"
+    >
+      <label-data label="Data do arquivamento:" :texto="dataArq" />
     </div>
 
     <div class="q-mb-sm" style="width: 100%">
-      <label-data label="Usuário abertura:" :texto="dados.nome_usuario" />
+      <label-data
+        label="Telefone:"
+        :texto="mascaraTelefone(dados.denuncia_disque_denuncia[0].telefone)"
+      />
+    </div>
+
+    <div class="q-mb-sm" style="width: 100%">
+      <label-data label="Usuário abertura:" :texto="dados.casos[0].nome" />
     </div>
     <div class="q-mb-sm" style="width: 100%">
-      <label-data label="Nível de Sigilo:" :texto="dados.nivel_sigilo" />
+      <label-data
+        label="Nível de Sigilo:"
+        :texto="dados.casos[0].nivel_sigilo"
+      />
     </div>
   </div>
 </template>
@@ -33,7 +47,11 @@ export default {
 
   computed: {
     dataCaso() {
-      var timestamp = Date.parse(this.dados.data_caso);
+      var timestamp = Date.parse(this.dados.casos[0].data_caso);
+      return formatarDataExtenso(timestamp);
+    },
+    dataArq() {
+      var timestamp = Date.parse(this.dados.casos[0].data_arquivamento);
       return formatarDataExtenso(timestamp);
     },
   },

@@ -19,9 +19,7 @@ const routes = [
   {
     path: "/whatsappmaisinfo/:id",
     component: () => import("layouts/MainLayout.vue"),
-    children: [
-      { path: "", component: () => import("pages/WhatsappMaisinfo.vue") },
-    ],
+    children: [{ path: "", component: () => import("pages/WhatsappCaso.vue") }],
   },
   {
     path: "/cadwhatsapp",

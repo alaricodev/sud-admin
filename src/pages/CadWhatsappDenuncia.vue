@@ -17,6 +17,15 @@
           class="q-mr-md"
         />
         <div class="text-h5">Cadastro de denúncia feita pelo Whatsapp</div>
+        <q-space />
+        <div>
+          <q-btn
+            color="primary"
+            label="Voltar"
+            icon="arrow_back"
+            @click="voltar()"
+          />
+        </div>
       </div>
     </div>
     <q-separator color="primary" />
@@ -147,6 +156,9 @@ export default {
         return false;
       }
       return true;
+    },
+    voltar() {
+      this.$router.push("/");
     },
     async salvarDados() {
       if (this.validarDados()) {

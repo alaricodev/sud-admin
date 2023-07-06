@@ -1,53 +1,29 @@
 <template>
-  <q-page class="bg-grey-4">
+  <q-page v-if="dadosCarregados" class="bg-grey-4">
     <div
       class="bg-white q-ma-md"
       style="border-radius: 5px; box-shadow: 1px; width: 98%"
     >
       <div class="q-pa-md row">
-        <q-btn flat icon="menu">
-          <!-- Estrutura de menu -->
-          <q-menu transition-show="flip-right" transition-hide="flip-left">
-            <q-list style="min-width: 100px">
-              <q-item clickable>
-                <q-item-section avatar
-                  ><q-icon color="orange" name="inventory_2"
-                /></q-item-section>
-                <q-item-section>Arquivar Denúncia</q-item-section>
-              </q-item>
-              <q-separator />
-              <q-item clickable>
-                <q-item-section avatar
-                  ><q-icon color="green" name="podcasts"
-                /></q-item-section>
-                <q-item-section>Tramitar informação</q-item-section>
-              </q-item>
-
-              <q-item clickable>
-                <q-item-section avatar
-                  ><q-icon color="red" name="cell_tower"
-                /></q-item-section>
-                <q-item-section>Receber a informação</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
+        <menu-acao :idCaso="dados.casos[0].id" />
         <q-chip class="q-ma-sm">
           <q-avatar
             icon="fa-solid fa-cloud"
             color="amber-10"
             text-color="white"
           />
-          <div class="q-pa-md text-h5">INFO-29209/29983</div>
+          <div class="q-pa-md text-h5">{{ dados.casos[0].protocolo }}</div>
         </q-chip>
         <div class="q-pa-sm">
-          <q-rating
-            v-model="qualidade_info"
-            size="2em"
-            :max="5"
-            color="primary"
-            readonly
-          />
+          <q-icon
+            :name="retornaIconeCor(dados.casos[0].nivel_sigilo, true)"
+            :color="retornaIconeCor(dados.casos[0].nivel_sigilo, false)"
+            size="md"
+          >
+            <q-tooltip
+              >Nível de sígilo: {{ dados.casos[0].nivel_sigilo }}</q-tooltip
+            >
+          </q-icon>
         </div>
         <q-space />
         <q-btn
@@ -75,11 +51,7 @@
               <q-tab name="4" label="Denunciante" icon="person" />
               <q-tab name="5" label="Envolvidos" icon="group" />
               <q-tab name="6" label="Arquivos" icon="cloud_download" />
-              <q-tab
-                name="7"
-                label="Tramitações"
-                icon="transfer_within_a_station"
-              />
+
               <q-tab name="8" label="Acompanhamento" icon="edit_note" />
               <q-tab name="9" label="Mais informações" icon="info" />
             </q-tabs>
@@ -88,15 +60,15 @@
 
             <q-tab-panels v-model="tabInfo" animated>
               <q-tab-panel name="1">
-                <sud-info-texto-denuncia :texto="registro.relato" />
+                <sud-info-texto-denuncia :texto="dados.casos[0].relato" />
               </q-tab-panel>
 
               <q-tab-panel name="2">
-                <sud-info-perguntas />
+                <sud-info-perguntas :perguntas="dados.denuncia_geral[0]" />
               </q-tab-panel>
 
               <q-tab-panel name="3">
-                <sud-info-local-fatos />
+                <sud-info-local-fatos :endereco="dados.enderecos[0]" />
               </q-tab-panel>
 
               <q-tab-panel name="4">
@@ -108,15 +80,11 @@
               </q-tab-panel>
 
               <q-tab-panel name="6">
-                <sud-info-arquivos />
-              </q-tab-panel>
-
-              <q-tab-panel name="7">
-                <sud-info-tramitacoes />
+                <caso-arquivos :arquivos="dados.arquivos" />
               </q-tab-panel>
 
               <q-tab-panel name="8">
-                <sud-info-acompanhamento />
+                <sud-info-acompanhamento :id="dados.casos[0].id" />
               </q-tab-panel>
 
               <q-tab-panel name="9">
@@ -136,51 +104,103 @@
 
 <script>
 import { ref } from "vue";
-import dados from "../assets/dados.json";
+import { useStore } from "src/stores/store";
+import { api } from "src/boot/axios";
 import SudInfoTextoDenuncia from "src/components/SudInfoTextoDenuncia.vue";
 import SudInfoPerguntas from "src/components/SudInfoPerguntas.vue";
 import SudInfoMaisInformacoes from "src/components/SudInfoMaisInformacoes.vue";
 import SudInfoLocalFatos from "src/components/SudInfoLocalFatos.vue";
 import SudInfoDenunciante from "src/components/SudInfoDenunciante.vue";
 import SudInfoEnvolvidos from "src/components/SudInfoEnvolvidos.vue";
-import SudInfoArquivos from "src/components/SudInfoArquivos.vue";
-import SudInfoTramitacoes from "src/components/SudInfoTramitacoes.vue";
 import SudInfoAcompanhamento from "src/components/SudInfoAcompanhamento.vue";
+import MenuAcao from "src/components/MenuAcao.vue";
+import CasoArquivos from "src/components/CasoArquivos.vue";
 export default {
   components: {
+    MenuAcao,
     SudInfoTextoDenuncia,
     SudInfoPerguntas,
     SudInfoMaisInformacoes,
     SudInfoLocalFatos,
     SudInfoDenunciante,
     SudInfoEnvolvidos,
-    SudInfoArquivos,
-    SudInfoTramitacoes,
     SudInfoAcompanhamento,
+    CasoArquivos,
   },
   name: "sudMaisInfo",
-  created() {},
+  created() {
+    this.carregarCaso(this.$route.params.id);
+  },
   setup() {
+    const store = useStore();
     return {
-      dados,
+      store,
       registro: ref(null),
       qualidade_info: ref(0),
       tabInfo: ref("1"),
       idCaso: ref(null),
+      dadosCarregados: ref(false),
     };
   },
-  beforeMount() {
-    this.idCaso = this.$route.params.id;
 
-    const temp = dados.filter((elemento) => {
-      return elemento.id == this.idCaso;
-    });
-
-    this.registro = temp[0];
-  },
   methods: {
     voltar() {
       this.$router.push("/");
+    },
+
+    async carregarCaso(idCaso) {
+      const params = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "10005",
+        id_caso: idCaso,
+      };
+      console.log(params);
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params);
+      this.store.telaCarregamento(false);
+
+      this.dados = resposta.data;
+
+      if (this.dados.status_ret == 1) {
+        this.store.alerta(this.dados.retorno);
+      } else {
+        this.dadosCarregados = true;
+        console.log(this.dados);
+      }
+    },
+
+    retornaIconeCor(sigilo, icone) {
+      if (icone) {
+        switch (sigilo) {
+          case 1:
+            return "fa-solid fa-1";
+          case 2:
+            return "fa-solid fa-2";
+          case 3:
+            return "fa-solid fa-3";
+          case 4:
+            return "fa-solid fa-4";
+          case 5:
+            return "fa-solid fa-5";
+          default:
+            return "fa-solid fa-0";
+        }
+      } else {
+        switch (sigilo) {
+          case 1:
+            return "green";
+          case 2:
+            return "green";
+          case 3:
+            return "green";
+          case 4:
+            return "orange";
+          case 5:
+            return "red";
+          default:
+            return "grey-8";
+        }
+      }
     },
   },
 };

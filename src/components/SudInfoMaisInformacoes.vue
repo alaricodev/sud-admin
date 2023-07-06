@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div class="text-h5 q-pb-md">Mais informações sobre o fato</div>
+    <div class="text-h5 q-pt-md">Mais informações sobre o fato</div>
+    <q-separator color="primary" class="q-mb-md" />
     <div class="q-mb-sm" style="width: 100%">
       <label-data label="Data da denúncia:" texto="15/01/1979" />
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <q-page class="bg-grey-4">
+  <q-page v-if="dadosCarregados" class="bg-grey-4">
     <div
       class="bg-white q-ma-md"
       style="border-radius: 5px; box-shadow: 1px; width: 98%"
@@ -12,15 +12,19 @@
             color="green"
             text-color="white"
           />
-          <div v-if="dados" class="q-pa-md text-h5">{{ dados.protocolo }}</div>
+          <div v-if="dados" class="q-pa-md text-h5">
+            {{ dados.casos[0].protocolo }}
+          </div>
         </q-chip>
         <div class="q-pa-sm">
-          <q-rating
-            v-model="dados.qualidade_info"
-            size="2em"
-            :max="5"
-            color="primary"
-          />
+          <q-icon
+            :name="retornaIconeCor(dados.casos[0].nivel_sigilo, true)"
+            :color="retornaIconeCor(dados.casos[0].nivel_sigilo, false)"
+            size="md"
+            ><q-tooltip
+              >Nível de sígilo: {{ dados.casos[0].nivel_sigilo }}</q-tooltip
+            >
+          </q-icon>
         </div>
         <q-space />
         <q-btn
@@ -52,19 +56,19 @@
 
             <q-tab-panels v-model="tabInfo" animated>
               <q-tab-panel name="1">
-                <sud-info-texto-denuncia :texto="dados.relato" />
+                <sud-info-texto-denuncia :texto="dados.casos[0].relato" />
               </q-tab-panel>
 
               <q-tab-panel name="6">
-                <sud-info-arquivos />
+                <caso-arquivos :arquivos="dados.arquivos" />
               </q-tab-panel>
 
               <q-tab-panel name="8">
-                <sud-info-acompanhamento :id="dados.id" />
+                <sud-info-acompanhamento :id="dados.casos[0].id" />
               </q-tab-panel>
 
               <q-tab-panel name="9">
-                <sud-info-mais-informacoes />
+                <caso-mais-informacao :dados="dadoInfo" />
               </q-tab-panel>
             </q-tab-panels>
           </q-card>
@@ -80,25 +84,34 @@
 
 <script>
 import { ref } from "vue";
+import { useStore } from "src/stores/store.js";
+import { api } from "src/boot/axios.js";
+import { mascaraTelefone, formatarDataExtenso } from "src/utils/util";
 import SudInfoTextoDenuncia from "src/components/SudInfoTextoDenuncia.vue";
-import SudInfoMaisInformacoes from "src/components/SudInfoMaisInformacoes.vue";
-import SudInfoArquivos from "src/components/SudInfoArquivos.vue";
 import SudInfoAcompanhamento from "src/components/SudInfoAcompanhamento.vue";
 import MenuAcao from "src/components/MenuAcao.vue";
+import CasoMaisInformacao from "src/components/CasoMaisInformacao.vue";
+import CasoArquivos from "src/components/CasoArquivos.vue";
+
 export default {
   components: {
     SudInfoTextoDenuncia,
-    SudInfoMaisInformacoes,
-    SudInfoArquivos,
     SudInfoAcompanhamento,
     MenuAcao,
+    CasoMaisInformacao,
+    CasoArquivos,
   },
   name: "WhatsappMaisInfo",
   created() {
     this.carregarCaso(this.$route.params.id);
   },
+
   setup() {
+    const store = useStore();
     return {
+      mascaraTelefone,
+      formatarDataExtenso,
+      store,
       registro: ref(null),
       qualidade_info: ref(0),
       tabInfo: ref("1"),
@@ -107,9 +120,34 @@ export default {
         id: null,
         relato: "",
       }),
+      dadoInfo: ref([]),
+      dadosCarregados: ref(false),
     };
   },
-
+  watch: {
+    dados() {
+      this.dadoInfo.push(
+        {
+          label: "Protocolo:",
+          valor: this.dados.casos[0].protocolo,
+        },
+        {
+          label: "Data:",
+          valor: this.formatarDataExtenso(this.dados.casos[0].data_caso),
+        },
+        {
+          label: "Quem Criou:",
+          valor: this.dados.casos[0].nome,
+        },
+        {
+          label: "Telefone:",
+          valor: this?.mascaraTelefone(
+            this.dados.denuncia_whatsapp[0].telefone
+          ),
+        }
+      );
+    },
+  },
   methods: {
     voltar() {
       this.$router.push("/");
@@ -120,10 +158,51 @@ export default {
         codigo_sys_func: "10005",
         id_caso: idCaso,
       };
+      console.log(params);
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
       this.store.telaCarregamento(false);
-      this.dados = resposta.data[0];
+
+      this.dados = resposta.data;
+
+      if (this.dados.status_ret == 1) {
+        this.store.alerta(this.dados.retorno);
+      } else {
+        this.dadosCarregados = true;
+      }
+    },
+    retornaIconeCor(sigilo, icone) {
+      if (icone) {
+        switch (sigilo) {
+          case 1:
+            return "fa-solid fa-1";
+          case 2:
+            return "fa-solid fa-2";
+          case 3:
+            return "fa-solid fa-3";
+          case 4:
+            return "fa-solid fa-4";
+          case 5:
+            return "fa-solid fa-5";
+          default:
+            return "fa-solid fa-0";
+        }
+      } else {
+        switch (sigilo) {
+          case 1:
+            return "green";
+          case 2:
+            return "green";
+          case 3:
+            return "green";
+          case 4:
+            return "orange";
+          case 5:
+            return "red";
+          default:
+            return "grey-8";
+        }
+      }
     },
   },
 };
