@@ -66,13 +66,12 @@
               <q-tab-panel name="2">
                 <sud-info-perguntas :perguntas="dados.denuncia_geral[0]" />
               </q-tab-panel>
-
               <q-tab-panel name="3">
-                <sud-info-local-fatos :endereco="dados.enderecos[0]" />
+                <caso-endereco-fato :endereco="dados.enderecos[0]" />
               </q-tab-panel>
 
               <q-tab-panel name="4">
-                <sud-info-denunciante />
+                <caso-denunciante :denunciante="dados.denunciantes[0]" />
               </q-tab-panel>
 
               <q-tab-panel name="5">
@@ -109,23 +108,23 @@ import { api } from "src/boot/axios";
 import SudInfoTextoDenuncia from "src/components/SudInfoTextoDenuncia.vue";
 import SudInfoPerguntas from "src/components/SudInfoPerguntas.vue";
 import SudInfoMaisInformacoes from "src/components/SudInfoMaisInformacoes.vue";
-import SudInfoLocalFatos from "src/components/SudInfoLocalFatos.vue";
-import SudInfoDenunciante from "src/components/SudInfoDenunciante.vue";
+import CasoDenunciante from "src/components/CasoDenunciante.vue";
 import SudInfoEnvolvidos from "src/components/SudInfoEnvolvidos.vue";
 import SudInfoAcompanhamento from "src/components/SudInfoAcompanhamento.vue";
 import MenuAcao from "src/components/MenuAcao.vue";
 import CasoArquivos from "src/components/CasoArquivos.vue";
+import CasoEnderecoFato from "src/components/CasoEnderecoFato.vue";
 export default {
   components: {
     MenuAcao,
     SudInfoTextoDenuncia,
     SudInfoPerguntas,
     SudInfoMaisInformacoes,
-    SudInfoLocalFatos,
-    SudInfoDenunciante,
+    CasoDenunciante,
     SudInfoEnvolvidos,
     SudInfoAcompanhamento,
     CasoArquivos,
+    CasoEnderecoFato,
   },
   name: "sudMaisInfo",
   created() {

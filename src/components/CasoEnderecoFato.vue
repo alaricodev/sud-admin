@@ -33,40 +33,24 @@
       loading="lazy"
       referrerpolicy="no-referrer-when-downgrade"
     ></iframe>
-    <!-- <iframe
-      width="100%"
-      height="600"
-      frameborder="0"
-      scrolling="no"
-      marginheight="0"
-      marginwidth="0"
-      :src="frameMap"
-    /> -->
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
 import LabelData from "./LabelData.vue";
+import { ref } from "vue";
 export default {
   components: { LabelData },
-  name: "SudInfoLocalFatos",
-  mounted() {
-    console.log(this.endereco);
-    this.cep = this.endereco.cep;
+  name: "CasoEnderecoFato",
+  created() {
+    this.cep = this.endereco.cep.replace(/^(\d{2})(\d{3})(\d{3})$/, "$1.$2-$3");
     this.logradouro = this.endereco.logradouro;
     this.numero = this.endereco.numero;
     this.complemento = this.endereco.complemento;
     this.bairro = this.endereco.bairro;
     this.cidade = this.endereco.cidade;
   },
-  props: {
-    endereco: {
-      type: Object,
-      required: true,
-    },
-  },
-  data() {
+  setup() {
     return {
       cep: ref(null),
       logradouro: ref(null),
@@ -76,6 +60,14 @@ export default {
       cidade: ref(null),
     };
   },
+
+  props: {
+    endereco: {
+      type: Object,
+      required: true,
+    },
+  },
+
   computed: {
     frameMap() {
       return `https://maps.google.com/maps?width=100%25&height=600&hl=en&q=${encodeURIComponent(
@@ -85,7 +77,7 @@ export default {
       }&t=&z=14&ie=UTF8&iwloc=B&output=embed`;
     },
   },
-  props: {},
+
   methods: {},
 };
 </script>
