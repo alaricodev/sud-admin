@@ -22,11 +22,30 @@ const routes = [
     children: [{ path: "", component: () => import("pages/WhatsappCaso.vue") }],
   },
   {
+    path: "/sosescolapmaisinfo/:id",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      { path: "", component: () => import("pages/SosEscolaCaso.vue") },
+    ],
+  },
+  {
+    path: "/franquearacessoinfo/:id",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      { path: "", component: () => import("pages/FranquearAcessoInfo.vue") },
+    ],
+  },
+  {
     path: "/cadwhatsapp",
     component: () => import("layouts/MainLayout.vue"),
     children: [
       { path: "", component: () => import("pages/CadWhatsappDenuncia.vue") },
     ],
+  },
+  {
+    path: "/configsud",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ path: "", component: () => import("pages/ConfigSud.vue") }],
   },
   // Always leave this as last one,
   // but you can also remove it

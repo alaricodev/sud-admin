@@ -4,37 +4,8 @@
       class="bg-white q-ma-md"
       style="border-radius: 5px; box-shadow: 1px; width: 98%"
     >
-      <div class="q-pa-md row">
-        <menu-acao :idCaso="dados.casos[0].id" />
-        <q-chip class="q-ma-sm">
-          <q-avatar
-            icon="fa-solid fa-phone"
-            color="indigo-10"
-            text-color="white"
-          />
-          <div class="q-pa-md text-h5">
-            {{ dados.casos[0].protocolo }}
-          </div>
-        </q-chip>
-        <div class="q-pa-sm">
-          <q-icon
-            :name="retornaIconeCor(dados.casos[0].nivel_sigilo, true)"
-            :color="retornaIconeCor(dados.casos[0].nivel_sigilo, false)"
-            size="md"
-          >
-            <q-tooltip
-              >Nível de sígilo: {{ dados.casos[0].nivel_sigilo }}</q-tooltip
-            >
-          </q-icon>
-        </div>
-        <q-space />
-        <q-btn
-          color="primary"
-          label="Voltar"
-          icon="arrow_back"
-          @click="voltar()"
-        />
-      </div>
+      <header-caso :dados="dados" />
+
       <div class="row q-pa-md" style="width: 100%">
         <div class="q-gutter-y-md" style="width: 100%">
           <q-card>
@@ -93,11 +64,11 @@ import DisqueDAudio from "src/components/DisqueDAudio.vue";
 import { useStore } from "src/stores/store";
 import { api } from "src/boot/axios";
 import DisqueDMaisInformacoes from "src/components/DisqueDMaisInformacoes.vue";
-import MenuAcao from "src/components/MenuAcao.vue";
+import HeaderCaso from "src/components/HeaderCaso.vue";
 
 export default {
   components: {
-    MenuAcao,
+    HeaderCaso,
     SudInfoAcompanhamento,
     DisqueDAudio,
     DisqueDMaisInformacoes,

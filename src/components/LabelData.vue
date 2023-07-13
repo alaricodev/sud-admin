@@ -39,6 +39,7 @@ export default {
     cor: {
       type: String,
       required: false,
+      default: "grey-10",
     },
   },
 };

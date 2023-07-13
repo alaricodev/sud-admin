@@ -1,14 +1,14 @@
 <template>
   <div class="text-h5 q-pa-md">Texto da Denúncia</div>
   <q-separator color="primary" />
-  <div class="q-pa-md" style="max-width: 90%">
-    {{ texto }}
+  <div class="q-pa-md flex flex-center" style="max-width: 90%">
+    <pre class="pre-container">{{ texto }}</pre>
   </div>
   <div class="text-h5 q-pa-md">Palavras mais usadas</div>
   <q-separator color="primary" />
   <div class="q-pa-md" style="max-width: 90%">
     <q-chip
-      v-for="palavra in getTopWords(texto, 5)"
+      v-for="palavra in getTopWords(texto, nrPalavras)"
       :key="palavra"
       outline
       :label="palavra"
@@ -24,14 +24,19 @@ import { getTopWords } from "../utils/util";
 import { ref } from "vue";
 export default {
   name: "SudInfotextoDenuncia",
-  beforeMount() {
-    this.palavrasChave = this.getTopWords(this.texto, 10);
+  data() {
+    return {};
   },
   setup() {
     return {
       getTopWords,
-      palavrasChave: ref(null),
+      nrPalavras: ref(10),
     };
+  },
+  computed: {
+    textoFormatado() {
+      return this.texto;
+    },
   },
   props: {
     texto: {
@@ -43,4 +48,13 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.pre-container {
+  max-width: 900px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  background-color: rgb(235, 232, 232);
+  padding: 10px;
+  border-radius: 10px;
+}
+</style>

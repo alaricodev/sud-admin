@@ -5,8 +5,15 @@
   <q-separator color="primary" />
   <div v-if="dados" class="flex flex-center">
     <div class="q-pa-md" style="max-width: 90%">
-      {{ dados.casos[0].relato }}
+      <!-- <div v-html="dados.casos[0].relato" /> -->
+      <pre class="pre-container">
+        {{ dados.casos[0].relato }}
+      </pre>
     </div>
+    <div class="q-pa-md" style="width: 100%">
+      <div class="text-h5">Palavras mais usadas</div>
+    </div>
+    <q-separator color="primary" class="q-my-sm" style="width: 100%" />
     <div class="q-pa-md" style="max-width: 90%">
       <q-chip
         v-for="palavra in getTopWords(this.dados.casos[0].relato, 5)"
@@ -53,6 +60,7 @@ export default {
       getTopWords,
     };
   },
+
   props: {
     dados: {
       type: Object,
@@ -84,5 +92,13 @@ export default {
 <style>
 audio::-webkit-media-controls-panel {
   background-color: #caa648;
+}
+.pre-container {
+  max-width: 900px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  background-color: rgb(235, 232, 232);
+  padding: 10px;
+  border-radius: 10px;
 }
 </style>

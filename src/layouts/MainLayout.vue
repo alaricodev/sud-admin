@@ -40,7 +40,7 @@
       </div>
       <div class="flex flex-center text-h6 text-grey-5 column">
         <span>PCSC</span>
-        <span>SUD - Adminitrador</span>
+        <span>SUD - Administrador</span>
       </div>
       <q-list>
         <q-item-label header class="text-primary text-bold text-center">
@@ -72,12 +72,30 @@
         <q-separator color="primary" />
         <q-item clickable>
           <q-item-section avatar
-            ><q-icon color="green" name="sms"
+            ><q-icon color="green" name="fa-brands fa-whatsapp"
           /></q-item-section>
           <q-item-section
             class="text-white"
             @click="$router.push(`/cadwhatsapp`)"
             >Nova denúncia whatsapp</q-item-section
+          >
+        </q-item>
+        <q-separator color="primary" />
+        <q-item clickable>
+          <q-item-section avatar
+            ><q-icon color="primary" name="fa-solid fa-box-archive"
+          /></q-item-section>
+          <q-item-section class="text-white"
+            >Denúncias Arquivadas</q-item-section
+          >
+        </q-item>
+        <q-separator color="primary" />
+        <q-item clickable>
+          <q-item-section avatar
+            ><q-icon color="primary" name="fa-solid fa-gears"
+          /></q-item-section>
+          <q-item-section class="text-white" @click="$router.push(`/configsud`)"
+            >Configurações</q-item-section
           >
         </q-item>
         <q-separator color="primary" />

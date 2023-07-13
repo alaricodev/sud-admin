@@ -4,8 +4,35 @@
       class="bg-white q-ma-md"
       style="border-radius: 5px; box-shadow: 1px; width: 98%"
     >
-      <header-caso :dados="dados" />
-
+      <div class="q-pa-md row">
+        <menu-acao :idCaso="dados.casos[0].id" />
+        <q-chip class="q-ma-sm">
+          <q-avatar
+            :icon="retornaIconeTopo(dados.caso[0].tipo)"
+            :color="retornaCorTopo(dados.caso[0].tipo)"
+            text-color="white"
+          />
+          <div class="q-pa-md text-h5">{{ dados.casos[0].protocolo }}</div>
+        </q-chip>
+        <div class="q-pa-sm">
+          <q-icon
+            :name="retornaIconeCor(dados.casos[0].nivel_sigilo, true)"
+            :color="retornaIconeCor(dados.casos[0].nivel_sigilo, false)"
+            size="md"
+          >
+            <q-tooltip
+              >Nível de sígilo: {{ dados.casos[0].nivel_sigilo }}</q-tooltip
+            >
+          </q-icon>
+        </div>
+        <q-space />
+        <q-btn
+          color="primary"
+          label="Voltar"
+          icon="arrow_back"
+          @click="voltar()"
+        />
+      </div>
       <div class="row q-pa-md" style="width: 100%">
         <div class="q-gutter-y-md" style="width: 100%">
           <q-card>
@@ -18,8 +45,19 @@
               align="justify"
               narrow-indicator
             >
-              <q-tab name="1" label="Texto Denúncia" icon="description" />
-              <q-tab name="2" label="Perguntas" icon="help" />
+              <q-tab
+                name="1"
+                label="Texto Denúncia"
+                icon="description"
+                v-if="!dados.denuncia_disque_denuncia"
+              />
+
+              <q-tab
+                name="2"
+                label="Perguntas"
+                icon="help"
+                v-if="dados.denuncia_geral"
+              />
               <q-tab
                 name="3"
                 label="Local dos Fatos"
@@ -101,7 +139,7 @@
               </q-tab-panel>
 
               <q-tab-panel name="9">
-                <caso-mais-informacao :dados="dadosMaisInfo()" />
+                <sud-info-mais-informacoes />
               </q-tab-panel>
             </q-tab-panels>
           </q-card>
@@ -119,25 +157,23 @@
 import { ref } from "vue";
 import { useStore } from "src/stores/store";
 import { api } from "src/boot/axios";
-import { formatarDataExtenso, extrairIPv4 } from "src/utils/util";
 import SudInfoTextoDenuncia from "src/components/SudInfoTextoDenuncia.vue";
 import SudInfoPerguntas from "src/components/SudInfoPerguntas.vue";
+import SudInfoMaisInformacoes from "src/components/SudInfoMaisInformacoes.vue";
 import CasoDenunciante from "src/components/CasoDenunciante.vue";
 import SudInfoAcompanhamento from "src/components/SudInfoAcompanhamento.vue";
-//import MenuAcao from "src/components/MenuAcao.vue";
+import MenuAcao from "src/components/MenuAcao.vue";
 import CasoArquivos from "src/components/CasoArquivos.vue";
 import CasoEnderecoFato from "src/components/CasoEnderecoFato.vue";
 import CasoLocalEletronico from "src/components/CasoLocalEletronico.vue";
 import CasoVeiculos from "src/components/CasoVeiculos.vue";
 import CasoEnvolvidos from "src/components/CasoEnvolvidos.vue";
-import CasoMaisInformacao from "src/components/CasoMaisInformacao.vue";
-import HeaderCaso from "src/components/HeaderCaso.vue";
 export default {
   components: {
-    //MenuAcao,
-    HeaderCaso,
+    MenuAcao,
     SudInfoTextoDenuncia,
     SudInfoPerguntas,
+    SudInfoMaisInformacoes,
     CasoDenunciante,
     SudInfoAcompanhamento,
     CasoArquivos,
@@ -145,7 +181,6 @@ export default {
     CasoLocalEletronico,
     CasoVeiculos,
     CasoEnvolvidos,
-    CasoMaisInformacao,
   },
   name: "sudMaisInfo",
   created() {
@@ -189,43 +224,33 @@ export default {
         console.log(this.dados);
       }
     },
-    dadosMaisInfo() {
-      const ret = [
-        {
-          label: "Data da Denúncia: ",
-          valor: formatarDataExtenso(this.dados.casos[0].data_caso),
-        },
-        {
-          label: "IP:",
-          valor: extrairIPv4(this.dados.casos[0].ip),
-        },
-        {
-          label: "Porta lógica:",
-          valor: this.dados.casos[0].porta_logica,
-        },
-        {
-          label: "Usuário Abertura:",
-          valor: this.dados.casos[0].nome,
-        },
-        {
-          label: "Nível de Sigilo:",
-          valor: this.dados.casos[0].nivel_sigilo,
-          cor:
-            this.dados.casos[0].nivel_sigilo > 4
-              ? "red"
-              : this.dados.casos[0].nivel_sigilo > 3
-              ? "orange"
-              : "green",
-        },
-        {
-          label: "Qualidade da informação",
-          valor: this.dados.casos[0].qualidade_info
-            ? `${this.dados.casos[0].qualidade_info}/5`
-            : "Não avaliada",
-        },
-      ];
-      console.log(ret);
-      return ret;
+    retornaIconeTopo(tipo) {
+      switch (tipo) {
+        case "SUD":
+          return "fa-solid fa-cloud";
+        case "WHATSAPP":
+          return "fa-brand fa-whatsapp";
+        case "SOS_ESCOLA":
+          return "fa-solid fa-graduation-cap";
+        case "DISQUE_DENUNCIA":
+          return "fa-solid fa-phone";
+        default:
+          return "";
+      }
+    },
+    retornaCorTopo(tipo) {
+      switch (tipo) {
+        case "SUD":
+          return "amber-10";
+        case "WHATSAPP":
+          return "green";
+        case "SOS_ESCOLA":
+          return "red";
+        case "DISQUE_DENUNCIA":
+          return "indigo-10";
+        default:
+          return "";
+      }
     },
     retornaIconeCor(sigilo, icone) {
       if (icone) {

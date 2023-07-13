@@ -33,7 +33,7 @@ import { useStore } from "../stores/store.js";
 import { storeToRefs } from "pinia";
 
 import { consultaDB } from "../utils/db.js";
-import { paginacaoJson } from "src/utils/util";
+import { formatarDataExtenso, paginacaoJson } from "src/utils/util";
 
 export default defineComponent({
   components: { FiltroIndex, CardShow },
@@ -41,16 +41,16 @@ export default defineComponent({
   setup() {
     const $q = useQuasar();
     const store = useStore();
-    const { denuncias } = storeToRefs(store);
+    //const { denuncias } = storeToRefs(store);
 
-    function showNotify() {
+    function showNotify(tipo, data_caso) {
       $q.notify({
         position: "top-left",
-        timeout: 3500,
-        message: "Acabou de cair uma denúncia no sistema sobre o SOS_ESCOLA",
-        caption: "às 10:27:15",
-        color: "red",
-        avatar: "https://cdn.quasar.dev/img/boy-avatar.png",
+        timeout: 5500,
+        message: `Acabou de cair uma denúncia no sistema ${tipo}`,
+        caption: formatarDataExtenso(data_caso),
+        color: this.store.corCaso(tipo),
+        icon: this.store.iconeCaso(tipo),
         progress: true,
       });
     }
@@ -65,7 +65,7 @@ export default defineComponent({
       dados,
       store,
       // ARRAY DE DENÚNCIAS
-      denuncias,
+      denuncias: ref([]),
       denunciasFiltrada: ref([]),
       // PAGINAÇÃO
       maxPagina: ref(0),
@@ -89,40 +89,53 @@ export default defineComponent({
     },
   },
 
-  async created() {
-    this.store.telaCarregamento(true);
-
-    this.store.denuncias = await consultaDB({
-      cpf_log: this.store.login.cpf_log,
-      codigo_sys_func: "10002",
-      data_caso_inicio: null,
-      data_caso_fim: null,
-    });
-
-    this.store.denuncias = paginacaoJson(this.store.denuncias, 10);
-
-    this.store.telaCarregamento(false);
-
+  created() {
+    this.carregaDenuncias();
     // Inicia a função de consulta a cada segundo quando o componente é criado
-    //this.iniciarConsultaPeriodica();
+    this.iniciarConsultaPeriodica();
   },
   methods: {
+    async carregaDenuncias() {
+      this.store.telaCarregamento(true);
+
+      const params = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "10002",
+        id_usuario: this.store.login.id_usuario,
+      };
+
+      const resposta = await api.post("/consulta", params);
+      this.denuncias = paginacaoJson(resposta.data, 10);
+
+      this.store.telaCarregamento(false);
+    },
+
     async buscarDenuncias() {
-      const resultado = await consultaDB({
+      const params = {
         cpf_log: this.store.login.cpf_log,
         codigo_sys_func: "10003",
-        id: 1,
-      });
-      // const resposta = await api.get("/aleatorio");
-      // console.log(resposta.data.msg);
-      // if (resposta.data.msg > 80) {
-      //   this.store.novasDenuncias += 1;
-      //   this.showNotify();
-      // }
+        id_usuario: this.store.login.id_usuario,
+        id_caso: this.denuncias.reduce((maior, objeto) => {
+          return objeto.id > maior ? objeto.id : maior;
+        }, 0),
+      };
+
+      const resposta = await api.post("/consulta", params);
+      if (resposta.data) {
+        const dados = resposta.data;
+        dados.forEach((obj) => {
+          this.showNotify(obj.tipo, obj.data_caso);
+          this.denuncias.unshift(obj);
+        });
+        this.denuncias = paginacaoJson(this.denuncias, 10);
+        this.atualPagina = 2;
+        this.atualPagina = 1;
+      }
+      console.log(resposta.data);
     },
     iniciarConsultaPeriodica() {
       // Use o setInterval para executar a função de consulta a cada segundo
-      setInterval(this.buscarDenuncias, 60000);
+      setInterval(this.buscarDenuncias, 30000);
     },
     reproduzirSom() {
       const audio = new Audio(som);

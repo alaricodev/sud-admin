@@ -4,6 +4,18 @@
 //
 // ---------------------------------------------------------------------------------------------------------------------
 
+export function extrairIPv4(str) {
+  /**
+   * Função feita para extrair a parte do IPV5 do IP
+   */
+  // Encontra o último índice do caractere ':'
+  let i = str.lastIndexOf(":");
+  // Se não encontrar, retorna a string inteira
+  if (i === -1) return str;
+  // Senão, retorna a substring a partir do índice seguinte
+  return str.substring(i + 1);
+}
+
 export function mascaraTelefone(telefone) {
   // dado esse formato: 12987651234, ele retorna esse: (12)98765-1234
   if (telefone) {
@@ -14,6 +26,37 @@ export function mascaraTelefone(telefone) {
   } else {
     return "";
   }
+}
+
+export function validarPlaca(placa) {
+  if (!placa) {
+    return false;
+  }
+
+  placa = placa.replace("-", "");
+
+  if (placa.length !== 7) {
+    return false;
+  }
+
+  function ehLetra(caractere) {
+    return /^[A-Z]$/i.test(caractere);
+  }
+
+  // Função auxiliar para verificar se um caractere é um número
+  function ehNumero(caractere) {
+    return /^\d$/.test(caractere);
+  }
+
+  if (!ehLetra(placa[0]) || !ehLetra(placa[1]) || !ehLetra(placa[2])) {
+    return false;
+  }
+
+  if (!ehNumero(placa[3]) || !ehNumero(placa[5]) || !ehNumero(placa[6])) {
+    return false;
+  }
+
+  return true;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

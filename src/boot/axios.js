@@ -10,7 +10,7 @@ import axios from "axios";
 //const api = axios.create({ baseURL: 'https://api.example.com' })
 let api = "";
 if (process.env.DEV) {
-  api = axios.create({ baseURL: "http://localhost:5001" });
+  api = axios.create({ baseURL: "http://10.121.23.44:5001" });
 } else {
   api = axios.create({ baseURL: "https://sistemas.pc.sc.gov.br/sud/backend/" });
 }

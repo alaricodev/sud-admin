@@ -55,7 +55,7 @@ export default {
       return formatarDataExtenso(timestamp);
     },
   },
-  mounted() {},
+
   props: {
     dados: {
       type: Object,
