@@ -58,7 +58,12 @@
               />
 
               <q-tab name="8" label="Acompanhamento" icon="edit_note" />
-              <q-tab name="9" label="Mais informações" icon="info" />
+              <q-tab
+                name="9"
+                label="Mais informações"
+                icon="info"
+                v-if="store.login.dipc"
+              />
             </q-tabs>
 
             <q-separator />

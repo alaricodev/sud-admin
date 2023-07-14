@@ -42,9 +42,17 @@
               align="justify"
               narrow-indicator
             >
-              <q-tab name="1" label="Mails" />
-              <q-tab name="2" label="Alarms" />
-              <q-tab name="3" label="Movies" />
+              <q-tab name="1" label="Grupos NINT" icon="fa-solid fa-sitemap" />
+              <q-tab
+                name="2"
+                label="BlackList Telefones"
+                icon="fa-solid fa-phone-slash"
+              />
+              <q-tab
+                name="3"
+                label="Parâmetros"
+                icon="fa-solid fa-stroopwafel"
+              />
             </q-tabs>
 
             <q-separator />

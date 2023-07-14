@@ -10,6 +10,7 @@ export const useStore = defineStore("store", {
       id_usuario: 133,
       nome_usuario: "Alarico Modinez de Castro",
       foto_usuario: "alarico_modinez_de_castro.jpg",
+      dipc: true,
       token: "",
     },
     denuncias: [],

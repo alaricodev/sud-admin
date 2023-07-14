@@ -49,7 +49,7 @@
               >
                 <q-item-section avatar>
                   <q-avatar>
-                    <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+                    <img :src="retornaFoto(policial.foto)" />
                   </q-avatar>
                 </q-item-section>
                 <q-item-section>
@@ -64,13 +64,7 @@
 
                 <q-item-section side top>
                   <q-badge
-                    :color="
-                      policial.nivel_acesso <= 3
-                        ? 'teal'
-                        : policial.nivel_acesso == 4
-                        ? 'orange'
-                        : 'red'
-                    "
+                    :color="store.corAcesso(policial.nivel_acesso)"
                     :label="policial.nivel_acesso"
                   />
                 </q-item-section>
@@ -289,6 +283,10 @@ export default {
       }
 
       return true;
+    },
+
+    retornaFoto(foto) {
+      return `https://getin.pc.sc.gov.br/get_files_imgUser/${foto}`;
     },
   },
 };

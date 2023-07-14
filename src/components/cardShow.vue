@@ -55,7 +55,25 @@
             text-color="white"
           />
         </q-item-section>
-        <q-item-section>{{ avatar.nome }}</q-item-section>
+        <q-item-section>
+          <div class="row">
+            {{ avatar.nome }}
+            <q-icon
+              v-if="dados.encaminhado_nint"
+              class="q-ml-md"
+              name="fa-regular fa-share-from-square"
+              color="amber-9"
+            >
+              <q-tooltip
+                :delay="500"
+                class="bg-primary text-body2"
+                :offset="[10, 10]"
+              >
+                Informação encaminhada: NINT
+              </q-tooltip>
+            </q-icon>
+          </div>
+        </q-item-section>
         <q-item-section> {{ dados.protocolo }} </q-item-section>
 
         <q-item-section class="text-subtitle2">
@@ -67,10 +85,20 @@
             :name="dados.tem_arquivos ? 'fa-solid fa-paperclip' : 'block'"
             :color="dados.tem_arquivos ? 'blue-grey' : 'red'"
           >
-            <q-tooltip v-if="dados.tem_arquivos"
+            <q-tooltip
+              :delay="500"
+              class="bg-primary text-body2"
+              :offset="[10, 10]"
+              v-if="dados.tem_arquivos"
               >Existe arquivos anexados</q-tooltip
             >
-            <q-tooltip v-else>Não existe arquivos anexados</q-tooltip>
+            <q-tooltip
+              :delay="500"
+              class="bg-primary text-body2"
+              :offset="[10, 10]"
+              v-else
+              >Não existe arquivos anexados</q-tooltip
+            >
           </q-icon>
         </q-item-section>
       </template>
@@ -79,22 +107,23 @@
         <div class="q-gutter-y-md" style="max-width: 100%">
           <q-card>
             <q-card-section>
-              <div class="text-h5 text-title1 text-grey-6">Resumo...</div>
-            </q-card-section>
-            <q-card-section>
               <div class="text-body1 text-grey-10 text-container">
-                <p :class="abertoDesc ? '' : 'text-overflow'">
+                <div class="text-h5 text-title1 text-grey-6">Relato:</div>
+                <q-separator />
+                <pre class="pre-container text-center"> {{ dados.relato }}</pre>
+
+                <!-- <p :class="abertoDesc ? '' : 'text-overflow'">
                   {{ dados.relato }}
-                </p>
+                </p> -->
               </div>
-              <q-separator color="primary" />
-              <div>
+
+              <!-- <div>
                 <q-btn
                   flat
                   :label="abertoDesc ? 'ler menos...' : 'ler mais...'"
                   @click="abertoDesc = !abertoDesc"
                 />
-              </div>
+              </div> -->
             </q-card-section>
           </q-card>
         </div>
@@ -207,5 +236,14 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; /* Reticências (...) */
+}
+
+.pre-container {
+  max-width: 900px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  background-color: rgb(235, 232, 232);
+  padding: 10px;
+  border-radius: 10px;
 }
 </style>
