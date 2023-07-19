@@ -10,10 +10,11 @@
         :dados="dado"
       />
     </div>
+
     <div class="q-pa-lg flex flex-center">
       <q-pagination
         v-model="atualPagina"
-        :max="maxPagina"
+        :max="totalPaginasArray(this.denuncias, 30)"
         :max-pages="10"
         boundary-numbers
       />
@@ -30,10 +31,13 @@ import { useQuasar } from "quasar";
 import som from "../assets/notify.mp3";
 import { api } from "boot/axios";
 import { useStore } from "../stores/store.js";
-import { storeToRefs } from "pinia";
 
 import { consultaDB } from "../utils/db.js";
-import { formatarDataExtenso, paginacaoJson } from "src/utils/util";
+import {
+  formatarDataExtenso,
+  paginacao,
+  totalPaginasArray,
+} from "src/utils/util";
 
 export default defineComponent({
   components: { FiltroIndex, CardShow },
@@ -64,27 +68,30 @@ export default defineComponent({
       // UTILIDADES
       dados,
       store,
+      totalPaginasArray,
+
       // ARRAY DE DENÚNCIAS
       denuncias: ref([]),
       denunciasFiltrada: ref([]),
       // PAGINAÇÃO
-      maxPagina: ref(0),
+      maxPagina: ref(10),
       atualPagina: ref(1),
     };
   },
 
   watch: {
     denuncias() {
-      this.maxPagina = this.denuncias.reduce((maiorPagina, objeto) => {
-        return objeto.pagina > maiorPagina ? objeto.pagina : maiorPagina;
-      }, 0);
-      this.denunciasFiltrada = this.denuncias.filter(
-        (el) => el.pagina === this.atualPagina
+      this.denunciasFiltrada = this.denunciasFiltrada = paginacao(
+        this.denuncias,
+        30,
+        this.atualPagina
       );
     },
     atualPagina() {
-      this.denunciasFiltrada = this.denuncias.filter(
-        (el) => el.pagina === this.atualPagina
+      this.denunciasFiltrada = this.denunciasFiltrada = paginacao(
+        this.denuncias,
+        30,
+        this.atualPagina
       );
     },
   },
@@ -94,6 +101,7 @@ export default defineComponent({
     // Inicia a função de consulta a cada segundo quando o componente é criado
     this.iniciarConsultaPeriodica();
   },
+
   methods: {
     async carregaDenuncias() {
       this.store.telaCarregamento(true);
@@ -105,7 +113,8 @@ export default defineComponent({
       };
 
       const resposta = await api.post("/consulta", params);
-      this.denuncias = paginacaoJson(resposta.data, 10);
+      this.denuncias = resposta.data;
+      this.denunciasFiltrada = paginacao(this.denuncias, 30, 1);
 
       this.store.telaCarregamento(false);
     },
@@ -123,19 +132,18 @@ export default defineComponent({
       const resposta = await api.post("/consulta", params);
       if (resposta.data) {
         const dados = resposta.data;
-        dados.forEach((obj) => {
-          this.showNotify(obj.tipo, obj.data_caso);
-          this.denuncias.unshift(obj);
-        });
-        this.denuncias = paginacaoJson(this.denuncias, 10);
-        this.atualPagina = 2;
-        this.atualPagina = 1;
+        for (let i = 0; i < dados.length; i++) {
+          this.showNotify(dados[i].tipo, dados[i].data_caso);
+          this.denuncias.unshift(dados[i]);
+        }
+
+        this.denunciasFiltrada = paginacao(this.denuncias, 30, 1);
       }
       console.log(resposta.data);
     },
     iniciarConsultaPeriodica() {
       // Use o setInterval para executar a função de consulta a cada segundo
-      setInterval(this.buscarDenuncias, 30000);
+      //setInterval(this.buscarDenuncias, 30000);
     },
     reproduzirSom() {
       const audio = new Audio(som);

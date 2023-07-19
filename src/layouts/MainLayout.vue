@@ -122,6 +122,54 @@ export default defineComponent({
       this.$router.push("/");
     },
   },
+
+  data() {
+    return {
+      itemsMenu: [
+        {
+          icone: "record_voice_over",
+          corIcone: "primary",
+          texto: "Denúncias",
+          corTexto: "white",
+          rota: "/",
+          separador: true,
+        },
+        {
+          icone: "dashboard",
+          corIcone: "primary",
+          texto: "Dashboard",
+          corTexto: "white",
+          rota: "/",
+          separador: true,
+        },
+        {
+          icone: "fa-brands fa-whatsapp",
+          corIcone: "green",
+          texto: "Nova denúncia whatsapp",
+          corTexto: "white",
+          rota: "/cadwhatsapp",
+          separador: true,
+        },
+        {
+          icone: "fa-solid fa-box-archive",
+          corIcone: "primary",
+          texto: "Denúncias Arquivadas",
+          corTexto: "white",
+          rota: "/",
+          separador: true,
+        },
+        {
+          icone: "fa-solid fa-gears",
+          corIcone: "primary",
+          texto: "Configurações",
+          corTexto: "white",
+          rota: "/configsud",
+          separador: true,
+        },
+      ],
+    };
+  },
+
   setup() {
     const leftDrawerOpen = ref(false);
     const store = useStore();

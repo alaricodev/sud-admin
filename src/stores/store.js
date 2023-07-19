@@ -69,12 +69,8 @@ export const useStore = defineStore("store", {
         case 1:
           return "green";
         case 2:
-          return "green";
-        case 3:
-          return "green";
-        case 4:
           return "orange";
-        case 5:
+        case 3:
           return "red";
         default:
           return "grey-8";

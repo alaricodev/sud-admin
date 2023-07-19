@@ -13,7 +13,7 @@
         <q-item>
           <q-item-section top avatar>
             <q-avatar>
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+              <img :src="retornaFoto(store.login.foto_usuario)" />
             </q-avatar>
           </q-item-section>
           <q-item-section>
@@ -67,7 +67,7 @@
         <q-item>
           <q-item-section top avatar>
             <q-avatar>
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+              <img :src="retornaFoto(store.login.foto_usuario)" />
             </q-avatar>
           </q-item-section>
           <q-item-section>
@@ -146,7 +146,7 @@
         <q-item>
           <q-item-section top avatar>
             <q-avatar>
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+              <img :src="retornaFoto(store.login.foto_usuario)" />
             </q-avatar>
           </q-item-section>
           <q-item-section>
@@ -345,7 +345,7 @@ export default {
 
     valorNivelSigilo(oper) {
       if (oper == "+") {
-        if (this.nivelSigiloInfo < 5) {
+        if (this.nivelSigiloInfo < 3) {
           this.nivelSigiloInfo += 1;
         }
       } else {
@@ -354,6 +354,11 @@ export default {
         }
       }
     },
+
+    retornaFoto(foto) {
+      return `https://getin.pc.sc.gov.br/get_files_imgUser/${foto}`;
+    },
+
     cancelar(tipo) {
       if (tipo == 1) {
         //Arquivamento de denúncia

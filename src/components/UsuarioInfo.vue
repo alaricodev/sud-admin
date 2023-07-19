@@ -84,6 +84,9 @@ export default {
         this.infoUso = resposta.data[0];
         this.store.login.cpf_log = this.infoUso.cpf;
         this.store.login.id_usuario = this.infoUso.id;
+        this.store.login.nome_usuario = this.infoUso.nome;
+        this.store.login.foto_usuario = this.infoUso.foto;
+        this.store.login.dipc = this.infoUso.usuario_dipc;
         this.cpf = "";
       } else {
         this.store.alerta("Usuário não localizado  !");

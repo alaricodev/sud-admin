@@ -28,6 +28,51 @@ export function mascaraTelefone(telefone) {
   }
 }
 
+export function abreviarSobrenomes(nomeCompleto) {
+  // Dividir o nome completo em partes
+  const partesNome = nomeCompleto.split(" ");
+
+  // Extrair o primeiro nome
+  const primeiroNome = partesNome[0];
+
+  // Criar uma nova array para armazenar os sobrenomes abreviados
+  const sobrenomesAbreviados = [];
+
+  // Iterar sobre as partes do nome, começando a partir do segundo elemento
+  for (let i = 1; i < partesNome.length; i++) {
+    const sobrenome = partesNome[i];
+
+    // Verificar se o sobrenome é composto (possui mais de uma palavra)
+    if (sobrenome.includes(" ")) {
+      // Dividir o sobrenome composto em palavras
+      const palavrasSobrenome = sobrenome.split(" ");
+
+      // Abreviar cada palavra do sobrenome composto
+      const abreviacoes = palavrasSobrenome.map(
+        (palavra) => `${palavra.charAt(0)}.`
+      );
+
+      // Juntar as palavras abreviadas do sobrenome composto
+      const sobrenomeAbreviado = abreviacoes.join(" ");
+
+      // Adicionar o sobrenome abreviado à array de sobrenomes abreviados
+      sobrenomesAbreviados.push(sobrenomeAbreviado);
+    } else {
+      // Caso o sobrenome não seja composto, apenas abreviar a primeira letra
+      const sobrenomeAbreviado = `${sobrenome.charAt(0)}.`;
+
+      // Adicionar o sobrenome abreviado à array de sobrenomes abreviados
+      sobrenomesAbreviados.push(sobrenomeAbreviado);
+    }
+  }
+
+  // Juntar o primeiro nome com os sobrenomes abreviados em uma única string
+  const nomeAbreviado = [primeiroNome, ...sobrenomesAbreviados].join(" ");
+
+  // Retornar o nome abreviado
+  return nomeAbreviado;
+}
+
 export function validarPlaca(placa) {
   if (!placa) {
     return false;
@@ -118,17 +163,43 @@ export function formatarDataExtenso(timestamp) {
 //
 // ---------------------------------------------------------------------------------------------------------------------
 
-export function paginacaoJson(array, registrosPorPagina) {
-  /*
-  Essa função pega um objeto e cria um campo com o
-  número da página.
-  */
-  let pagina = 0;
-  for (var i = 0; i < array.length; i++) {
-    pagina = Math.floor(i / registrosPorPagina) + 1;
-    array[i].pagina = pagina;
+export function totalPaginasArray(array, registrosPorPagina) {
+  let totalPaginas = Math.floor(array.length / registrosPorPagina);
+
+  if (array.length % registrosPorPagina > 0) {
+    totalPaginas += 1;
   }
-  return array;
+
+  return totalPaginas;
+}
+
+export function paginacao(array, nrRegistrosPagina, pagina) {
+  let totPaginas = Math.floor(array.length / nrRegistrosPagina);
+
+  let paginaQuebrada = false;
+
+  if (array.length % nrRegistrosPagina > 0) {
+    totPaginas++;
+    paginaQuebrada = true;
+  }
+
+  let registroInicial = 0;
+  let registroFinal = 0;
+
+  if (paginaQuebrada && totPaginas == pagina) {
+    registroInicial = pagina * nrRegistrosPagina - (nrRegistrosPagina - 1);
+    registroFinal = registroInicial + (array.length % nrRegistrosPagina);
+  } else {
+    registroInicial = pagina * nrRegistrosPagina - (nrRegistrosPagina - 1);
+    registroFinal = registroInicial + (nrRegistrosPagina - 1);
+  }
+
+  const indiceInicial = registroInicial - 1;
+  const indiceFinal = registroFinal - 1;
+
+  return array.filter(
+    (elemento, indice) => indice >= indiceInicial && indice <= indiceFinal
+  );
 }
 
 export function getTopWords(text, top) {

@@ -1,4 +1,50 @@
 <template>
+  <!-- Lista Grupos e franquear acesso -->
+  <q-dialog persistent v-model="telaGrupo">
+    <q-card style="min-width: 500px">
+      <q-bar class="bg-primary text-white">
+        <q-icon name="group" />
+        <div>Franquear acesso ao Grupo</div>
+        <q-space />
+        <q-btn flat icon="close" v-close-popup />
+      </q-bar>
+      <q-card-section>
+        <q-scroll-area style="height: 450px; max-width: 100%">
+          <q-item
+            class="q-my-md bg-grey-3"
+            v-for="(grupo, i) in grupos"
+            :key="grupo"
+          >
+            <q-item-section side top>
+              <q-checkbox v-model="checkNints[i]" />
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon color="primary" name="group" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ grupo.nome }}</q-item-label>
+              <q-item-label caption>{{ grupo.descricao }}</q-item-label>
+            </q-item-section>
+            <q-item-section side top v-if="grupo == grupoSelecionado">
+              <q-icon name="check" color="green" />
+            </q-item-section>
+          </q-item>
+        </q-scroll-area>
+      </q-card-section>
+      <q-separator color="primary" />
+      <q-card-actions align="right">
+        <q-btn
+          flat
+          icon="add"
+          color="green"
+          label="Franquear acesso"
+          @click="franquearAcesso()"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- Buscar policial por nome -->
   <q-dialog persistent v-model="telaProcuraPolicial">
     <q-card style="width: 500px">
       <q-bar>
@@ -96,8 +142,8 @@
   >
     <div class="q-ma-md row" style="width: 98%">
       <div
-        class="col-11 text-h5 q-pa-sm"
-        style="background-color: rgb(228, 226, 226); border-radius: 15px"
+        class="col-11 text-h5 q-pa-sm text-grey-6"
+        style="background-color: rgb(243, 241, 241); border-radius: 15px"
       >
         CASO: {{ dados.protocolo }}
       </div>
@@ -113,7 +159,7 @@
     </div>
     <q-separator class="q-my-sm" />
     <div class="q-ma-md row" style="width: 98%">
-      <div style="width: 30%" class="bg-white">
+      <div style="width: 15%" class="bg-white">
         <q-btn
           label="Escolher Policial"
           color="primary"
@@ -125,6 +171,25 @@
           </q-tooltip>
         </q-btn>
       </div>
+      <div style="width: 15%" class="bg-white">
+        <q-btn
+          label="Escolher Grupo NINT"
+          color="primary"
+          icon="fa-solid fa-people-group"
+          @click="telaGrupo = true"
+        >
+          <q-tooltip class="bg-primary text-body2" :offset="[10, 10]">
+            Selecionar grupo
+          </q-tooltip>
+        </q-btn>
+      </div>
+      <q-space />
+      <div style="width: 35%" class="bg-white text-h6 q-pt-sm text-right">
+        <span class="text-grey-8"> Acesso ao caso:</span>
+        <span class="text-grey-10 text-italic"
+          >{{ dadosAcesso.length }} policiais</span
+        >.
+      </div>
       <div style="margin-top: 1px; margin-left: 15px"></div>
     </div>
     <q-separator class="q-my-md" />
@@ -134,6 +199,7 @@
           v-for="acesso in dadosAcesso"
           :key="acesso.id"
           :dados="acesso"
+          :funcao="removerAcessoUsuario"
         />
       </div>
     </div>
@@ -151,6 +217,7 @@ export default {
 
   created() {
     this.carregarCaso(this.$route.params.id);
+    this.carregaGrupo();
   },
 
   setup() {
@@ -171,6 +238,10 @@ export default {
       nomesPesquisados: null,
       policialSelecionado: null,
       dadosAcesso: null,
+
+      telaGrupo: false,
+      grupos: null,
+      checkNints: [],
     };
   },
 
@@ -182,9 +253,71 @@ export default {
         this.nomePolicialPesquisa = null;
       }
     },
+
+    telaGrupo() {
+      if (this.telaGrupo) {
+        this.limpaChecksNint();
+      }
+    },
   },
 
   methods: {
+    limpaChecksNint() {
+      for (let i = 0; i < this.grupos.length; i++) {
+        this.checkNints.push(false);
+      }
+    },
+
+    montarArrayGrupo() {
+      const ret = [];
+
+      for (let i = 0; i < this.checkNints.length; i++) {
+        if (this.checkNints[i]) {
+          ret.push({
+            id_grupo: this.grupos[i].id,
+            nome: this.grupos[i].nome,
+          });
+        }
+      }
+
+      return ret;
+    },
+
+    async franquearAcesso() {
+      const params = {
+        codigo_sys_func: "20021",
+        cpf_log: this.store.login.cpf_log,
+        id_caso: this.dados.id,
+        array_grupo: this.montarArrayGrupo(),
+      };
+
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params);
+      this.store.telaCarregamento(false);
+
+      if (resposta.data.status_ret == 0) {
+        this.limpaChecksNint();
+        this.telaGrupo = false;
+        this.carregaDadosAcessos();
+        this.store.alerta(resposta.data.retorno);
+      } else {
+        this.store.alerta(resposta.data.retorno);
+      }
+    },
+
+    async carregaGrupo() {
+      const params = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "20019",
+        tipo_crud: 4,
+      };
+
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params);
+      this.store.telaCarregamento(false);
+      this.grupos = resposta.data;
+    },
+
     async carregarCaso(idCaso) {
       const params = {
         cpf_log: this.store.login.cpf_log,
@@ -206,6 +339,7 @@ export default {
         this.dadosCarregados = true;
       }
     },
+
     voltar(tipo, id) {
       this.$router.push(this.store.rotaCaso(tipo, id));
     },
@@ -246,7 +380,7 @@ export default {
       this.store.telaCarregamento(false);
 
       this.dadosAcesso = resposta.data;
-      console.log(dadosAcesso.length);
+      console.log(this.dadosAcesso);
     },
 
     async buscaPoliciaisPorNome(nome) {
@@ -283,6 +417,26 @@ export default {
       }
 
       return true;
+    },
+
+    async removerAcessoUsuario(id) {
+      const params = {
+        codigo_sys_func: "20005",
+        tipo_crud: 2,
+        cpf_log: this.store.login.cpf_log,
+        id: id,
+      };
+
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params);
+      this.store.telaCarregamento(false);
+
+      if (resposta.data.status_ret != 1) {
+        this.carregaDadosAcessos();
+      } else {
+        console.log(resposta);
+        this.store.alerta(resposta.data.retorno);
+      }
     },
 
     retornaFoto(foto) {

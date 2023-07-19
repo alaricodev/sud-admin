@@ -59,18 +59,23 @@
 
             <q-tab-panels v-model="tab" animated style="height: 500px">
               <q-tab-panel name="1">
-                <div class="text-h6">Mails</div>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                <config-grupo-nint />
               </q-tab-panel>
 
               <q-tab-panel name="2">
-                <div class="text-h6">Alarms</div>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                <div class="flex flex-center">
+                  <config-blacklist />
+                </div>
               </q-tab-panel>
 
               <q-tab-panel name="3">
-                <div class="text-h6">Movies</div>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                <div class="flex flex-center">
+                  <q-img
+                    src="../../public/ntsh.png"
+                    width="300px"
+                    height="100%"
+                  />
+                </div>
               </q-tab-panel>
             </q-tab-panels>
           </q-card>
@@ -84,8 +89,11 @@
 import { api } from "src/boot/axios";
 
 import { useStore } from "src/stores/store";
+import ConfigGrupoNint from "src/components/ConfigGrupoNint.vue";
+import ConfigBlacklist from "src/components/ConfigBlacklist.vue";
 
 export default {
+  components: { ConfigGrupoNint, ConfigBlacklist },
   name: "ConfigSud",
   created() {},
   data() {

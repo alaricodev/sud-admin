@@ -18,6 +18,9 @@
         <label-data label="Bairro:" :texto="bairro" />
       </div>
       <div class="q-mb-sm" style="width: 100%">
+        <label-data label="Ponto de referência:" :texto="ponto_referencia" />
+      </div>
+      <div class="q-mb-sm" style="width: 100%">
         <label-data label="Cidade:" :texto="cidade" />
       </div>
     </div>
@@ -49,6 +52,7 @@ export default {
     this.complemento = this.endereco.complemento;
     this.bairro = this.endereco.bairro;
     this.cidade = this.endereco.cidade;
+    this.ponto_referencia = this.endereco.ponto_referencia;
   },
   setup() {
     return {
