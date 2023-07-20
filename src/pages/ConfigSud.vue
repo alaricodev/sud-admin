@@ -1,84 +1,86 @@
 <template>
-  <div
-    class="q-ma-md bg-white"
-    style="
-      border-radius: 20px;
-      border: 1px solid #616161;
-      width: 98%;
-      height: 700px;
-    "
-  >
-    <div class="row" style="width: 100%">
-      <div class="text-h6 q-ma-md row" style="width: 100%">
-        <q-icon
-          name="fa-solid fa-gears"
-          size="md"
-          color="grey-7"
-          class="q-mr-md"
-        />
-        <div class="text-h5">Configurações</div>
-        <q-space />
-        <div>
-          <q-btn
-            color="primary"
-            label="Voltar"
-            icon="arrow_back"
-            @click="voltar()"
+  <div class="flex flex-center q-pa-md" style="height: 100vh">
+    <div
+      class="bg-white flex column"
+      style="
+        border-radius: 20px;
+        border: 1px solid #616161;
+        width: 100%;
+        height: 100%;
+      "
+    >
+      <div class="row" style="width: 100%">
+        <div class="text-h6 q-ma-md row" style="width: 100%">
+          <q-icon
+            name="fa-solid fa-gears"
+            size="md"
+            color="grey-7"
+            class="q-mr-md"
           />
+          <div class="text-h5">Configurações</div>
+          <q-space />
+          <div>
+            <q-btn
+              color="primary"
+              label="Voltar"
+              icon="arrow_back"
+              @click="voltar()"
+            />
+          </div>
         </div>
       </div>
-    </div>
-    <q-separator color="primary" />
-    <div>
-      <div class="q-pa-md">
-        <div class="q-gutter-y-md" style="max-width: 100%">
-          <q-card>
-            <q-tabs
-              v-model="tab"
-              dense
-              class="text-grey"
-              active-color="primary"
-              indicator-color="primary"
-              align="justify"
-              narrow-indicator
-            >
-              <q-tab name="1" label="Grupos NINT" icon="fa-solid fa-sitemap" />
-              <q-tab
-                name="2"
-                label="BlackList Telefones"
-                icon="fa-solid fa-phone-slash"
-              />
-              <q-tab
-                name="3"
-                label="Parâmetros"
-                icon="fa-solid fa-stroopwafel"
-              />
-            </q-tabs>
+      <q-separator color="primary" />
+      <div style="flex-grow: 1">
+        <div class="q-pa-md" style="height: 100%">
+          <div class="q-gutter-y-md" style="max-width: 100%; height: 100%">
+            <q-card class="flex column" style="height: 100%">
+              <q-tabs
+                v-model="tab"
+                dense
+                class="text-grey"
+                active-color="primary"
+                indicator-color="primary"
+                align="justify"
+                narrow-indicator
+              >
+                <q-tab
+                  name="1"
+                  label="Grupos NINT"
+                  icon="fa-solid fa-sitemap"
+                />
+                <q-tab
+                  name="2"
+                  label="BlackList Telefones"
+                  icon="fa-solid fa-phone-slash"
+                />
+                <q-tab name="3" label="Usuários" icon="fa-solid fa-user" />
+              </q-tabs>
 
-            <q-separator />
+              <q-separator />
 
-            <q-tab-panels v-model="tab" animated style="height: 500px">
-              <q-tab-panel name="1">
-                <config-grupo-nint />
-              </q-tab-panel>
+              <q-tab-panels v-model="tab" animated style="flex-grow: 1">
+                <q-tab-panel name="1">
+                  <config-grupo-nint />
+                </q-tab-panel>
 
-              <q-tab-panel name="2">
-                <div class="flex flex-center">
-                  <config-blacklist />
-                </div>
-              </q-tab-panel>
+                <q-tab-panel name="2">
+                  <div class="flex flex-center">
+                    <config-blacklist />
+                  </div>
+                </q-tab-panel>
 
-              <q-tab-panel name="3">
-                <div class="flex flex-center">
-                  <q-img
-                    src="../../public/ntsh.png"
-                    width="300px"
-                    height="100%"
-                  />
-                </div>
-              </q-tab-panel>
-            </q-tab-panels>
-          </q-card>
+                <q-tab-panel name="3">
+                  <div class="flex flex-center">
+                    <q-img
+                      src="../../public/ntsh.png"
+                      width="300px"
+                      height="100%"
+                    />
+                  </div>
+                </q-tab-panel>
+              </q-tab-panels>
+            </q-card>
+          </div>
         </div>
       </div>
     </div>

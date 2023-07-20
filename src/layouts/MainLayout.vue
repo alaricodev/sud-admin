@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="bg-grey-4">
-    <q-header elevated>
+    <!-- <q-header elevated>
       <q-toolbar>
         <q-btn
           flat
@@ -15,7 +15,7 @@
 
         <div>Algum dado vai aqui</div>
       </q-toolbar>
-    </q-header>
+    </q-header> -->
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-black">
       <usuario-info />
@@ -47,58 +47,22 @@
           MENU</q-item-label
         >
       </q-list>
+
       <q-list style="min-width: 100px">
         <q-separator color="primary" />
-        <q-item clickable @click="voltar()">
-          <q-item-section avatar>
-            <q-icon
-              v-show="nrDenuncia == 0"
-              color="primary"
-              name="record_voice_over"
-            />
-            <q-badge v-show="nrDenuncia > 0" class="q-pa-sm" color="red">{{
-              nrDenuncia
-            }}</q-badge>
-          </q-item-section>
-          <q-item-section class="text-white">Denúncias </q-item-section>
-        </q-item>
-        <q-separator color="primary" />
-        <q-item clickable>
-          <q-item-section avatar
-            ><q-icon color="primary" name="dashboard"
-          /></q-item-section>
-          <q-item-section class="text-white">Dashboard</q-item-section>
-        </q-item>
-        <q-separator color="primary" />
-        <q-item clickable>
-          <q-item-section avatar
-            ><q-icon color="green" name="fa-brands fa-whatsapp"
-          /></q-item-section>
-          <q-item-section
-            class="text-white"
-            @click="$router.push(`/cadwhatsapp`)"
-            >Nova denúncia whatsapp</q-item-section
-          >
-        </q-item>
-        <q-separator color="primary" />
-        <q-item clickable>
-          <q-item-section avatar
-            ><q-icon color="primary" name="fa-solid fa-box-archive"
-          /></q-item-section>
-          <q-item-section class="text-white"
-            >Denúncias Arquivadas</q-item-section
-          >
-        </q-item>
-        <q-separator color="primary" />
-        <q-item clickable>
-          <q-item-section avatar
-            ><q-icon color="primary" name="fa-solid fa-gears"
-          /></q-item-section>
-          <q-item-section class="text-white" @click="$router.push(`/configsud`)"
-            >Configurações</q-item-section
-          >
-        </q-item>
-        <q-separator color="primary" />
+        <div v-for="item in itemsMenu" :key="item">
+          <q-item clickable @click="$router.push(item.rota)">
+            <q-item-section avatar>
+              <q-icon :color="item.corIcone" :name="item.icone" />
+            </q-item-section>
+
+            <q-item-section class="text-white">
+              {{ item.texto }}
+            </q-item-section>
+          </q-item>
+
+          <q-separator v-if="item.separador" color="primary" />
+        </div>
       </q-list>
     </q-drawer>
 
@@ -167,6 +131,8 @@ export default defineComponent({
           separador: true,
         },
       ],
+      miniState: true,
+      drawer: false,
     };
   },
 
@@ -177,6 +143,7 @@ export default defineComponent({
     return {
       store,
       leftDrawerOpen,
+
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },

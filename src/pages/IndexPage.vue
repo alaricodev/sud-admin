@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-grey-4">
+  <div class="q-pa-md bg-grey-4">
     <div>
       <filtro-index />
     </div>
-    <div class="q-px-md">
+    <div>
       <card-show
         v-for="dado in denunciasFiltrada"
         :key="dado.id"
@@ -143,7 +143,7 @@ export default defineComponent({
     },
     iniciarConsultaPeriodica() {
       // Use o setInterval para executar a função de consulta a cada segundo
-      //setInterval(this.buscarDenuncias, 30000);
+      setInterval(this.buscarDenuncias, 30000);
     },
     reproduzirSom() {
       const audio = new Audio(som);

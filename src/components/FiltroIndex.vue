@@ -1,8 +1,8 @@
 <template>
   <q-expansion-item
-    class="q-ma-md shadow-1 overflow-hidden"
+    class="q-mb-md shadow-1 overflow-hidden"
     style="border-radius: 5px"
-    icon="explore"
+    icon="fa-solid fa-filter"
     label="FILTROS"
     header-class="bg-primary text-white text-h5"
     expand-icon-class="text-white"

@@ -1,33 +1,35 @@
 <template>
-  <q-card class="q-ma-sm" style="max-width: 200px">
-    <q-card-section>
-      <div class="full-width text-left">
-        <q-btn
-          flat
-          dense
-          icon="close"
-          color="red"
-          @dblclick="removerUsuarioGrupo(usuario.id_usuarios_x_grupo_nint)"
+  <q-card class="q-ma-sm" style="width: 160px">
+    <q-card-section class="q-pa-none relative">
+      <q-btn
+        flat
+        dense
+        class="absolute"
+        style="right: 5px; top: 5px; z-index: 9"
+        icon="close"
+        color="red"
+        @dblclick="remover(usuario.id_usuarios_x_grupo_nint)"
+      >
+        <q-tooltip
+          :delay="500"
+          class="bg-primary text-body2"
+          :offset="[10, 10]"
         >
-          <q-tooltip
-            :delay="500"
-            class="bg-primary text-body2"
-            :offset="[10, 10]"
-          >
-            Remover do Grupo
-          </q-tooltip>
-        </q-btn>
-      </div>
-      <div class="full-width text-center q-py-md">
-        <q-img :src="retornaFoto(usuario.foto)" width="100px" height="100%" />
-      </div>
-
-      <div class="full-width">
-        <div class="text-subtitle2 text-center">
-          {{ abreviarSobrenomes(usuario.nome_usuario) }}
+          Remover do Grupo (duplo clique)
+        </q-tooltip>
+      </q-btn>
+      <div class="full-width text-left"></div>
+      <div class="full-width text-center q-pa-sm">
+        <q-img
+          :src="retornaFoto(usuario.foto)"
+          width="100%"
+          height="100%"
+          class="relative"
+        >
           <q-badge
             :color="store.corAcesso(usuario.nivel_acesso)"
-            floating
+            class="absolute q-px-xs"
+            style="left: 0px; top: 0px; padding: 6px 8px"
             transparent
             rounded
             align="center"
@@ -40,8 +42,16 @@
               Nível de Acesso
             </q-tooltip>
           </q-badge>
+        </q-img>
+      </div>
+
+      <div class="full-width">
+        <div class="text-subtitle2 text-center">
+          {{ abreviarSobrenomes(usuario.nome_usuario) }}
         </div>
-        <div class="text-lowercase text-center text-caption text-grey-6">
+        <div
+          class="q-pb-sm text-lowercase text-center text-caption text-grey-6"
+        >
           {{ usuario.cargo }}
         </div>
       </div>
@@ -52,7 +62,6 @@
 <script>
 import { abreviarSobrenomes } from "src/utils/util.js";
 import { useStore } from "src/stores/store";
-import { api } from "src/boot/axios";
 export default {
   name: "UsuarioCardSmall",
   created() {},
@@ -68,29 +77,17 @@ export default {
       type: String,
       required: true,
     },
+    funcao: {
+      type: Function,
+      required: true,
+    },
   },
   methods: {
     retornaFoto(foto) {
       return `https://getin.pc.sc.gov.br/get_files_imgUser/${foto}`;
     },
-    async removerUsuarioGrupo(id) {
-      const params = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "20020",
-        tipo_crud: 2,
-        id: id,
-      };
-      this.store.telaCarregamento(true);
-      const resposta = await api.post("/consulta", params);
-      this.store.telaCarregamento(false);
-
-      if (resposta.data.status_ret == 0) {
-        this.telaProcuraPolicial = false;
-        this.carregaUsuGrupo();
-        this.store.alerta(resposta.data.retorno);
-      } else {
-        this.store.alerta(resposta.data.retorno);
-      }
+    async remover(id) {
+      this.funcao(id);
     },
   },
 };

@@ -135,12 +135,35 @@ export function formatarDataGrid(timestamp) {
   const minutos = data.getMinutes();
   const segundos = data.getSeconds();
 
-  const dataFormatada =
-    dia >= 10
-      ? `${dia} ${mes} ${ano} - ${horas}h ${minutos}m ${segundos}s`
-      : `0${dia} ${mes} ${ano} - ${horas}h ${minutos}m ${segundos}s`;
+  return `${leftPad(dia, 2)} ${mes} ${ano} - ${leftPad(horas, 2)}h ${leftPad(
+    minutos,
+    2
+  )}m ${leftPad(segundos, 2)}s`;
+}
 
-  return dataFormatada;
+export function formatarDataGridSimples(timestamp) {
+  // Dado um timestamp retorna uma string nesse formato: 06 Fev 2023
+  const meses = [
+    "Jan",
+    "Fev",
+    "Mar",
+    "Abr",
+    "Mai",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Set",
+    "Out",
+    "Nov",
+    "Dez",
+  ];
+
+  const data = new Date(timestamp);
+  const dia = data.getDate();
+  const mes = meses[data.getMonth()];
+  const ano = data.getFullYear();
+
+  return `${leftPad(dia, 2)} ${mes} ${ano}`;
 }
 
 export function formatarDataExtenso(timestamp) {
@@ -157,11 +180,39 @@ export function formatarDataExtenso(timestamp) {
   return dataFormatada;
 }
 
+export function differenceInDays(timestamp1, timestamp2) {
+  // Dado dois timestamps, calcula a diferença em dias entre as duas datas
+
+  const oneDayMilliseconds = 24 * 60 * 60 * 1000; // Milissegundos em um dia
+
+  // Arredondar as datas para o início do dia (0 horas)
+  const date1 = new Date(timestamp1);
+  date1.setHours(0, 0, 0, 0);
+  const date2 = new Date(timestamp2);
+  date2.setHours(0, 0, 0, 0);
+
+  // Calcular a diferença em milissegundos
+  const differenceMilliseconds = Math.abs(date2 - date1);
+
+  // Calcular a diferença em dias
+  const differenceDays = Math.round(
+    differenceMilliseconds / oneDayMilliseconds
+  );
+
+  return differenceDays;
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 //
 //  FUNÇÕES DE UTILIDADES DIVERSAR
 //
 // ---------------------------------------------------------------------------------------------------------------------
+
+function leftPad(value, totalWidth, paddingChar) {
+  // preencher com zero
+  var length = totalWidth - value.toString().length + 1;
+  return Array(length).join(paddingChar || "0") + value;
+}
 
 export function totalPaginasArray(array, registrosPorPagina) {
   let totalPaginas = Math.floor(array.length / registrosPorPagina);
