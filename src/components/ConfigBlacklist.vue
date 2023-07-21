@@ -100,7 +100,7 @@
     />
 
     <q-chip v-if="dadosCarregados" class="q-ml-xl">
-      <q-avatar color="green" text-color="white">{{ dados.length }}</q-avatar>
+      <q-avatar color="green" text-color="white">{{ dados?.length }}</q-avatar>
       Telefones na Blacklist
     </q-chip>
   </div>

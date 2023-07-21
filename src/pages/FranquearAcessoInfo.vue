@@ -362,7 +362,6 @@ export default {
         this.telaProcuraPolicial = false;
         this.carregaDadosAcessos();
       } else {
-        console.log(resposta);
         this.store.alerta(resposta.data.retorno);
       }
     },
@@ -380,7 +379,6 @@ export default {
       this.store.telaCarregamento(false);
 
       this.dadosAcesso = resposta.data;
-      console.log(this.dadosAcesso);
     },
 
     async buscaPoliciaisPorNome(nome) {
@@ -434,7 +432,6 @@ export default {
       if (resposta.data.status_ret != 1) {
         this.carregaDadosAcessos();
       } else {
-        console.log(resposta);
         this.store.alerta(resposta.data.retorno);
       }
     },

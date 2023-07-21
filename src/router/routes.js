@@ -43,6 +43,13 @@ const routes = [
     ],
   },
   {
+    path: "/denunciasarquivadas",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      { path: "", component: () => import("pages/DenunciasArquivadas.vue") },
+    ],
+  },
+  {
     path: "/configsud",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/ConfigSud.vue") }],

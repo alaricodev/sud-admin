@@ -134,7 +134,7 @@ export default {
         codigo_sys_func: "10005",
         id_caso: idCaso,
       };
-      console.log(params);
+
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
       this.store.telaCarregamento(false);

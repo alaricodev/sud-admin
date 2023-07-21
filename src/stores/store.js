@@ -14,6 +14,9 @@ export const useStore = defineStore("store", {
       token: "",
     },
     denuncias: [],
+    layout: {
+      miniState: false,
+    },
   }),
   getters: {
     //filtroAtivo: (state) => state.filtroAtivo,

@@ -1,64 +1,66 @@
 <template>
-  <q-page v-if="dadosCarregados" class="bg-grey-4">
-    <div
-      class="bg-white q-ma-md"
-      style="border-radius: 5px; box-shadow: 1px; width: 98%"
-    >
-      <header-caso :dados="dados" />
+  <div class="q-pa-sm" style="height: 100vh">
+    <q-page v-if="dadosCarregados" class="bg-grey-4">
+      <div
+        class="bg-white"
+        style="border-radius: 5px; box-shadow: 1px; width: 98%"
+      >
+        <header-caso :dados="dados" />
 
-      <div class="row q-pa-md" style="width: 100%">
-        <div class="q-gutter-y-md" style="width: 100%">
-          <q-card>
-            <q-tabs
-              v-model="tabInfo"
-              dense
-              class="text-grey"
-              active-color="primary"
-              indicator-color="primary"
-              align="justify"
-              narrow-indicator
-            >
-              <q-tab name="1" label="Denúncia" icon="phone_callback" />
+        <div class="row q-pa-md" style="width: 100%">
+          <div class="q-gutter-y-md" style="width: 100%">
+            <q-card>
+              <q-tabs
+                v-model="tabInfo"
+                dense
+                class="text-grey"
+                active-color="primary"
+                indicator-color="primary"
+                align="justify"
+                narrow-indicator
+              >
+                <q-tab name="1" label="Denúncia" icon="phone_callback" />
 
-              <q-tab name="8" label="Acompanhamento" icon="edit_note" />
-              <q-tab
-                name="9"
-                label="Mais informações"
-                icon="info"
-                v-if="store.login.dipc"
-              />
-            </q-tabs>
+                <q-tab name="8" label="Acompanhamento" icon="edit_note" />
+                <q-tab
+                  name="9"
+                  label="Mais informações"
+                  icon="info"
+                  v-if="store.login.dipc"
+                />
+              </q-tabs>
 
-            <q-separator />
+              <q-separator />
 
-            <q-tab-panels v-model="tabInfo" animated>
-              <q-tab-panel name="1">
-                <div>
-                  <disque-d-audio :dados="dados" />
-                </div>
-              </q-tab-panel>
+              <q-tab-panels v-model="tabInfo" animated>
+                <q-tab-panel name="1">
+                  <div>
+                    <disque-d-audio :dados="dados" />
+                  </div>
+                </q-tab-panel>
 
-              <q-tab-panel name="8">
-                <div>
-                  <sud-info-acompanhamento :id="dados.casos[0].id" />
-                </div>
-              </q-tab-panel>
+                <q-tab-panel name="8">
+                  <div>
+                    <sud-info-acompanhamento :id="dados.casos[0].id" />
+                  </div>
+                </q-tab-panel>
 
-              <q-tab-panel name="9">
-                <div>
-                  <disque-d-mais-informacoes :dados="dados" />
-                </div>
-              </q-tab-panel>
-            </q-tab-panels>
-          </q-card>
+                <q-tab-panel name="9">
+                  <div>
+                    <disque-d-mais-informacoes :dados="dados" />
+                  </div>
+                </q-tab-panel>
+              </q-tab-panels>
+            </q-card>
+          </div>
         </div>
-      </div>
 
-      <!-- <div class="q-pa-md">
+        <!-- <div class="q-pa-md">
 
       </div> -->
-    </div>
-  </q-page>
+      </div>
+    </q-page>
+  </div>
 </template>
 
 <script>
@@ -118,7 +120,7 @@ export default {
         codigo_sys_func: "10005",
         id_caso: idCaso,
       };
-      console.log(params);
+
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
       this.store.telaCarregamento(false);
@@ -129,7 +131,6 @@ export default {
         this.store.alerta(this.dados.retorno);
       } else {
         this.dadosCarregados = true;
-        console.log(this.dados);
       }
     },
 

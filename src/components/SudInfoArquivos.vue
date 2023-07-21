@@ -66,7 +66,32 @@ export default {
     };
   },
   props: {},
-  methods: {},
+  methods: {
+    downloadFile(nomeArquivo) {
+      if (nomeArquivo.trim() !== "") {
+        const downloadUrl = `/downloadmidia/${encodeURIComponent(nomeArquivo)}`;
+        const params = {
+          url: downloadUrl,
+          responseType: "blob", // Indica que a resposta é um arquivo binário
+        };
+        api
+          .get(downloadUrl, params)
+          .then((response) => {
+            // Cria um link temporário para download e o aciona
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", nomeArquivo);
+            document.body.appendChild(link);
+            link.click();
+          })
+          .catch((error) => {
+            console.error("Erro ao fazer o download:", error);
+            // Aqui você pode tratar os erros ou exibir uma mensagem de erro para o usuário
+          });
+      }
+    },
+  },
 };
 </script>
 

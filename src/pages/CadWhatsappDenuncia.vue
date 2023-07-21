@@ -188,13 +188,12 @@ export default {
             formData, // arquivos e dados
             { headers } // headers
           );
-          console.log(res.data);
+
           this.alerta("REGISTRO FEITO COM SUCESSO !");
           this.files = null;
           this.telefone = null;
           this.relato = "";
         } catch (erro) {
-          console.log(res.data);
           console.error(erro);
         }
 

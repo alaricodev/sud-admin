@@ -210,7 +210,6 @@ export default {
         id_caso: idCaso,
       };
 
-      console.log(params);
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
       this.store.telaCarregamento(false);
@@ -221,7 +220,6 @@ export default {
         this.store.alerta(this.dados.retorno);
       } else {
         this.dadosCarregados = true;
-        console.log(this.dados);
       }
     },
     retornaIconeTopo(tipo) {

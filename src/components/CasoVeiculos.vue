@@ -45,9 +45,6 @@ import LabelData from "./LabelData.vue";
 import { useStore } from "src/stores/store";
 import { validarPlaca } from "../utils/util";
 export default {
-  created() {
-    console.log(this.dados);
-  },
   name: "CasoVeiculos",
   setup() {
     const store = useStore();

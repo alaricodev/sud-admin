@@ -93,9 +93,6 @@ import { useStore } from "src/stores/store";
 import QualificarEnvolvido from "./QualificarEnvolvido.vue";
 
 export default {
-  created() {
-    console.log(this.dados);
-  },
   name: "CasoEnvolvidos",
   data() {
     return {

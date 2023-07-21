@@ -286,8 +286,6 @@ export default {
 
       const resposta = await api.post("/consulta", params);
 
-      console.log(resposta);
-
       if (resposta.data.status_ret == 0) {
         this.telaArquivamento = false;
         this.$router.go();
@@ -307,8 +305,6 @@ export default {
       };
 
       const resposta = await api.post("/consulta", params);
-
-      console.log(resposta);
 
       if (resposta.data.status_ret == 0) {
         this.telaArquivamento = false;
@@ -330,8 +326,6 @@ export default {
       };
 
       const resposta = await api.post("/consulta", params);
-
-      console.log(resposta);
 
       if (resposta.data.status_ret == 0) {
         this.telaArquivamento = false;

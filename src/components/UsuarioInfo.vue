@@ -75,6 +75,7 @@ export default {
     async carregaInfoUsu(cpf) {
       const params = {
         cpf: cpf,
+        cpf_log: this.store.login.cpf_log,
         codigo_sys_func: "10007",
       };
 

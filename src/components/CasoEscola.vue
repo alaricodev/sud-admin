@@ -14,9 +14,9 @@
       :texto="dados.escola"
       cor="grey-8"
     />
-    <div style="width: 100%">
+    <div style="width: 100%" v-if="mapaCarregado">
       <iframe
-        :src="getGoogleMapsUrl(dados.escola)"
+        :src="frameMap()"
         width="100%"
         height="600"
         style="border: 0"
@@ -29,12 +29,19 @@
 </template>
 
 <script>
+import { api } from "src/boot/axios";
 import LabelData from "./LabelData.vue";
 export default {
   name: "CasoEscola",
-  created() {},
+  created() {
+    this.carregaDadosEscola();
+  },
   data() {
-    return {};
+    return {
+      mapaCarregado: false,
+      lat: null,
+      lon: null,
+    };
   },
   components: { LabelData },
   props: {
@@ -45,14 +52,18 @@ export default {
   },
 
   methods: {
-    getGoogleMapsUrl(schoolName) {
-      // Codifica o nome da escola para uso no URL
-      var encodedSchoolName = encodeURIComponent(schoolName);
+    frameMap(lat, lon) {
+      return `https://maps.google.com/maps?width=100%25&height=600&hl=en&q=${encodeURIComponent(
+        lat
+      )},${encodeURIComponent(lon)}`;
+    },
 
-      // Constrói a URL do Google Maps
-      var url = "https://www.google.com/maps/search/" + encodedSchoolName;
-
-      return url;
+    async carregaDadosEscola() {
+      const resposta = await api.get(`/estabelecimento/${this.dados.escola}`);
+      console.log(resposta.data);
+      this.lat = resposta.data[0].lat;
+      this.lon = resposta.data[0].lon;
+      this.mapaCarregado = true;
     },
   },
 };

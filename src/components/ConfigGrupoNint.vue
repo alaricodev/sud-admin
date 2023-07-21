@@ -304,7 +304,7 @@ export default {
 
       try {
         const resposta = await api.post("/consulta", params);
-        console.log(resposta);
+
         if (resposta.data.status_ret == 0) {
           this.cadNomeGrupo = null;
           this.cadDescGrupo = null;

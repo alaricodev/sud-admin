@@ -24,7 +24,7 @@
       </q-card-section>
       <q-separator color="primary" class="q-mb-sm" />
       <q-card-actions align="center">
-        <q-btn color="primary" icon="download" />
+        <q-btn color="primary" icon="download" @click="downloadFile(arquivo)" />
         <q-btn
           v-if="
             arquivo.tipo.toUpperCase() == 'AUDIO' ||
@@ -42,14 +42,12 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { api } from "src/boot/axios";
 import { format } from "quasar";
 
 export default {
   name: "CasoArquivos",
-  created() {
-    console.log(this.arquivos);
-  },
+
   setup() {
     const { humanStorageSize } = format;
     return {
@@ -76,6 +74,32 @@ export default {
           return "headphones";
         default:
           return "fa-regular fa-file";
+      }
+    },
+    downloadFile(arquivo) {
+      if (arquivo.nome.trim() !== "") {
+        const downloadUrl = `/downloadmidia/${encodeURIComponent(
+          arquivo.nome
+        )}`;
+        const params = {
+          url: downloadUrl,
+          responseType: "blob", // Indica que a resposta é um arquivo binário
+        };
+        api
+          .get(downloadUrl, params)
+          .then((response) => {
+            // Cria um link temporário para download e o aciona
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", arquivo.nome_original);
+            document.body.appendChild(link);
+            link.click();
+          })
+          .catch((error) => {
+            console.error("Erro ao fazer o download:", error);
+            // Aqui você pode tratar os erros ou exibir uma mensagem de erro para o usuário
+          });
       }
     },
   },

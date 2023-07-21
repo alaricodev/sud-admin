@@ -27,7 +27,6 @@ export default {
   created() {
     if (this.dados) {
       this.dadosCarregados = true;
-      console.log(this.dados);
     }
   },
   setup() {

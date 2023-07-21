@@ -1,102 +1,104 @@
 <template>
-  <q-page v-if="dadosCarregados" class="bg-grey-4">
-    <div
-      class="bg-white q-ma-md"
-      style="border-radius: 5px; box-shadow: 1px; width: 98%"
-    >
-      <header-caso :dados="dados" />
+  <div class="q-pa-sm" style="height: 100vh">
+    <q-page v-if="dadosCarregados" class="bg-grey-4">
+      <div
+        class="bg-white q-ma-md"
+        style="border-radius: 5px; box-shadow: 1px; width: 98%"
+      >
+        <header-caso :dados="dados" />
 
-      <div class="row q-pa-md" style="width: 100%">
-        <div class="q-gutter-y-md" style="width: 100%">
-          <q-card>
-            <q-tabs
-              v-model="tabInfo"
-              dense
-              class="text-grey"
-              active-color="primary"
-              indicator-color="primary"
-              align="justify"
-              narrow-indicator
-            >
-              <q-tab name="1" label="Texto Denúncia" icon="description" />
+        <div class="row q-pa-md" style="width: 100%">
+          <div class="q-gutter-y-md" style="width: 100%">
+            <q-card>
+              <q-tabs
+                v-model="tabInfo"
+                dense
+                class="text-grey"
+                active-color="primary"
+                indicator-color="primary"
+                align="justify"
+                narrow-indicator
+              >
+                <q-tab name="1" label="Texto Denúncia" icon="description" />
 
-              <q-tab
-                name="2"
-                label="Escola"
-                icon="fa-solid fa-school"
-                v-if="dados.locais_eletronicos"
-              />
+                <q-tab
+                  name="2"
+                  label="Escola"
+                  icon="fa-solid fa-school"
+                  v-if="dados.locais_eletronicos"
+                />
 
-              <q-tab
-                name="3"
-                label="Local Eletrônico"
-                icon="memory"
-                v-if="dados.locais_eletronicos"
-              />
+                <q-tab
+                  name="3"
+                  label="Local Eletrônico"
+                  icon="memory"
+                  v-if="dados.locais_eletronicos"
+                />
 
-              <q-tab
-                name="5"
-                label="Envolvidos"
-                icon="group"
-                v-if="dados.envolvidos"
-              />
+                <q-tab
+                  name="5"
+                  label="Envolvidos"
+                  icon="group"
+                  v-if="dados.envolvidos"
+                />
 
-              <q-tab
-                name="6"
-                label="Arquivos"
-                icon="cloud_download"
-                v-if="dados.arquivos"
-              />
+                <q-tab
+                  name="6"
+                  label="Arquivos"
+                  icon="cloud_download"
+                  v-if="dados.arquivos"
+                />
 
-              <q-tab name="8" label="Acompanhamento" icon="edit_note" />
-              <q-tab
-                name="9"
-                label="Mais informações"
-                icon="info"
-                v-if="store.login.dipc"
-              />
-            </q-tabs>
+                <q-tab name="8" label="Acompanhamento" icon="edit_note" />
+                <q-tab
+                  name="9"
+                  label="Mais informações"
+                  icon="info"
+                  v-if="store.login.dipc"
+                />
+              </q-tabs>
 
-            <q-separator />
+              <q-separator />
 
-            <q-tab-panels v-model="tabInfo" animated>
-              <q-tab-panel name="1">
-                <sud-info-texto-denuncia :texto="dados.casos[0].relato" />
-              </q-tab-panel>
+              <q-tab-panels v-model="tabInfo" animated>
+                <q-tab-panel name="1">
+                  <sud-info-texto-denuncia :texto="dados.casos[0].relato" />
+                </q-tab-panel>
 
-              <q-tab-panel name="2">
-                <caso-escola :dados="dados.denuncia_sos_escola[0]" />
-              </q-tab-panel>
+                <q-tab-panel name="2">
+                  <caso-escola :dados="dados.denuncia_sos_escola[0]" />
+                </q-tab-panel>
 
-              <q-tab-panel name="3">
-                <caso-local-eletronico :dados="dados.locais_eletronicos[0]" />
-              </q-tab-panel>
+                <q-tab-panel name="3">
+                  <caso-local-eletronico :dados="dados.locais_eletronicos[0]" />
+                </q-tab-panel>
 
-              <q-tab-panel name="5">
-                <caso-envolvidos :dados="dados.envolvidos" />
-              </q-tab-panel>
+                <q-tab-panel name="5">
+                  <caso-envolvidos :dados="dados.envolvidos" />
+                </q-tab-panel>
 
-              <q-tab-panel name="6">
-                <caso-arquivos :arquivos="dados.arquivos" />
-              </q-tab-panel>
+                <q-tab-panel name="6">
+                  <caso-arquivos :arquivos="dados.arquivos" />
+                </q-tab-panel>
 
-              <q-tab-panel name="8">
-                <sud-info-acompanhamento :id="dados.casos[0].id" />
-              </q-tab-panel>
+                <q-tab-panel name="8">
+                  <sud-info-acompanhamento :id="dados.casos[0].id" />
+                </q-tab-panel>
 
-              <q-tab-panel name="9">
-                <caso-mais-informacao :dados="dadosMaisInfo()" />
-              </q-tab-panel>
-            </q-tab-panels>
-          </q-card>
+                <q-tab-panel name="9">
+                  <caso-mais-informacao :dados="dadosMaisInfo()" />
+                </q-tab-panel>
+              </q-tab-panels>
+            </q-card>
+          </div>
         </div>
-      </div>
 
-      <!-- <div class="q-pa-md">
+        <!-- <div class="q-pa-md">
 
       </div> -->
-    </div>
-  </q-page>
+      </div>
+    </q-page>
+  </div>
 </template>
 
 <script>
@@ -151,7 +153,6 @@ export default {
         id_caso: idCaso,
       };
 
-      console.log(params);
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
       this.store.telaCarregamento(false);
@@ -162,7 +163,6 @@ export default {
         this.store.alerta(this.dados.retorno);
       } else {
         this.dadosCarregados = true;
-        console.log(this.dados);
       }
     },
     dadosMaisInfo() {
@@ -200,7 +200,7 @@ export default {
             : "Não avaliada",
         },
       ];
-      console.log(ret);
+
       return ret;
     },
     retornaIconeCor(sigilo, icone) {

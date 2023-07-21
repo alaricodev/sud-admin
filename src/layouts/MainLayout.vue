@@ -1,69 +1,99 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="bg-grey-4">
-    <!-- <q-header elevated>
-      <q-toolbar>
+    <!-- <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-black"> -->
+    <q-drawer
+      v-model="drawer"
+      show-if-above
+      :mini="store.layout.miniState"
+      :breakpoint="500"
+      bordered
+      class="bg-black"
+    >
+      <!-- <usuario-info /> -->
+      <div
+        style="width: 100%"
+        class="q-mt-md q-px-sm"
+        :class="store.layout.miniState ? 'text-center' : 'text-right'"
+      >
         <q-btn
           flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title>Administrador SUD </q-toolbar-title>
-
-        <div>Algum dado vai aqui</div>
-      </q-toolbar>
-    </q-header> -->
-
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-black">
-      <usuario-info />
-      <div style="width: 100%" class="q-mt-md q-px-sm text-right">
-        <q-btn
-          round
           color="primary"
-          icon="arrow_back"
+          :icon="
+            store.layout.miniState
+              ? 'fa-solid fa-arrow-right'
+              : 'fa-solid fa-arrow-left'
+          "
           outline
           size="xs"
           clickable
           v-ripple
-          @click="toggleLeftDrawer"
+          @click="store.layout.miniState = !store.layout.miniState"
         />
       </div>
-      <div class="flex flex-center column" style="height: 150px">
-        <img
-          src="../assets/logo.png"
-          spinner-color="white"
-          style="height: 100%"
-        />
-      </div>
-      <div class="flex flex-center text-h6 text-grey-5 column">
-        <span>PCSC</span>
-        <span>SUD - Administrador</span>
-      </div>
-      <q-list>
-        <q-item-label header class="text-primary text-bold text-center">
-          MENU</q-item-label
-        >
-      </q-list>
-
-      <q-list style="min-width: 100px">
-        <q-separator color="primary" />
-        <div v-for="item in itemsMenu" :key="item">
-          <q-item clickable @click="$router.push(item.rota)">
-            <q-item-section avatar>
-              <q-icon :color="item.corIcone" :name="item.icone" />
-            </q-item-section>
-
-            <q-item-section class="text-white">
-              {{ item.texto }}
-            </q-item-section>
-          </q-item>
-
-          <q-separator v-if="item.separador" color="primary" />
+      <div v-if="!store.layout.miniState">
+        <div class="flex flex-center column" style="height: 150px">
+          <img
+            src="../assets/logo.png"
+            spinner-color="white"
+            style="height: 100%"
+          />
         </div>
-      </q-list>
+        <div class="flex flex-center text-h6 text-grey-5 column">
+          <span>PCSC</span>
+          <span>SUD - Administrador</span>
+        </div>
+        <q-list>
+          <q-item-label header class="text-primary text-bold text-center">
+            MENU</q-item-label
+          >
+        </q-list>
+      </div>
+      <div v-else>
+        <div style="padding-top: 30px"></div>
+        <div class="flex flex-center column" style="height: 50px">
+          <img
+            src="../assets/logo.png"
+            spinner-color="white"
+            style="height: 100%"
+          />
+        </div>
+
+        <div class="text-primary text-bold text-center q-my-sm">SUD</div>
+        <div style="padding-top: 147px"></div>
+      </div>
+
+      <div v-if="!store.layout.miniState">
+        <q-list style="min-width: 100px">
+          <q-separator color="primary" />
+          <div v-for="item in itemsMenu" :key="item">
+            <q-item clickable @click="$router.push(item.rota)">
+              <q-item-section avatar>
+                <q-icon :color="item.corIcone" :name="item.icone" />
+              </q-item-section>
+
+              <q-item-section class="text-white">
+                {{ item.texto }}
+              </q-item-section>
+            </q-item>
+
+            <q-separator v-if="item.separador" color="primary" />
+          </div>
+        </q-list>
+      </div>
+      <div v-else>
+        <q-list>
+          <div v-for="item in itemsMenu" :key="item">
+            <q-item clickable @click="$router.push(item.rota)">
+              <q-item-section avatar>
+                <q-icon :color="item.corIcone" :name="item.icone" />
+                <q-tooltip :delay="500" class="bg-primary" :offset="[10, 10]">
+                  {{ item.texto }}
+                </q-tooltip>
+              </q-item-section>
+            </q-item>
+          </div>
+        </q-list>
+      </div>
     </q-drawer>
 
     <q-page-container>
@@ -75,12 +105,12 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useStore } from "src/stores/store";
-import UsuarioInfo from "src/components/UsuarioInfo.vue";
 
 export default defineComponent({
   name: "MainLayout",
 
-  components: { UsuarioInfo },
+  components: {},
+
   methods: {
     voltar() {
       this.$router.push("/");
@@ -98,14 +128,14 @@ export default defineComponent({
           rota: "/",
           separador: true,
         },
-        {
-          icone: "dashboard",
-          corIcone: "primary",
-          texto: "Dashboard",
-          corTexto: "white",
-          rota: "/",
-          separador: true,
-        },
+        // {
+        //   icone: "dashboard",
+        //   corIcone: "primary",
+        //   texto: "Dashboard",
+        //   corTexto: "white",
+        //   rota: "/",
+        //   separador: true,
+        // },
         {
           icone: "fa-brands fa-whatsapp",
           corIcone: "green",
@@ -119,7 +149,7 @@ export default defineComponent({
           corIcone: "primary",
           texto: "Denúncias Arquivadas",
           corTexto: "white",
-          rota: "/",
+          rota: "/denunciasarquivadas",
           separador: true,
         },
         {
@@ -131,7 +161,6 @@ export default defineComponent({
           separador: true,
         },
       ],
-      miniState: true,
       drawer: false,
     };
   },
@@ -140,9 +169,12 @@ export default defineComponent({
     const leftDrawerOpen = ref(false);
     const store = useStore();
 
+    //const homologacao = process.env.DEV
+
     return {
       store,
       leftDrawerOpen,
+      //homologacao,
 
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -152,6 +184,9 @@ export default defineComponent({
   computed: {
     nrDenuncia() {
       return this.store.novasDenuncias;
+    },
+    homologacao() {
+      return process.env.DEV;
     },
   },
 });

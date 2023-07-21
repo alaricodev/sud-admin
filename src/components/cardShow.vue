@@ -137,13 +137,13 @@
           color="primary"
           @click="maisInfo(dados.id, dados.tipo)"
         />
-        <q-btn
+        <!-- <q-btn
           flat
           icon="fa-solid fa-box-archive"
           label="Arquivar denúncia"
           color="red-4"
           @click="janelaArquivarCaso()"
-        />
+        /> -->
       </q-card-actions>
     </q-expansion-item>
   </q-card>
@@ -202,7 +202,6 @@ export default {
       this.promptConfirma = true;
     },
     arquivarCaso() {
-      console.log(`Arquivou o caso ${this.dados.id}`);
       this.promptConfirma = false;
     },
     maisInfo(id, tipo) {
