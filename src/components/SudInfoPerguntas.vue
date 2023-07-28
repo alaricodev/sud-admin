@@ -63,6 +63,10 @@ export default {
         pergunta: "Houve violência doméstica?",
         resposta: this.perguntas.per_violencia_domestica,
       },
+      {
+        pergunta: "Algum foragido envolvido na denúncia?",
+        resposta: this.perguntas.per_foragidos,
+      },
     ];
   },
   methods: {},

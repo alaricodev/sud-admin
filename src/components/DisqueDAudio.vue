@@ -32,9 +32,14 @@
   <q-separator color="primary" />
   <div class="flex flex-center">
     <div class="row q-ma-xl" style="width: 100%; justify-content: center">
-      <audio ref="audioPlayer" controls class="audio-1"></audio>
+      <audio
+        v-show="audioCarregado"
+        ref="audioPlayer"
+        controls
+        class="audio-1"
+      ></audio>
     </div>
-    <div class="row q-my-md" style="width: 100%; justify-content: center">
+    <!-- <div class="row q-my-md" style="width: 100%; justify-content: center">
       <q-btn
         color="primary"
         style="width: 40%"
@@ -42,7 +47,7 @@
         icon="download"
         @click="recebeAudio"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -50,14 +55,24 @@
 import { api } from "boot/axios";
 import { ref } from "vue";
 import { getTopWords } from "../utils/util";
+import { useStore } from "src/stores/store";
 export default {
   name: "DisqueDAudio",
-
+  created() {
+    this.recebeAudio();
+  },
+  data() {
+    return {
+      audioCarregado: false,
+    };
+  },
   setup() {
+    const store = useStore();
     return {
       // PALAVRAS CHAVES
       palavrasChave: ref([]),
       getTopWords,
+      store,
     };
   },
 
@@ -76,12 +91,16 @@ export default {
       const rota = "/audio181";
 
       try {
+        this.store.telaCarregamento(true);
         const response = await api.post(rota, dados, headers);
         // Converte o blob em uma URL de objeto e define no elemento <audio>
         const audioURL = URL.createObjectURL(new Blob([response.data]));
         this.$refs.audioPlayer.src = audioURL;
         //this.$refs.audioPlayer.play();
+        this.store.telaCarregamento(false);
+        this.audioCarregado = true;
       } catch (error) {
+        this.store.telaCarregamento(false);
         console.error(error);
       }
     },

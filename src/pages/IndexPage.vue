@@ -41,9 +41,8 @@
 import CardShow from "src/components/cardShow.vue";
 import FiltroIndex from "src/components/FiltroIndex.vue";
 import dados from "../assets/dados.json";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watchEffect } from "vue";
 import { useQuasar } from "quasar";
-import som from "../assets/notify.mp3";
 import { api } from "boot/axios";
 import { useStore } from "../stores/store.js";
 
@@ -60,6 +59,10 @@ export default defineComponent({
   setup() {
     const $q = useQuasar();
     const store = useStore();
+    const denuncias = ref([]);
+    const denunciasFiltrada = ref([]);
+    const maxPagina = ref(10);
+    const atualPagina = ref(1);
     //const { denuncias } = storeToRefs(store);
 
     function showNotify(tipo, data_caso) {
@@ -68,11 +71,41 @@ export default defineComponent({
         timeout: 5500,
         message: `Acabou de cair uma denúncia no sistema ${tipo}`,
         caption: formatarDataExtenso(data_caso),
-        color: this.store.corCaso(tipo),
-        icon: this.store.iconeCaso(tipo),
+        color: store.corCaso(tipo),
+        icon: store.iconeCaso(tipo),
         progress: true,
       });
     }
+
+    async function carregaDenuncias() {
+      store.telaCarregamento(true);
+
+      const params = {
+        cpf_log: store.login.cpf_log,
+        codigo_sys_func: "10001",
+        id_usuario: store.login.id_usuario,
+        caso_arquivado: false,
+      };
+
+      const resposta = await api.post("/consulta", params);
+
+      // if (resposta.data.status_ret) {
+      //   this.store.alerta(resposta.data.retorno);
+      // } else {
+
+      // }
+
+      denuncias.value = resposta.data;
+      denunciasFiltrada.value = paginacao(denuncias.value, 30, 1);
+
+      store.telaCarregamento(false);
+    }
+
+    watchEffect(() => {
+      if (store.token) {
+        carregaDenuncias();
+      }
+    });
 
     return {
       //FUNÇÔES INTERNAS
@@ -84,36 +117,26 @@ export default defineComponent({
       dados,
       store,
       totalPaginasArray,
-
+      carregaDenuncias,
       // ARRAY DE DENÚNCIAS
-      denuncias: ref([]),
-      denunciasFiltrada: ref([]),
+      denuncias,
+      denunciasFiltrada,
       // PAGINAÇÃO
-      maxPagina: ref(10),
-      atualPagina: ref(1),
+      maxPagina,
+      atualPagina,
     };
   },
 
   watch: {
     denuncias() {
-      this.denunciasFiltrada = this.denunciasFiltrada = paginacao(
-        this.denuncias,
-        30,
-        this.atualPagina
-      );
+      this.denunciasFiltrada = paginacao(this.denuncias, 30, this.atualPagina);
     },
     atualPagina() {
-      this.denunciasFiltrada = this.denunciasFiltrada = paginacao(
-        this.denuncias,
-        30,
-        this.atualPagina
-      );
+      this.denunciasFiltrada = paginacao(this.denuncias, 30, this.atualPagina);
     },
   },
 
   created() {
-    this.carregaDenuncias();
-
     // Inicia a função de consulta a cada segundo quando o componente é criado
     // Somente envia notificações caso o sistema esteja em produção
     // e o usuário seja da DIPC
@@ -123,22 +146,6 @@ export default defineComponent({
   },
 
   methods: {
-    async carregaDenuncias() {
-      this.store.telaCarregamento(true);
-
-      const params = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "10002",
-        id_usuario: this.store.login.id_usuario,
-      };
-
-      const resposta = await api.post("/consulta", params);
-      this.denuncias = resposta.data;
-      this.denunciasFiltrada = paginacao(this.denuncias, 30, 1);
-
-      this.store.telaCarregamento(false);
-    },
-
     async buscarDenuncias() {
       const params = {
         cpf_log: this.store.login.cpf_log,
@@ -163,10 +170,6 @@ export default defineComponent({
     iniciarConsultaPeriodica() {
       // Use o setInterval para executar a função de consulta a cada segundo
       setInterval(this.buscarDenuncias, 30000);
-    },
-    reproduzirSom() {
-      const audio = new Audio(som);
-      audio.play();
     },
   },
 });

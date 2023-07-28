@@ -79,7 +79,7 @@
             icon="fa-solid fa-person"
             label="Qualificar o suspeito"
             color="primary"
-            @click="qualificaEnvolvidoJanela = true"
+            @click="qualificarPessoa()"
           />
         </q-card-section>
       </q-card>
@@ -114,6 +114,9 @@ export default {
   },
   methods: {
     pesquisarPessoa() {
+      this.store.alerta("Função em desenvolvimento");
+    },
+    qualificarPessoa() {
       this.store.alerta("Função em desenvolvimento");
     },
   },

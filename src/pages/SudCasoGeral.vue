@@ -225,7 +225,7 @@ export default {
     retornaIconeTopo(tipo) {
       switch (tipo) {
         case "SUD":
-          return "fa-solid fa-cloud";
+          return "fa-solid fa-desktop";
         case "WHATSAPP":
           return "fa-brand fa-whatsapp";
         case "SOS_ESCOLA":

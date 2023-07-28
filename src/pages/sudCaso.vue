@@ -5,7 +5,7 @@
         class="bg-white q-ma-md"
         style="border-radius: 5px; box-shadow: 1px; width: 98%"
       >
-        <header-caso :dados="dados" />
+        <header-caso :dados="dados" :funcaoRefresh="carregarCaso" />
 
         <div class="row q-pa-md" style="width: 100%">
           <div class="q-gutter-y-md" style="width: 100%">
@@ -181,6 +181,8 @@ export default {
         codigo_sys_func: "10005",
         id_caso: idCaso,
       };
+
+      this.dadosCarregados = false;
 
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);

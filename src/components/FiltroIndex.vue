@@ -10,6 +10,17 @@
     <q-card>
       <q-card-section>
         <div class="text-subtitle1 text-bold text-grey-8 full-width">
+          Filtro Básico
+        </div>
+        <div>
+          <q-toggle
+            v-model="exibirEncaminhados"
+            label="Exibir informações encaminhadas"
+          />
+        </div>
+      </q-card-section>
+      <q-card-section>
+        <div class="text-subtitle1 text-bold text-grey-8 full-width">
           Tipo de Denúncia
         </div>
         <div>
@@ -43,7 +54,7 @@
           />
         </div>
       </q-card-section>
-      <q-card-section>
+      <q-card-section v-if="false">
         <div class="text-subtitle1 text-bold text-grey-8 full-width">Data:</div>
         <div>
           <q-radio
@@ -83,12 +94,45 @@
           />
         </div>
         <div v-if="opDataDenuncia == 'P'">
-          <q-date minimal v-model="data1" class="q-mr-md" />
-          <q-date minimal v-model="data2" />
+          <q-input filled v-model="data1" mask="date" :rules="['date']">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date v-model="date">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+
+          <q-input filled v-model="data2" mask="date" :rules="['date']">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date v-model="date">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
         </div>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="Aplicar Filtros" />
+        <q-btn flat label="Aplicar Filtros" :disable="true" />
       </q-card-actions>
     </q-card>
   </q-expansion-item>
@@ -96,9 +140,11 @@
 
 <script>
 import { useStore } from "src/stores/store";
-import { ref } from "vue";
 export default {
   name: "filtroIndex",
+  created() {
+    this.exibirEncaminhados = !this.store.login.dipc;
+  },
   setup() {
     const store = useStore();
     return {
@@ -111,6 +157,7 @@ export default {
       opDataDenuncia: "TODOS",
       data1: "2023-01-01",
       data2: "2023-12-31",
+      exibirEncaminhados: false,
     };
   },
   methods: {},

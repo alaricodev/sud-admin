@@ -215,6 +215,10 @@ function leftPad(value, totalWidth, paddingChar) {
 }
 
 export function totalPaginasArray(array, registrosPorPagina) {
+  if (!array) {
+    return 0;
+  }
+
   let totalPaginas = Math.floor(array.length / registrosPorPagina);
 
   if (array.length % registrosPorPagina > 0) {
@@ -225,6 +229,10 @@ export function totalPaginasArray(array, registrosPorPagina) {
 }
 
 export function paginacao(array, nrRegistrosPagina, pagina) {
+  if (!array) {
+    return [];
+  }
+
   let totPaginas = Math.floor(array.length / nrRegistrosPagina);
 
   let paginaQuebrada = false;

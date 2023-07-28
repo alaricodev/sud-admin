@@ -1,17 +1,22 @@
 import { defineStore } from "pinia";
 import { Dialog, Loading } from "quasar";
+import { api } from "src/boot/axios";
 
 export const useStore = defineStore("store", {
   state: () => ({
     filtroAtivo: true,
     novasDenuncias: 0,
+    userData: null,
+    token: null,
+    tokenWizard: null,
     login: {
-      cpf_log: "27830137897",
-      id_usuario: 133,
-      nome_usuario: "Alarico Modinez de Castro",
-      foto_usuario: "alarico_modinez_de_castro.jpg",
-      dipc: true,
-      token: "",
+      logado: false,
+      cpf_log: null,
+      id_usuario: null,
+      nome_usuario: null,
+      foto_usuario: null,
+      dipc: null,
+      token: null,
     },
     denuncias: [],
     layout: {
@@ -82,7 +87,7 @@ export const useStore = defineStore("store", {
     iconeCaso(tipo) {
       switch (tipo) {
         case "SUD":
-          return "fa-solid fa-cloud";
+          return "fa-solid fa-desktop";
         case "WHATSAPP":
           return "fa-brands fa-whatsapp";
         case "DISQUE_DENUNCIA":

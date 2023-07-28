@@ -81,6 +81,24 @@
         </q-item-section>
 
         <q-item-section side>
+          <q-btn
+            flat
+            icon="fa-solid fa-arrow-right-to-bracket"
+            color="primary"
+            @click="maisInfo(dados.id, dados.tipo)"
+          >
+            <q-tooltip
+              :delay="500"
+              class="bg-primary text-body2"
+              :offset="[10, 10]"
+              v-if="dados.tem_arquivos"
+            >
+              Visualizar a informação
+            </q-tooltip>
+          </q-btn>
+        </q-item-section>
+
+        <q-item-section side>
           <q-icon
             :name="dados.tem_arquivos ? 'fa-solid fa-paperclip' : 'fdfdfdd'"
             :color="dados.tem_arquivos ? 'blue-grey' : 'red'"
@@ -90,8 +108,9 @@
               class="bg-primary text-body2"
               :offset="[10, 10]"
               v-if="dados.tem_arquivos"
-              >Existe arquivos anexados</q-tooltip
             >
+              Existe arquivos anexados
+            </q-tooltip>
             <q-tooltip
               :delay="500"
               class="bg-primary text-body2"
@@ -107,10 +126,15 @@
         <div class="q-gutter-y-md" style="max-width: 100%">
           <q-card>
             <q-card-section>
-              <div class="text-body1 text-grey-10 text-container">
+              <div class="text-body1 text-grey-10">
                 <div class="text-h5 text-title1 text-grey-6">Relato:</div>
                 <q-separator />
-                <pre class="pre-container text-center"> {{ dados.relato }}</pre>
+                <pre class="pre-container">
+                  <q-scroll-area style="height: 330px; max-width: 100%;">
+                    {{ dados.relato }}
+                  </q-scroll-area>
+
+                </pre>
 
                 <!-- <p :class="abertoDesc ? '' : 'text-overflow'">
                   {{ dados.relato }}
@@ -137,13 +161,6 @@
           color="primary"
           @click="maisInfo(dados.id, dados.tipo)"
         />
-        <!-- <q-btn
-          flat
-          icon="fa-solid fa-box-archive"
-          label="Arquivar denúncia"
-          color="red-4"
-          @click="janelaArquivarCaso()"
-        /> -->
       </q-card-actions>
     </q-expansion-item>
   </q-card>
@@ -176,9 +193,9 @@ export default {
         };
       } else if (this.dados.tipo == "SUD") {
         return {
-          icon: "fa-solid fa-cloud",
+          icon: "fa-solid fa-desktop",
           color: "amber-10",
-          nome: "SUD",
+          nome: "Denúncia Online",
         };
       } else if (this.dados.tipo == "DISQUE_DENUNCIA") {
         return {
@@ -238,7 +255,7 @@ export default {
 }
 
 .pre-container {
-  max-width: 900px;
+  max-width: 100%;
   overflow-x: auto;
   white-space: pre-wrap;
   background-color: rgb(235, 232, 232);

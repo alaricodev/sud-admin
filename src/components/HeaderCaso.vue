@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md row items-center">
     <!-- Menu lateral -->
-    <menu-acao :caso="dados.casos[0]" />
+    <menu-acao :caso="dados.casos[0]" :funcaoRefresh="funcaoRefresh" />
 
     <!-- Exibição do protocolo -->
     <q-chip class="q-ma-sm">
@@ -86,6 +86,10 @@ export default {
   props: {
     dados: {
       type: Object,
+      required: true,
+    },
+    funcaoRefresh: {
+      type: Function,
       required: true,
     },
   },

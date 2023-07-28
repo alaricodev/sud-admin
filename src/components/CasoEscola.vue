@@ -39,8 +39,7 @@ export default {
   data() {
     return {
       mapaCarregado: false,
-      lat: null,
-      lon: null,
+      endereco: null,
     };
   },
   components: { LabelData },
@@ -52,18 +51,27 @@ export default {
   },
 
   methods: {
-    frameMap(lat, lon) {
-      return `https://maps.google.com/maps?width=100%25&height=600&hl=en&q=${encodeURIComponent(
-        lat
-      )},${encodeURIComponent(lon)}`;
+    frameMap() {
+      const endereco = encodeURIComponent(this.retiraCEP(this.endereco));
+      return `https://maps.google.com/maps?width=100%25&height=600&hl=en&q=${endereco}&t=&z=14&ie=UTF8&iwloc=B&output=embed`;
     },
 
     async carregaDadosEscola() {
       const resposta = await api.get(`/estabelecimento/${this.dados.escola}`);
       console.log(resposta.data);
-      this.lat = resposta.data[0].lat;
-      this.lon = resposta.data[0].lon;
+      this.endereco = resposta.data[0].display_name;
       this.mapaCarregado = true;
+    },
+
+    retiraCEP(str) {
+      const cepRegex = /\b\d{5}-\d{3}\b/;
+      const match = str.match(cepRegex);
+
+      if (match) {
+        return match[0];
+      } else {
+        return null;
+      }
     },
   },
 };

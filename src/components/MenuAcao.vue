@@ -270,6 +270,10 @@ export default {
       type: Object,
       required: true,
     },
+    funcaoRefresh: {
+      type: Function,
+      required: true,
+    },
   },
   methods: {
     franquearAcesso() {
@@ -282,16 +286,17 @@ export default {
         tipo_crud: 3,
         id: this.caso.id,
         arquivamento: true,
+        confirmacao: "CONFIRMO",
       };
 
       const resposta = await api.post("/consulta", params);
 
       if (resposta.data.status_ret == 0) {
         this.telaArquivamento = false;
-        this.$router.go();
+        this.$router.go(-1);
         this.confirma = "";
-        this.store.alerta(resposta.data.retorno);
       } else {
+        console.log(resposta);
         this.store.alerta(resposta.data.retorno);
       }
     },
@@ -302,15 +307,18 @@ export default {
         tipo_crud: 3,
         id: this.caso.id,
         nivel_sigilo: this.nivelSigiloInfo,
+        arquivamento: null,
+        confirmacao: "CONFIRMO",
       };
 
       const resposta = await api.post("/consulta", params);
 
       if (resposta.data.status_ret == 0) {
         this.telaArquivamento = false;
-        this.$router.go();
-        this.confirma = "";
-        this.store.alerta(resposta.data.retorno);
+        this.confirmaSigilo = "";
+        this.telaSigilo = false;
+
+        this.funcaoRefresh(this.caso.id);
       } else {
         this.store.alerta(resposta.data.retorno);
       }
@@ -323,15 +331,16 @@ export default {
         tipo_crud: 3,
         id: this.caso.id,
         qualidade_info: this.classificacao,
+        arquivamento: null,
       };
 
       const resposta = await api.post("/consulta", params);
 
       if (resposta.data.status_ret == 0) {
         this.telaArquivamento = false;
-        this.$router.go();
-        this.confirma = "";
-        this.store.alerta(resposta.data.retorno);
+        this.confirmaClassificacao = "";
+        this.telaClassificaco = false;
+        this.funcaoRefresh(this.caso.id);
       } else {
         this.store.alerta(resposta.data.retorno);
       }
