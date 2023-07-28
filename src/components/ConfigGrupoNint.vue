@@ -372,9 +372,23 @@ export default {
         cpf_atribuicao: this.store.login.cpf_log,
       };
 
+      const params2 = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "20015",
+        tipo_crud: 3,
+        id: policial.id,
+        usuario_nint: true,
+      };
+
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
+      const resposta2 = await api.post("/consulta", params2);
       this.store.telaCarregamento(false);
+
+      if (resposta2.data.status_ret == 1) {
+        this.store.alerta(resposta.data.retorno);
+        return false;
+      }
 
       if (resposta.data.status_ret == 0) {
         this.telaProcuraPolicial = false;

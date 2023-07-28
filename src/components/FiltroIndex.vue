@@ -8,14 +8,14 @@
     expand-icon-class="text-white"
   >
     <q-card>
-      <q-card-section>
+      <q-card-section v-if="store.login.dipc">
         <div class="text-subtitle1 text-bold text-grey-8 full-width">
           Filtro Básico
         </div>
         <div>
           <q-toggle
-            v-model="exibirEncaminhados"
-            label="Exibir informações encaminhadas"
+            v-model="store.filtros.encaminhados"
+            label="ocultar denúncias encaminhadas"
           />
         </div>
       </q-card-section>
@@ -27,30 +27,30 @@
           <q-radio
             checked-icon="task_alt"
             unchecked-icon="panorama_fish_eye"
-            v-model="valorTipoDenuncia"
+            v-model="store.filtros.tipo"
             val="TODOS"
             label="TODOS"
           />
           <q-radio
             checked-icon="task_alt"
             unchecked-icon="panorama_fish_eye"
-            v-model="valorTipoDenuncia"
+            v-model="store.filtros.tipo"
             val="SUD"
-            label="SUD"
+            label="Denúncia Anônima"
           />
           <q-radio
             checked-icon="task_alt"
             unchecked-icon="panorama_fish_eye"
-            v-model="valorTipoDenuncia"
-            val="SOS ESCOLA"
-            label="SOS_ESCOLA"
+            v-model="store.filtros.tipo"
+            val="SOS_ESCOLA"
+            label="SOS ESCOLA"
           />
           <q-radio
             checked-icon="task_alt"
             unchecked-icon="panorama_fish_eye"
-            v-model="valorTipoDenuncia"
-            val="DISQUE DENÚNCIA"
-            label="DISQUE_DENUNCIA"
+            v-model="store.filtros.tipo"
+            val="DISQUE_DENUNCIA"
+            label="DISQUE DENÚNCIA"
           />
         </div>
       </q-card-section>
@@ -132,7 +132,7 @@
         </div>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="Aplicar Filtros" :disable="true" />
+        <q-btn flat label="Aplicar Filtros" @click="aplicarFiltros()" />
       </q-card-actions>
     </q-card>
   </q-expansion-item>
@@ -144,6 +144,12 @@ export default {
   name: "filtroIndex",
   created() {
     this.exibirEncaminhados = !this.store.login.dipc;
+  },
+  props: {
+    funcaoRefresh: {
+      type: Function,
+      required: true,
+    },
   },
   setup() {
     const store = useStore();
@@ -160,7 +166,11 @@ export default {
       exibirEncaminhados: false,
     };
   },
-  methods: {},
+  methods: {
+    aplicarFiltros() {
+      this.funcaoRefresh();
+    },
+  },
 };
 </script>
 

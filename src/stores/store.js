@@ -22,11 +22,36 @@ export const useStore = defineStore("store", {
     layout: {
       miniState: false,
     },
+    filtros: {
+      exibirEncaminhados: true,
+      encaminhados: true,
+      tipo: "TODOS",
+    },
   }),
   getters: {
     //filtroAtivo: (state) => state.filtroAtivo,
   },
   actions: {
+    filtroCasos(array) {
+      if (!array) {
+        return array;
+      }
+
+      // Primeiro Filtro: Exibir as informações compartilhadas
+      if (this.filtros.encaminhados) {
+        array = array.filter((item) => {
+          return item.encaminhado_nint !== true;
+        });
+      }
+
+      // Segundo Filtro: Tipo do
+      if (this.filtros.tipo !== "TODOS") {
+        array = array.filter((item) => {
+          return item.tipo === this.filtros.tipo;
+        });
+      }
+      return array;
+    },
     alerta(msg) {
       Dialog.create({
         title: "Aviso",

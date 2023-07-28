@@ -16,7 +16,7 @@
         </div>
         <q-separator color="primary" class="q-mb-md" />
       </div>
-      <filtro-index />
+      <filtro-index :funcaoRefresh="provoca" />
     </div>
     <div>
       <card-show
@@ -95,7 +95,7 @@ export default defineComponent({
 
       // }
 
-      denuncias.value = resposta.data;
+      denuncias.value = store.filtroCasos(resposta.data);
       denunciasFiltrada.value = paginacao(denuncias.value, 30, 1);
 
       store.telaCarregamento(false);
@@ -170,6 +170,9 @@ export default defineComponent({
     iniciarConsultaPeriodica() {
       // Use o setInterval para executar a função de consulta a cada segundo
       setInterval(this.buscarDenuncias, 30000);
+    },
+    provoca() {
+      this.carregaDenuncias();
     },
   },
 });
