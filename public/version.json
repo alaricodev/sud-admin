@@ -1,0 +1,31 @@
+[
+  {
+    "versao": "Versão 0.9.9",
+    "data": "em desenvolvimento",
+    "alteracao": [
+      "Correção de Bugs no controle de versão",
+      "Implementação do botão limpar data e hora no cadastro de informações vindas do whatsapp"
+    ]
+  },
+  {
+    "versao": "Versão 0.9.8",
+    "data": "04 de agosto de 2023",
+    "alteracao": [
+      "Mudança na exibição do franqueamento de informações, agora são agrupadas pelo grupo que o policial pertence",
+      "Implementação do histórico de versões",
+      "Correção do uso de filtro no histórico"
+    ]
+  },
+  {
+    "versao": "Versão 0.9.7",
+    "data": "02 de agosto de 2023",
+    "alteracao": [
+      "Envio de Email ao compartilhar Denúncias com Grupos Nints ou policiais"
+    ]
+  },
+  {
+    "versao": "Versão 0.9.6",
+    "data": "30 de julho de 2023",
+    "alteracao": ["Entrega do SUD"]
+  }
+]

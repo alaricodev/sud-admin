@@ -80,6 +80,33 @@
           {{ formatarDataGrid(dados.data_caso) }}
         </q-item-section>
 
+        <q-item-section>
+          <div class="flex flex-center">
+            <div v-for="n in 5" :key="n">
+              <q-icon
+                :name="
+                  dados.qualidade_info >= n
+                    ? 'fa-solid fa-star'
+                    : 'fa-regular fa-star'
+                "
+                color="amber"
+                size="xs"
+                class="q-mr-sm"
+              />
+            </div>
+            <q-tooltip
+              :delay="500"
+              class="bg-primary text-body2"
+              :offset="[10, 10]"
+            >
+              <div v-if="dados.qualidade_info">
+                Qualidade da informação {{ dados.qualidade_info }}/5
+              </div>
+              <div v-else>Qualidade da informação</div>
+            </q-tooltip>
+          </div>
+        </q-item-section>
+
         <q-item-section side>
           <q-btn
             flat
@@ -100,8 +127,12 @@
 
         <q-item-section side>
           <q-icon
-            :name="dados.tem_arquivos ? 'fa-solid fa-paperclip' : 'fdfdfdd'"
-            :color="dados.tem_arquivos ? 'blue-grey' : 'red'"
+            :name="
+              dados.tem_arquivos
+                ? 'fa-solid fa-paperclip'
+                : 'fa-solid fa-paperclip'
+            "
+            :color="dados.tem_arquivos ? 'blue-grey' : 'grey-3'"
           >
             <q-tooltip
               :delay="500"
@@ -172,6 +203,7 @@ import { formatarDataGrid } from "../utils/util.js";
 export default {
   name: "cardShow",
   props: { dados: Object },
+
   setup() {
     return {
       // FUNÇÕES

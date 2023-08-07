@@ -69,7 +69,7 @@
       <q-card-actions align="right">
         <q-btn
           flat
-          :disable="dados.usuario_dipc"
+          :disable="dados.usuario_dipc || !store.login.dipc"
           label="Remover"
           :color="dados.usuario_dipc ? 'grey-5' : 'red-10'"
           icon="fa-solid fa-trash"

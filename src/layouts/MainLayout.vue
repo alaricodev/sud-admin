@@ -167,7 +167,8 @@
             Desenvolvido por GETIN
           </div>
           <div class="q-px-lg" style="font-size: 0.8rem">
-            Versão: {{ pack.version }}
+            <!-- <a :href="$router.push('/version')"> Versão: {{ pack.version }} </a> -->
+            <q-btn flat :label="versao()" @click="$router.push('/version')" />
           </div>
         </div>
       </div>
@@ -194,6 +195,9 @@ export default defineComponent({
   methods: {
     voltar() {
       this.$router.push("/");
+    },
+    versao() {
+      return `Versão ${this.pack.version}`;
     },
   },
 
@@ -262,6 +266,8 @@ export default defineComponent({
         store.login.nome_usuario = infoUso.nome;
         store.login.foto_usuario = infoUso.foto;
         store.login.dipc = infoUso.usuario_dipc;
+        store.login.nint = infoUso.usuario_nint;
+        store.login.nivel = infoUso.nivel_acesso;
       } else {
         store.alerta("Usuário não localizado  !");
       }

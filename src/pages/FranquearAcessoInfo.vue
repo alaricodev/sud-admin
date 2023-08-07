@@ -49,7 +49,7 @@
     <q-card style="width: 500px">
       <q-bar>
         <q-icon name="search" />
-        <div class="text-body1">Procurar Policial por nome</div>
+        <div class="text-body1">Procurar Delegado por nome</div>
         <q-space />
         <q-btn flat icon="close" size="sm" v-close-popup></q-btn>
       </q-bar>
@@ -57,7 +57,7 @@
         <q-input
           outlined
           v-model="nomePolicialPesquisa"
-          label="Informe o nome completo ou parcial do policial"
+          label="Informe o nome completo ou parcial do Delegado"
           color="primary"
           @keyup.enter="buscaPoliciaisPorNome(nomePolicialPesquisa)"
         >
@@ -69,7 +69,7 @@
               @click="buscaPoliciaisPorNome(nomePolicialPesquisa)"
             >
               <q-tooltip class="bg-primary text-body2" :offset="[10, 10]">
-                Buscar policiais com esse nome
+                Buscar delegados com esse nome
               </q-tooltip>
             </q-btn>
           </template>
@@ -118,7 +118,7 @@
             </div>
           </div>
           <div v-else class="flex flex-center">
-            <q-img src="../../public/ntsh.png" width="200px" height="200px" />
+            <!-- <q-img src="../../public/ntsh.png" /> -->
           </div>
         </q-scroll-area>
       </q-card-section>
@@ -159,9 +159,13 @@
     </div>
     <q-separator class="q-my-sm" />
     <div class="q-ma-md row" style="width: 98%">
-      <div style="width: 15%" class="bg-white">
+      <div
+        v-if="store.login.nint || store.login.dipc"
+        style="width: 15%"
+        class="bg-white"
+      >
         <q-btn
-          label="Escolher Policial"
+          label="Escolher Delegado"
           color="primary"
           icon="search"
           @click="telaProcuraPolicial = true"
@@ -171,9 +175,9 @@
           </q-tooltip>
         </q-btn>
       </div>
-      <div style="width: 15%" class="bg-white">
+      <div v-if="store.login.dipc" style="width: 15%" class="bg-white">
         <q-btn
-          label="Escolher Grupo NINT"
+          label="Escolher Grupo"
           color="primary"
           icon="fa-solid fa-people-group"
           @click="telaGrupo = true"
@@ -184,23 +188,71 @@
         </q-btn>
       </div>
       <q-space />
-      <div style="width: 35%" class="bg-white text-h6 q-pt-sm text-right">
+      <!-- <div style="width: 35%" class="bg-white text-h6 q-pt-sm text-right">
         <span class="text-grey-8"> Acesso ao caso:</span>
-        <span class="text-grey-10 text-italic"
+        <span v-if="dadosCarregados" class="text-grey-10 text-italic"
           >{{ dadosAcesso.length }} policiais</span
         >.
-      </div>
+      </div> -->
       <div style="margin-top: 1px; margin-left: 15px"></div>
     </div>
     <q-separator class="q-my-md" />
     <div class="full-width q-pa-md">
-      <div v-if="dadosAcesso" style="display: flex; flex-wrap: wrap">
-        <usuario-card
-          v-for="acesso in dadosAcesso"
-          :key="acesso.id"
-          :dados="acesso"
-          :funcao="removerAcessoUsuario"
-        />
+      <div v-if="dadosAcesso">
+        <q-scroll-area style="height: 650px; width: 100%">
+          <div
+            class="full-width"
+            v-for="nomeGrupo in nomeGrupos"
+            :key="nomeGrupo.id"
+          >
+            <q-expansion-item
+              class="shadow-1 overflow-hidden q-my-md"
+              style="border-radius: 10px"
+              icon="fa-solid fa-people-group"
+              :label="nomeGrupo.nome"
+              :caption="nomeGrupo.descricao"
+              header-class="bg-primary text-grey-3 text-overline"
+              expand-icon-class="text-white"
+            >
+              <q-card>
+                <q-card-section>
+                  <div class="flex flex-nowrap">
+                    <usuario-card
+                      v-for="dado in userNint(nomeGrupo.id)"
+                      :key="dado.id"
+                      :dados="dado"
+                      :funcao="removerAcessoUsuario"
+                    />
+                  </div>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
+          </div>
+          <div class="full-width">
+            <q-expansion-item
+              class="shadow-1 overflow-hidden q-my-md"
+              style="border-radius: 10px"
+              icon="fa-solid fa-person-walking"
+              label="Policiais"
+              caption="Policiais que tem acesso ao caso"
+              header-class="bg-blue-grey text-white text-overline"
+              expand-icon-class="text-white"
+            >
+              <q-card>
+                <q-card-section>
+                  <div class="flex flex-nowrap">
+                    <usuario-card
+                      v-for="acesso in dadosAcesso"
+                      :key="acesso.id"
+                      :dados="acesso"
+                      :funcao="removerAcessoUsuario"
+                    />
+                  </div>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
+          </div>
+        </q-scroll-area>
       </div>
     </div>
   </q-page>
@@ -238,9 +290,12 @@ export default {
       nomesPesquisados: null,
       policialSelecionado: null,
       dadosAcesso: null,
+      dadosAcessoGrupo: null,
+      nomeGrupos: null,
 
       telaGrupo: false,
       grupos: null,
+      gruposFiltrados: null,
       checkNints: [],
     };
   },
@@ -262,6 +317,14 @@ export default {
   },
 
   methods: {
+    userNint(id) {
+      const temp = this.dadosAcessoGrupo.filter(
+        (item) => item.id_grupo_nint == id
+      );
+
+      return temp;
+    },
+
     limpaChecksNint() {
       for (let i = 0; i < this.grupos.length; i++) {
         this.checkNints.push(false);
@@ -283,6 +346,34 @@ export default {
       return ret;
     },
 
+    parametroEmail(dados) {
+      let to = "";
+      let cc = "";
+      if (dados.length > 0) {
+        to = dados[0].email_funcional;
+        dados.shift();
+        const emails = dados.map((item) => item.email_funcional);
+
+        cc = emails.join(",");
+      } else {
+        to = dados[0].email_funcional;
+        cc = "";
+      }
+      return { to: to, cc: cc };
+    },
+
+    montarArrayGrupoID() {
+      const ret = [];
+
+      for (let i = 0; i < this.checkNints.length; i++) {
+        if (this.checkNints[i]) {
+          ret.push(this.grupos[i].id);
+        }
+      }
+
+      return `array${JSON.stringify(ret)}`;
+    },
+
     async franquearAcesso() {
       const params = {
         codigo_sys_func: "20021",
@@ -298,6 +389,22 @@ export default {
       if (resposta.data.status_ret == 0) {
         this.limpaChecksNint();
         this.telaGrupo = false;
+
+        const params2 = {
+          codigo_sys_func: "10009",
+          cpf_log: this.store.login.cpf_log,
+          id_grupos: this.montarArrayGrupoID(),
+        };
+
+        const resposta2 = await api.post("/consulta", params2);
+
+        if (!process.env.DEV) {
+          let params3 = this.parametroEmail(resposta2.data);
+          params3["protocolo"] = this.dados.protocolo;
+          params3["tipo"] = this.dados.tipo;
+          const resposta3 = await api.post("/sendmail", params3);
+        }
+
         this.carregaDadosAcessos();
         this.store.alerta(resposta.data.retorno);
       } else {
@@ -316,6 +423,7 @@ export default {
       const resposta = await api.post("/consulta", params);
       this.store.telaCarregamento(false);
       this.grupos = resposta.data;
+      this.gruposFiltrados = resposta.data;
     },
 
     async carregarCaso(idCaso) {
@@ -358,7 +466,22 @@ export default {
       this.store.telaCarregamento(false);
 
       if (resposta.data.status_ret != 1) {
-        this.store.alerta("Acesso ao caso fornecido com sucesso !");
+        const params2 = {
+          codigo_sys_func: "10009",
+          cpf_log: this.store.login.cpf_log,
+          id_grupos: this.montarArrayGrupoID(),
+        };
+
+        const resposta2 = await api.post("/consulta", params2);
+
+        if (!process.env.DEV) {
+          let params3 = this.parametroEmail(resposta2.data);
+          params3["protocolo"] = this.dados.protocolo;
+          params3["tipo"] = this.dados.tipo;
+
+          const resposta3 = await api.post("/sendmail", params3);
+        }
+
         this.telaProcuraPolicial = false;
         this.carregaDadosAcessos();
       } else {
@@ -367,29 +490,52 @@ export default {
     },
 
     async carregaDadosAcessos() {
-      const params = {
-        codigo_sys_func: "20005",
-        tipo_crud: 4,
+      const params1 = {
+        codigo_sys_func: "10010",
+        cpf_log: this.store.login.cpf_log,
+        id_caso: this.dados.id,
+      };
+
+      const params2 = {
+        codigo_sys_func: "10011",
         cpf_log: this.store.login.cpf_log,
         id_caso: this.dados.id,
       };
 
       this.store.telaCarregamento(true);
-      const resposta = await api.post("/consulta", params);
+      const resposta1 = await api.post("/consulta", params1);
+      const resposta2 = await api.post("/consulta", params2);
       this.store.telaCarregamento(false);
 
-      this.dadosAcesso = resposta.data;
+      this.dadosAcesso = resposta1.data;
+      this.dadosAcessoGrupo = resposta2.data;
+
+      const objTemp = this.dadosAcessoGrupo.filter(
+        (obj, index, self) =>
+          index === self.findIndex((o) => o.id_grupo_nint === obj.id_grupo_nint)
+      );
+
+      this.nomeGrupos = objTemp.map((item) => {
+        return {
+          id: item.id_grupo_nint,
+          nome: item.nome_grupo_nint,
+          descricao: item.nint_descricao,
+        };
+      });
+
+      console.log(this.dadosAcesso);
+      console.log(this.dadosAcessoGrupo);
     },
 
     async buscaPoliciaisPorNome(nome) {
       if (!nome) {
-        this.store.alerta("Favor informar o nome do policial");
+        this.store.alerta("Favor informar o nome do Delegado");
         return false;
       }
 
       if (nome.length < 4) {
         this.store.alerta(
-          "Favor informar pelo menos <b>4 letras</b> do nome parcial do policial"
+          "Favor informar pelo menos <b>4 letras</b> do nome parcial do Delegado"
         );
         return false;
       }
@@ -400,8 +546,9 @@ export default {
 
       const params = {
         cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "10008",
+        codigo_sys_func: "10008A",
         nome: `%${nome.toUpperCase()}%`,
+        cargo: "DELEGADO DE POLICIA CIVIL",
       };
 
       this.store.telaCarregamento(true);

@@ -52,6 +52,13 @@
             val="DISQUE_DENUNCIA"
             label="DISQUE DENÚNCIA"
           />
+          <q-radio
+            checked-icon="task_alt"
+            unchecked-icon="panorama_fish_eye"
+            v-model="store.filtros.tipo"
+            val="WHATSAPP"
+            label="WHATSAPP"
+          />
         </div>
       </q-card-section>
       <q-card-section v-if="false">

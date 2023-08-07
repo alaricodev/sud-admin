@@ -79,7 +79,7 @@
             </div>
           </div>
           <div v-else class="flex flex-center">
-            <q-img src="../../public/ntsh.png" width="200px" height="200px" />
+            <!-- <q-img src="../../public/ntsh.png" width="200px" height="200px" /> -->
           </div>
         </q-scroll-area>
       </q-card-section>
@@ -398,16 +398,31 @@ export default {
         this.store.alerta(resposta.data.retorno);
       }
     },
-    async removerUsuarioGrupo(id) {
+    async removerUsuarioGrupo(id, id_policial) {
       const params = {
         cpf_log: this.store.login.cpf_log,
         codigo_sys_func: "20020",
         tipo_crud: 2,
         id: id,
       };
+
+      const params2 = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "20015",
+        tipo_crud: 3,
+        id: id_policial,
+        usuario_nint: false,
+      };
+
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
+      const resposta2 = await api.post("/consulta", params2);
       this.store.telaCarregamento(false);
+
+      if (resposta2.data.status_ret == 1) {
+        this.store.alerta(resposta.data.retorno);
+        return false;
+      }
 
       if (resposta.data.status_ret == 0) {
         this.telaProcuraPolicial = false;

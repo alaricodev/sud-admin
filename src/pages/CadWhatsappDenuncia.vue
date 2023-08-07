@@ -74,6 +74,7 @@
             >
             Caracteres - {{ relato.split(" ").length }} palavras
             <q-chip color="white"> </q-chip>
+            <q-btn flat label="limpar data e hora" @click="extrairLixo()" />
           </div>
         </div>
         <div
@@ -189,16 +190,45 @@ export default {
             { headers } // headers
           );
 
-          this.alerta("REGISTRO FEITO COM SUCESSO !");
-          this.files = null;
-          this.telefone = null;
-          this.relato = "";
+          if (!res.data.erro) {
+            this.alerta("REGISTRO FEITO COM SUCESSO !");
+            this.files = null;
+            this.telefone = null;
+            this.relato = "";
+          } else {
+            this.alerta(res.data.msg);
+          }
         } catch (erro) {
           console.error(erro);
+          this.alerta(erro.response.data.msg);
         }
 
         return true;
       }
+    },
+    limparDataHora() {
+      console.log(this.extractChatInfo(this.relato));
+    },
+    extrairLixo() {
+      const regex = /\[\d{2}:\d{2}, \d{2}\/\d{2}\/\d{4}\]/g;
+      const texto = this.relato.replace(regex, "");
+      this.relato = texto;
+    },
+    extractChatInfo(text) {
+      const regex = /\[(\d{2}:\d{2}, \d{2}\/\d{2}\/\d{4})\] ([^:]+): (.+)/g;
+      const matches = [];
+      let match;
+      let texto = "";
+
+      while ((match = regex.exec(text))) {
+        const timestamp = match[1];
+        const interlocutor = match[2];
+        const message = match[3];
+        matches.push({ timestamp, interlocutor, message });
+        texto += `${message}\n`;
+      }
+
+      return texto;
     },
   },
 };

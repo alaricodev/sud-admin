@@ -8,7 +8,9 @@
         style="right: 5px; top: 5px; z-index: 9"
         icon="close"
         color="red"
-        @dblclick="remover(usuario.id_usuarios_x_grupo_nint)"
+        @dblclick="
+          remover(usuario.id_usuarios_x_grupo_nint, usuario.id_usuario)
+        "
       >
         <q-tooltip
           :delay="500"
@@ -86,8 +88,8 @@ export default {
     retornaFoto(foto) {
       return `https://getin.pc.sc.gov.br/get_files_imgUser/${foto}`;
     },
-    async remover(id) {
-      this.funcao(id);
+    async remover(id, id_usuario) {
+      this.funcao(id, id_usuario);
     },
   },
 };

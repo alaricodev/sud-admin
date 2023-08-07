@@ -16,7 +16,9 @@ export const useStore = defineStore("store", {
       nome_usuario: null,
       foto_usuario: null,
       dipc: null,
+      nint: null,
       token: null,
+      nivel: null,
     },
     denuncias: [],
     layout: {

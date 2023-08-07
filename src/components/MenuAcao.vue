@@ -296,7 +296,6 @@ export default {
         this.$router.go(-1);
         this.confirma = "";
       } else {
-        console.log(resposta);
         this.store.alerta(resposta.data.retorno);
       }
     },

@@ -1,6 +1,6 @@
 we
 <template>
-  <div class="flex flex-center q-pa-md" style="height: 100vh">
+  <div v-if="store.login.nivel >= 3" class="flex flex-center q-pa-md">
     <div
       class="bg-white flex column"
       style="
@@ -33,8 +33,8 @@ we
       <q-separator color="primary" />
       <div style="flex-grow: 1">
         <div class="q-pa-md" style="height: 100%">
-          <div class="q-gutter-y-md" style="max-width: 100%; height: 100%">
-            <q-card class="flex column" style="height: 100%">
+          <div class="q-gutter-y-md" style="max-width: 100%">
+            <q-card class="" style="height: 100%">
               <q-tabs
                 v-model="tab"
                 dense
@@ -71,13 +71,7 @@ we
                 </q-tab-panel>
 
                 <q-tab-panel name="3">
-                  <div class="flex flex-center">
-                    <q-img
-                      src="../../public/ntsh.png"
-                      width="300px"
-                      height="100%"
-                    />
-                  </div>
+                  <config-usuario />
                 </q-tab-panel>
               </q-tab-panels>
             </q-card>
@@ -85,6 +79,9 @@ we
         </div>
       </div>
     </div>
+  </div>
+  <div class="flex flex-center" v-else>
+    <div class="flex flex-center text-h4">Nível 3 necessário</div>
   </div>
 </template>
 
@@ -94,9 +91,10 @@ import { api } from "src/boot/axios";
 import { useStore } from "src/stores/store";
 import ConfigGrupoNint from "src/components/ConfigGrupoNint.vue";
 import ConfigBlacklist from "src/components/ConfigBlacklist.vue";
+import ConfigUsuario from "src/components/ConfigUsuario.vue";
 
 export default {
-  components: { ConfigGrupoNint, ConfigBlacklist },
+  components: { ConfigGrupoNint, ConfigBlacklist, ConfigUsuario },
   name: "ConfigSud",
   created() {},
   data() {

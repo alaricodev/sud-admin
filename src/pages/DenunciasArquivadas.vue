@@ -15,7 +15,7 @@
         </div>
       </div>
       <q-separator color="primary" class="q-mb-md" />
-      <filtro-index />
+      <filtro-index :funcaoRefresh="carregaDenuncias" />
     </div>
     <div>
       <card-show
@@ -113,7 +113,7 @@ export default defineComponent({
       };
 
       const resposta = await api.post("/consulta", params);
-      this.denuncias = resposta.data;
+      this.denuncias = this.store.filtroCasos(resposta.data);
       this.denunciasFiltrada = paginacao(this.denuncias, 30, 1);
 
       this.store.telaCarregamento(false);
