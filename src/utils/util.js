@@ -141,6 +141,36 @@ export function formatarDataGrid(timestamp) {
   )}m ${leftPad(segundos, 2)}s`;
 }
 
+export function formatarDataCurta(timestamp) {
+  // Dado um timestamp retorna uma string nesse formato: 06/Fev/2023 15:16
+  const meses = [
+    "Jan",
+    "Fev",
+    "Mar",
+    "Abr",
+    "Mai",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Set",
+    "Out",
+    "Nov",
+    "Dez",
+  ];
+
+  const data = new Date(timestamp);
+  const dia = data.getDate();
+  const mes = meses[data.getMonth()];
+  const ano = data.getFullYear();
+  const horas = data.getHours();
+  const minutos = data.getMinutes();
+  const segundos = data.getSeconds();
+
+  return `${leftPad(dia, 2)}/${mes}/${ano} ${leftPad(horas, 2)}:${leftPad(
+    minutos,
+    2
+  )}`;
+}
 export function formatarDataGridSimples(timestamp) {
   // Dado um timestamp retorna uma string nesse formato: 06 Fev 2023
   const meses = [

@@ -81,10 +81,10 @@ export default defineComponent({
       store.telaCarregamento(true);
 
       const params = {
+        codigo_sys_func: "10013",
         cpf_log: store.login.cpf_log,
-        codigo_sys_func: "10001",
-        id_usuario: store.login.id_usuario,
-        caso_arquivado: false,
+        ativo: true,
+        arquivado: false,
       };
 
       const resposta = await api.post("/consulta", params);

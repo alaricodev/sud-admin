@@ -40,6 +40,10 @@ export const useStore = defineStore("store", {
       }
 
       // Primeiro Filtro: Exibir as informações compartilhadas
+      if (!this.login.dipc) {
+        this.filtros.encaminhados = false;
+      }
+
       if (this.filtros.encaminhados) {
         array = array.filter((item) => {
           return item.encaminhado_nint !== true;
@@ -137,6 +141,20 @@ export const useStore = defineStore("store", {
           return "red";
         default:
           return "black";
+      }
+    },
+    displayCaso(tipo) {
+      switch (tipo) {
+        case "SUD":
+          return "Denúncia Online";
+        case "WHATSAPP":
+          return "Whatsapp";
+        case "DISQUE_DENUNCIA":
+          return "Disque Denúncia";
+        case "SOS_ESCOLA":
+          return "SOS Escola";
+        default:
+          return "<sem nome>";
       }
     },
   },

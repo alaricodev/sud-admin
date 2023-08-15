@@ -1,10 +1,15 @@
 [
   {
     "versao": "Versão 0.9.9",
-    "data": "em desenvolvimento",
+    "data": "15 de agosto de 2023",
     "alteracao": [
+      "Correção do Bug do franqueamento de acesso para grupos",
+      "Correção do BUG das denúncias arquivadas",
+      "Correção do duplo clique no pequeno card das configurações de Grupos",
       "Correção de Bugs no controle de versão",
-      "Implementação do botão limpar data e hora no cadastro de informações vindas do whatsapp"
+      "Implementação do botão limpar data e hora no cadastro de informações vindas do whatsapp",
+      "Correção do BUG de aspas simples travar o cadastro",
+      "Implementação do controle de usuários."
     ]
   },
   {

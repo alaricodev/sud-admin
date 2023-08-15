@@ -222,8 +222,20 @@
                       :key="dado.id"
                       :dados="dado"
                       :funcao="removerAcessoUsuario"
+                      :desativado="true"
                     />
                   </div>
+                </q-card-section>
+
+                <q-card-section align="left">
+                  <q-btn
+                    flat
+                    class="q-pa-md"
+                    label="Remover acesso do Grupo"
+                    icon="delete"
+                    color="red-4"
+                    @click="removeAcessoGrupo(nomeGrupo.id, dados.id)"
+                  />
                 </q-card-section>
               </q-card>
             </q-expansion-item>
@@ -246,6 +258,7 @@
                       :key="acesso.id"
                       :dados="acesso"
                       :funcao="removerAcessoUsuario"
+                      :desativado="false"
                     />
                   </div>
                 </q-card-section>
@@ -262,6 +275,7 @@
 import { api } from "src/boot/axios";
 import { useStore } from "src/stores/store";
 import UsuarioCard from "src/components/UsuarioCard.vue";
+import { Dialog } from "quasar";
 export default {
   name: "FranquearAcessoInfo",
 
@@ -269,7 +283,7 @@ export default {
 
   created() {
     this.carregarCaso(this.$route.params.id);
-    this.carregaGrupo();
+    this.carregaGrupo(this.$route.params.id);
   },
 
   setup() {
@@ -312,6 +326,8 @@ export default {
     telaGrupo() {
       if (this.telaGrupo) {
         this.limpaChecksNint();
+
+        console.log(this.grupos);
       }
     },
   },
@@ -326,6 +342,9 @@ export default {
     },
 
     limpaChecksNint() {
+      if (!this.grupos) {
+        return false;
+      }
       for (let i = 0; i < this.grupos.length; i++) {
         this.checkNints.push(false);
       }
@@ -376,7 +395,7 @@ export default {
 
     async franquearAcesso() {
       const params = {
-        codigo_sys_func: "20021",
+        codigo_sys_func: "20021B",
         cpf_log: this.store.login.cpf_log,
         id_caso: this.dados.id,
         array_grupo: this.montarArrayGrupo(),
@@ -384,6 +403,7 @@ export default {
 
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
+      console.log(resposta);
       this.store.telaCarregamento(false);
 
       if (resposta.data.status_ret == 0) {
@@ -406,22 +426,24 @@ export default {
         }
 
         this.carregaDadosAcessos();
+        this.carregaGrupo(this.dados.id);
         this.store.alerta(resposta.data.retorno);
       } else {
         this.store.alerta(resposta.data.retorno);
       }
     },
 
-    async carregaGrupo() {
+    async carregaGrupo(id) {
       const params = {
         cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "20019",
-        tipo_crud: 4,
+        codigo_sys_func: "10014",
+        id_caso: id,
       };
 
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
       this.store.telaCarregamento(false);
+
       this.grupos = resposta.data;
       this.gruposFiltrados = resposta.data;
     },
@@ -522,9 +544,6 @@ export default {
           descricao: item.nint_descricao,
         };
       });
-
-      console.log(this.dadosAcesso);
-      console.log(this.dadosAcessoGrupo);
     },
 
     async buscaPoliciaisPorNome(nome) {
@@ -564,23 +583,59 @@ export default {
       return true;
     },
 
+    removeAcessoGrupo(id, caso) {
+      Dialog.create({
+        title: "Acesso de GRUPO",
+        message: "Deseja remover o acesso do caso para esse grupo ?",
+        cancel: true,
+        persistent: true,
+      }).onOk(async () => {
+        const params = {
+          codigo_sys_func: "20024",
+          tipo_crud: 2,
+          cpf_log: this.store.login.cpf_log,
+          caso_id: caso,
+          grupo_nint_id: id,
+        };
+
+        this.store.telaCarregamento(true);
+        const resposta = await api.post("/consulta", params);
+        this.store.telaCarregamento(false);
+
+        if (resposta.data.status_ret == 0) {
+          this.carregaDadosAcessos();
+          this.carregaGrupo(this.dados.id);
+          this.store.alerta(resposta.data.retorno);
+        } else {
+          this.store.alerta(resposta.data.retorno);
+        }
+      });
+    },
+
     async removerAcessoUsuario(id) {
-      const params = {
-        codigo_sys_func: "20005",
-        tipo_crud: 2,
-        cpf_log: this.store.login.cpf_log,
-        id: id,
-      };
+      Dialog.create({
+        title: "Remover Acesso do usuário",
+        message: "Deseja remover o acesso do usuário ?",
+        cancel: true,
+        persistent: true,
+      }).onOk(async () => {
+        const params = {
+          codigo_sys_func: "20005",
+          tipo_crud: 2,
+          cpf_log: this.store.login.cpf_log,
+          id: id,
+        };
 
-      this.store.telaCarregamento(true);
-      const resposta = await api.post("/consulta", params);
-      this.store.telaCarregamento(false);
+        this.store.telaCarregamento(true);
+        const resposta = await api.post("/consulta", params);
+        this.store.telaCarregamento(false);
 
-      if (resposta.data.status_ret != 1) {
-        this.carregaDadosAcessos();
-      } else {
-        this.store.alerta(resposta.data.retorno);
-      }
+        if (resposta.data.status_ret != 1) {
+          this.carregaDadosAcessos();
+        } else {
+          this.store.alerta(resposta.data.retorno);
+        }
+      });
     },
 
     retornaFoto(foto) {

@@ -144,9 +144,13 @@ export default {
         //INFO
         telefone: this.telefone,
         // RELATO
-        relato: this.relato,
+        relato: this.replaceAll(this.relato, "'", ""),
       };
       return ret;
+    },
+
+    replaceAll(str, search, replacement) {
+      return str.replace(new RegExp(search, "g"), replacement);
     },
 
     validarDados() {

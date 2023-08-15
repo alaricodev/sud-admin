@@ -8,16 +8,14 @@
         style="right: 5px; top: 5px; z-index: 9"
         icon="close"
         color="red"
-        @dblclick="
-          remover(usuario.id_usuarios_x_grupo_nint, usuario.id_usuario)
-        "
+        @click="remover(usuario.id_usuarios_x_grupo_nint, usuario.id_usuario)"
       >
         <q-tooltip
           :delay="500"
           class="bg-primary text-body2"
           :offset="[10, 10]"
         >
-          Remover do Grupo (duplo clique)
+          Remover do Grupo
         </q-tooltip>
       </q-btn>
       <div class="full-width text-left"></div>
@@ -64,6 +62,7 @@
 <script>
 import { abreviarSobrenomes } from "src/utils/util.js";
 import { useStore } from "src/stores/store";
+import { Dialog } from "quasar";
 export default {
   name: "UsuarioCardSmall",
   created() {},
@@ -89,7 +88,14 @@ export default {
       return `https://getin.pc.sc.gov.br/get_files_imgUser/${foto}`;
     },
     async remover(id, id_usuario) {
-      this.funcao(id, id_usuario);
+      Dialog.create({
+        title: "Remoção do Grupo",
+        message: "Deseja remover esse usuário do Grupo ? ",
+        cancel: true,
+        persistent: true,
+      }).onOk(async () => {
+        this.funcao(id, id_usuario);
+      });
     },
   },
 };

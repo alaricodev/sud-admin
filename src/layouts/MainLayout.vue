@@ -230,7 +230,7 @@ export default defineComponent({
           corTexto: "white",
           rota: "/denunciasarquivadas",
           separador: true,
-          liberado: false,
+          liberado: true,
         },
         {
           icone: "fa-solid fa-gears",

@@ -107,9 +107,9 @@ export default defineComponent({
 
       const params = {
         cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "10001",
-        id_usuario: this.store.login.id_usuario,
-        caso_arquivado: true,
+        codigo_sys_func: "10013",
+        ativo: false,
+        arquivado: true,
       };
 
       const resposta = await api.post("/consulta", params);

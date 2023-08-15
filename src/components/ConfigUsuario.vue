@@ -95,6 +95,7 @@
       @click="telaProcuraPolicial = true"
     />
   </div>
+  <q-separator color="primary" class="q-my-sm" />
   <div
     v-if="usuarioSelecionado"
     class="full-width q-ma-sm"
@@ -169,8 +170,65 @@
             <q-separator color="primary" />
             <q-tab-panels v-model="tab" animated>
               <q-tab-panel name="1" style="height: 450px">
-                <div class="text-h6">CASOS</div>
-                Quais casos o usuário tem acesso
+                <!-- <div class="text-h6">CASOS</div> -->
+
+                <div>
+                  <q-table
+                    flat
+                    title="Casos"
+                    :rows="rowsCasos"
+                    :columns="columnsCasos"
+                    row-key="protocolo"
+                    :filter="filtro"
+                    hide-header
+                    bordered="false"
+                    no-data-label="Sem casos disponíveis"
+                    :rows-per-page-options="[6, 10, 20, 30, 50, 100]"
+                    rows-per-page-label="Registros por página"
+                  >
+                    <template v-slot:top-right>
+                      <q-input
+                        outlined
+                        dense
+                        debounce="300"
+                        v-model="filtro"
+                        placeholder="Filtro"
+                      >
+                        <template v-slot:append>
+                          <q-icon name="search" />
+                        </template>
+                      </q-input>
+                    </template>
+                    <template v-slot:body-cell-tipo="props">
+                      <q-td :props="props">
+                        <div class="row">
+                          <q-icon
+                            class="q-pt-sm q-pr-sm"
+                            :name="store.iconeCaso(props.value)"
+                            :color="store.corCaso(props.value)"
+                          />
+                          <span
+                            class="q-pt-xs"
+                            :class="`text-bold text-${store.corCaso(
+                              props.value
+                            )}`"
+                            >{{ store.displayCaso(props.value) }}</span
+                          >
+                        </div>
+                      </q-td>
+                    </template>
+                    <!-- <template v-slot:body-cell-action="props">
+                      <q-td :props="props">
+                        <q-btn
+                          dense
+                          color="primary"
+                          icon="delete"
+                          @click="removeAcesso(props.row)"
+                        />
+                      </q-td>
+                    </template> -->
+                  </q-table>
+                </div>
               </q-tab-panel>
 
               <q-tab-panel name="2" style="height: 450px">
@@ -221,6 +279,7 @@
                     class="width: 100%"
                     color="primary"
                     label="Tornar Esse usuário membro da DIPC"
+                    @click="membroDIPC(true, policialSelecionado)"
                   />
                 </div>
                 <div v-else class="flex flex-center" style="height: 90%">
@@ -229,7 +288,8 @@
                     rounded
                     class="width: 100%"
                     color="red"
-                    label="Esse usuário não pertence mais à DIPC"
+                    label="Retirar esse usuário da DIPC"
+                    @click="membroDIPC(false, policialSelecionado)"
                   />
                 </div>
               </q-tab-panel>
@@ -258,6 +318,8 @@
 import { api } from "src/boot/axios";
 import { useStore } from "src/stores/store";
 import LabelData from "./LabelData.vue";
+import { formatarDataCurta } from "../utils/util.js";
+import { Dialog } from "quasar";
 export default {
   name: "ConfigUsuario",
   components: { LabelData },
@@ -274,9 +336,37 @@ export default {
       nomePolicialPesquisa: null,
       nomesPesquisados: null,
       policialSelecionado: null,
+      filtro: "",
+      rowsCasos: [],
+      columnsCasos: [
+        {
+          name: "protocolo",
+          required: true,
+          label: "Protocolo",
+          align: "left",
+          field: (row) => row.protocolo,
+          format: (val) => `${val}`,
+          sortable: true,
+        },
+        {
+          name: "tipo",
+          align: "center",
+          label: "Tipo",
+          field: "tipo",
+          sortable: true,
+        },
+        {
+          name: "data",
+          label: "Data",
+          field: "data_caso",
+          sortable: true,
+          format: (val) => `${formatarDataCurta(val)}`,
+        },
+        { name: "action", label: "Aceso", align: "right", field: "id_acesso" },
+      ],
     };
   },
-  props: {},
+
   methods: {
     async buscaPoliciaisPorNome(nome) {
       if (!nome) {
@@ -304,7 +394,6 @@ export default {
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
       this.store.telaCarregamento(false);
-      console.log(resposta.data);
 
       if (resposta.data) {
         this.nomesPesquisados = resposta.data;
@@ -314,13 +403,118 @@ export default {
 
       return true;
     },
+
+    async retornaCasoUsuario(cpf) {
+      const params = {
+        cpf_log: cpf,
+        codigo_sys_func: "10013",
+        ativo: true,
+        arquivado: true,
+      };
+
+      const resposta = await api.post("/consulta", params);
+
+      resposta.data ? (this.rowsCasos = resposta.data) : (this.rowsCasos = []);
+    },
+
     retornaFoto(foto) {
       return `https://getin.pc.sc.gov.br/get_files_imgUser/${foto}`;
     },
+
     SelecionaPolicial(policial) {
       this.policialSelecionado = policial;
+      this.retornaCasoUsuario(policial.cpf);
+      this.nomePolicialPesquisa = null;
+      this.nomesPesquisados = null;
       this.telaProcuraPolicial = false;
       this.usuarioSelecionado = true;
+    },
+
+    async membroDIPC(vlr, policial) {
+      const params = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "20025",
+        tipo_crud: vlr ? 1 : 2,
+        id: policial.id,
+        cpf_usuario: policial.cpf,
+      };
+
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params);
+      this.store.telaCarregamento(false);
+
+      if (resposta.data.status_ret == 0) {
+        this.policialSelecionado.usuario_dipc = vlr;
+        let nivel = 0;
+        vlr ? (nivel = 2) : (nivel = 1);
+        this.policialSelecionado.nivel_acesso = nivel;
+      }
+
+      this.retornaCasoUsuario(policial.cpf);
+
+      this.store.alerta(resposta.data.retorno);
+
+      return true;
+    },
+
+    removeAcesso(coluna) {
+      Dialog.create({
+        title: "Apagar registro",
+        message: "Deseja remover esse acesso do usuário ? ",
+        cancel: true,
+        persistent: true,
+      }).onOk(async () => {
+        const params = {
+          cpf_log: this.store.login.cpf_log,
+          codigo_sys_func: "20026",
+          id_acesso: coluna.id_acesso,
+        };
+        this.store.telaCarregamento(true);
+        const resposta = await api.post("/consulta", params);
+        this.store.telaCarregamento(false);
+        if (resposta.data.status_ret == 0) {
+          this.retornaCasoUsuario(this.policialSelecionado.cpf);
+        }
+
+        this.store.alerta(resposta.data.retorno);
+      });
+    },
+
+    async valorNivelSigilo(oper) {
+      let nivel = this.policialSelecionado.nivel_acesso;
+      let podeAtualizar = false;
+
+      if (oper == "+") {
+        if (nivel < 3) {
+          nivel++;
+          podeAtualizar = true;
+        }
+      } else {
+        if (nivel > 1) {
+          nivel--;
+          podeAtualizar = true;
+        }
+      }
+
+      if (podeAtualizar) {
+        const params = {
+          cpf_log: this.store.login.cpf_log,
+          codigo_sys_func: "20015",
+          tipo_crud: 3,
+          id: this.policialSelecionado.id,
+          nivel_acesso: nivel,
+        };
+
+        this.store.telaCarregamento(true);
+        const resposta = await api.post("/consulta", params);
+        this.store.telaCarregamento(false);
+
+        if (resposta.data.status_ret == 0) {
+          this.policialSelecionado.nivel_acesso = nivel;
+        } else {
+          this.store.alerta(resposta.data.retorno);
+        }
+      }
     },
   },
 };

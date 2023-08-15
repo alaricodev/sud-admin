@@ -1,5 +1,5 @@
 <template>
-  <div v-if="dados" class="q-ma-sm" style="width: 350px; max-height: 350px">
+  <div v-if="dados" class="q-ma-sm" style="width: 300px; max-height: 300px">
     <q-card
       class="full-width"
       style="
@@ -36,42 +36,15 @@
           </div>
         </div>
       </q-card-section>
-      <q-card-section>
-        <q-chip
-          v-if="dados.usuario_dipc"
-          class="glossy"
-          color="primary"
-          text-color="white"
-          icon-right="fa-solid fa-person-military-pointing"
-        >
-          DINT
-        </q-chip>
-        <q-chip
-          v-if="dados.usuario_nint"
-          class="glossy"
-          color="orange"
-          text-color="white"
-          icon-right="fa-solid fa-person-military-pointing"
-        >
-          NINT
-        </q-chip>
-        <q-chip
-          v-if="!dados.usuario_nint && !dados.usuario_dipc"
-          class="glossy"
-          color="teal"
-          text-color="white"
-          icon-right="fa-solid fa-person"
-        >
-          Policial
-        </q-chip>
-      </q-card-section>
+
       <q-separator />
       <q-card-actions align="right">
         <q-btn
+          dense
           flat
-          :disable="dados.usuario_dipc || !store.login.dipc"
+          :disable="desativado"
           label="Remover"
-          :color="dados.usuario_dipc ? 'grey-5' : 'red-10'"
+          :color="desativado ? 'grey-5' : 'red-10'"
           icon="fa-solid fa-trash"
           @click="removerUsuario()"
         />
@@ -103,6 +76,11 @@ export default {
     funcao: {
       type: Function,
       required: true,
+    },
+    desativado: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
   methods: {
