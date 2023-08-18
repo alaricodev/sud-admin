@@ -143,6 +143,8 @@ export default {
 
       this.dados = resposta.data;
 
+      console.log(this.dados.casos[0]);
+
       if (this.dados.status_ret == 1) {
         this.store.alerta(this.dados.retorno);
       } else {

@@ -58,7 +58,7 @@ export default {
 
     async carregaDadosEscola() {
       const resposta = await api.get(`/estabelecimento/${this.dados.escola}`);
-      console.log(resposta.data);
+
       this.endereco = resposta.data[0].display_name;
       this.mapaCarregado = true;
     },

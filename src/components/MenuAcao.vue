@@ -189,17 +189,87 @@
     </q-card>
   </q-dialog>
 
+  <!-- Desarquivamento da denúncia -->
+  <q-dialog persistent v-model="telaDesarquivamento">
+    <q-card>
+      <q-bar>
+        <q-icon name="fa-solid fa-box-archive" />
+        <div>Desarquivamento de denúncia</div>
+        <q-space />
+        <q-icon name="close" @click="cancelar(1)" />
+      </q-bar>
+      <q-card-section>
+        <q-item>
+          <q-item-section top avatar>
+            <q-avatar>
+              <img :src="retornaFoto(store.login.foto_usuario)" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label
+              ><b>{{ store.login.nome_usuario }}</b></q-item-label
+            >
+            <q-item-label
+              >Desarquivar a informação em: <b> {{ dataAtual }} </b>
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-card-section>
+
+      <q-separator class="q-my-sm" />
+
+      <q-card-section>
+        <div class="text-subtitle1 full-width">
+          Para desarquivar a informação, escreva abaixo: <b>CONFIRMO</b> e após
+          o botão aparecer, clique nele.
+        </div>
+        <div class="full-width q-pa-md">
+          <q-input
+            outlined
+            v-model="confirma"
+            mask="AAAAAAAA"
+            ref="refConfirmo"
+          />
+        </div>
+      </q-card-section>
+      <q-separator class="q-my-sm" />
+      <q-card-actions align="right">
+        <q-btn
+          label="Confirmar"
+          color="red"
+          v-if="confirma.toUpperCase() == 'CONFIRMO'"
+          @click="desarquivarInformacao()"
+        />
+        <q-btn flat label="Cancelar" @click="cancelar(1)" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
   <!-- Menu Principal começa aqui -->
   <div>
     <q-btn flat icon="menu">
       <!-- Estrutura de menu -->
       <q-menu transition-show="flip-right" transition-hide="flip-left">
         <q-list style="min-width: 100px">
-          <q-item clickable @click="telaArquivamento = true">
+          <q-item
+            v-if="!caso.data_arquivamento"
+            clickable
+            @click="telaArquivamento = true"
+          >
             <q-item-section avatar
               ><q-icon color="grey-8" name="inventory_2"
             /></q-item-section>
             <q-item-section>Arquivar Denúncia</q-item-section>
+          </q-item>
+          <q-item
+            v-if="caso.data_arquivamento"
+            clickable
+            @click="telaDesarquivamento = true"
+          >
+            <q-item-section avatar
+              ><q-icon color="red" name="inventory_2"
+            /></q-item-section>
+            <q-item-section>Desarquivar Denúncia</q-item-section>
           </q-item>
           <q-separator />
           <q-item clickable @click="telaSigilo = true">
@@ -248,6 +318,7 @@ export default {
   data() {
     return {
       telaArquivamento: false,
+      telaDesarquivamento: false,
       telaSigilo: false,
       telaClassificaco: false,
       confirma: "",
@@ -299,6 +370,28 @@ export default {
         this.store.alerta(resposta.data.retorno);
       }
     },
+
+    async desarquivarInformacao() {
+      const params = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "20002",
+        tipo_crud: 3,
+        id: this.caso.id,
+        arquivamento: false,
+        confirmacao: "CONFIRMO",
+      };
+
+      const resposta = await api.post("/consulta", params);
+
+      if (resposta.data.status_ret == 0) {
+        this.telaDesarquivamento = false;
+        this.$router.go(-1);
+        this.confirma = "";
+      } else {
+        this.store.alerta(resposta.data.retorno);
+      }
+    },
+
     async alterarNivelSigilo() {
       const params = {
         cpf_log: this.store.login.cpf_log,

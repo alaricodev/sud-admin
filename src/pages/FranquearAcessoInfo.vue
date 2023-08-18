@@ -198,7 +198,7 @@
     </div>
     <q-separator class="q-my-md" />
     <div class="full-width q-pa-md">
-      <div v-if="dadosAcesso">
+      <div v-if="dadosAcesso || dadosAcessoGrupo">
         <q-scroll-area style="height: 650px; width: 100%">
           <div
             class="full-width"
@@ -326,8 +326,6 @@ export default {
     telaGrupo() {
       if (this.telaGrupo) {
         this.limpaChecksNint();
-
-        console.log(this.grupos);
       }
     },
   },
@@ -403,7 +401,7 @@ export default {
 
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
-      console.log(resposta);
+
       this.store.telaCarregamento(false);
 
       if (resposta.data.status_ret == 0) {
@@ -488,16 +486,8 @@ export default {
       this.store.telaCarregamento(false);
 
       if (resposta.data.status_ret != 1) {
-        const params2 = {
-          codigo_sys_func: "10009",
-          cpf_log: this.store.login.cpf_log,
-          id_grupos: this.montarArrayGrupoID(),
-        };
-
-        const resposta2 = await api.post("/consulta", params2);
-
         if (!process.env.DEV) {
-          let params3 = this.parametroEmail(resposta2.data);
+          let params3 = { to: policial.email_funcional, cc: "" };
           params3["protocolo"] = this.dados.protocolo;
           params3["tipo"] = this.dados.tipo;
 

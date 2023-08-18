@@ -140,12 +140,15 @@ export default {
         sys_func: "20001",
         tipo_crud: 1,
         tipo: "WHATSAPP",
-        cpf_log: this.store.cpf_log,
+        cpf_log: this.store.login.cpf_log,
         //INFO
         telefone: this.telefone,
         // RELATO
         relato: this.replaceAll(this.relato, "'", ""),
       };
+
+      console.log(ret);
+
       return ret;
     },
 
@@ -195,6 +198,7 @@ export default {
           );
 
           if (!res.data.erro) {
+            console.log(res.data);
             this.alerta("REGISTRO FEITO COM SUCESSO !");
             this.files = null;
             this.telefone = null;

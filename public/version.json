@@ -1,5 +1,14 @@
 [
   {
+    "versao": "Versão 0.9.91",
+    "data": "16 de agosto de 2023",
+    "alteracao": [
+      "Correção do Bug de franqueamento de acesso a delegados",
+      "Correção do Bug de franqueamento de acessos aos Grupos",
+      "Implementação do desarquivamento do arquivo"
+    ]
+  },
+  {
     "versao": "Versão 0.9.9",
     "data": "15 de agosto de 2023",
     "alteracao": [
