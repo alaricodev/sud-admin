@@ -61,7 +61,8 @@ we
 
               <q-tab-panels v-model="tab" animated style="flex-grow: 1">
                 <q-tab-panel name="1">
-                  <config-grupo-nint />
+                  <!-- <config-grupo-nint /> -->
+                  <config-grupo />
                 </q-tab-panel>
 
                 <q-tab-panel name="2">
@@ -89,12 +90,13 @@ we
 import { api } from "src/boot/axios";
 
 import { useStore } from "src/stores/store";
-import ConfigGrupoNint from "src/components/ConfigGrupoNint.vue";
+//import ConfigGrupoNint from "src/components/ConfigGrupoNint.vue";
 import ConfigBlacklist from "src/components/ConfigBlacklist.vue";
 import ConfigUsuario from "src/components/ConfigUsuario.vue";
+import ConfigGrupo from "src/components/ConfigGrupo.vue";
 
 export default {
-  components: { ConfigGrupoNint, ConfigBlacklist, ConfigUsuario },
+  components: { ConfigBlacklist, ConfigUsuario, ConfigGrupo },
   name: "ConfigSud",
   created() {},
   data() {
