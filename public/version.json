@@ -1,5 +1,15 @@
 [
   {
+    "versao": "Versão 1.0.0",
+    "data": "16 de agosto de 2023",
+    "alteracao": [
+      "Implementação do novo sistemas de franqueamento das denúncias",
+      "Novo sistema de setup dos grupos nints",
+      "retirada do acesso do caso por usuário, somente por grupo",
+      "Trava de somente as os DIPC e os NINTs poderem franquear informações"
+    ]
+  },
+  {
     "versao": "Versão 0.9.91",
     "data": "16 de agosto de 2023",
     "alteracao": [

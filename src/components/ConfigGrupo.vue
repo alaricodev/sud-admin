@@ -100,12 +100,15 @@
         <q-btn flat dense icon="close" v-close-popup />
       </q-bar>
       <q-card-section>
+        <div v-if="modoCadGrupo == 'S'" class="full-width q-my-md">
+          <div class="text-h6 grey-8">SubGrupo de {{ nomeGrupo }}</div>
+        </div>
         <div class="full-width q-my-md">
           <q-input
             v-model="cadNomeGrupo"
             outlined
             dense
-            :label="nomeSubGrupo ? 'Nome Subgrupo' : 'Nome do Grupo'"
+            :label="captionNomeGrupo"
           />
         </div>
         <div class="full-width q-my-md">
@@ -113,9 +116,7 @@
             v-model="cadDescGrupo"
             outlined
             dense
-            :label="
-              nomeSubGrupo ? 'Descrição do Subgrupo' : 'Descrição do Grupo'
-            "
+            :label="captionDescGrupo"
           />
         </div>
       </q-card-section>
@@ -126,7 +127,7 @@
           icon="save"
           label="Salvar"
           color="green"
-          @click="salvarGrupo()"
+          @click="salvarOperacaoGrupo()"
         />
         <q-btn flat icon="close" label="Cancelar" color="red" v-close-popup />
       </q-card-actions>
@@ -147,22 +148,23 @@
                     flat
                     icon="fa-regular fa-square-plus"
                     label="Adicionar Grupo"
-                    @click="adicionarGrupo()"
-                    v-if="store.login.dipc && idGrupo"
+                    @click="addGrupo()"
+                    v-if="store.login.dipc && !idSubGrupo"
                   />
                   <q-btn
                     dense
                     flat
                     icon="fa-regular fa-pen-to-square"
                     label="Editar Grupo"
-                    v-if="store.login.dipc && idGrupo"
+                    v-if="store.login.dipc && idGrupo && !idSubGrupo"
+                    @click="editGrupo()"
                   />
                   <q-btn
                     dense
                     flat
                     icon="fa-regular fa-square-plus"
                     label="Adicionar Subgrupo"
-                    @click="adicionarSubGrupo()"
+                    @click="addSubGrupo()"
                     v-if="(store.login.nint || store.login.dipc) && idGrupo"
                   />
                   <q-btn
@@ -171,6 +173,7 @@
                     icon="fa-regular fa-pen-to-square"
                     label="Editar Subgrupo"
                     v-if="(store.login.dipc || store.login.nint) && idSubGrupo"
+                    @click="editSubGrupo()"
                   />
                 </q-bar>
               </div>
@@ -194,17 +197,21 @@
                   <q-breadcrumbs-el
                     v-if="nomeGrupo"
                     :label="nomeGrupo"
-                    icon="widgets"
+                    icon="fa-solid fa-people-group"
                   />
                   <q-breadcrumbs-el
                     v-if="nomeSubGrupo"
                     :label="nomeSubGrupo"
-                    icon="navigation"
+                    icon="fa-solid fa-building-shield"
                   />
                 </q-breadcrumbs>
               </div>
+              <div class="full-width text-grey-5">
+                {{ descricaoGrupo }}
+              </div>
+
               <div class="q-pt-md">
-                <q-card>
+                <q-card style="height: 510px">
                   <q-tabs
                     v-model="tab"
                     dense
@@ -230,8 +237,27 @@
 
                   <q-tab-panels v-model="tab" animated>
                     <q-tab-panel name="usuarios">
-                      <div class="text-h6">Mails</div>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      <div class="full-width">
+                        <q-btn
+                          v-if="idGrupo || idSubGrupo"
+                          label="Adicionar Usuário"
+                          color="primary"
+                          @click="addUsuGrupos()"
+                        />
+                      </div>
+
+                      <q-scroll-area style="height: 300px; max-width: 100%">
+                        <div class="flex flex-center">
+                          <usuario-card-small
+                            v-for="usuario in usuariosGrupo"
+                            :key="usuario"
+                            :funcao="removerUsuarioGrupo"
+                            :usuario="usuario"
+                            :idGrupo="idGrupo"
+                            :idSubGrupo="idSubGrupo"
+                          />
+                        </div>
+                      </q-scroll-area>
                     </q-tab-panel>
 
                     <q-tab-panel name="casos">
@@ -257,7 +283,7 @@ import UsuarioCardSmall from "./UsuarioCardSmall.vue";
 import { ref } from "vue";
 
 export default {
-  //components: { UsuarioCardSmall },
+  components: { UsuarioCardSmall },
   name: "ConfigGrupo",
   created() {
     this.carregaGrupo();
@@ -276,7 +302,10 @@ export default {
       cadNomeGrupo: null,
       cadDescGrupo: null,
       captionTelaCadGrupo: null,
-      captionSubgrupo: null,
+      captionNomeGrupo: null,
+      captionDescGrupo: null,
+      modoCadGrupo: null,
+      acaoCadGrupo: null,
 
       // USUÁRIOS
       telaProcuraPolicial: false,
@@ -293,8 +322,12 @@ export default {
       splitterModel: 40,
       idGrupo: null,
       nomeGrupo: null,
+      descGrupo: null,
       idSubGrupo: null,
       nomeSubGrupo: null,
+      descSubGrupo: null,
+      descricaoGrupo: "   ",
+      filter: null,
 
       // ABAS
       tab: "usuarios",
@@ -312,18 +345,29 @@ export default {
       if (tipo == "G") {
         this.idGrupo = this.selecionado.split("#")[1];
         this.nomeGrupo = this.grupoSelecionado.label;
+        this.descGrupo = this.grupoSelecionado.desc_grupo;
         this.idSubGrupo = null;
         this.nomeSubGrupo = null;
+        this.descSubGrupo = null;
+        this.descricaoGrupo = this.descGrupo;
       } else {
         this.idGrupo = this.grupoSelecionado.id_grupo;
         this.nomeGrupo = this.grupoSelecionado.nome_grupo;
+        this.descGrupo = this.grupoSelecionado.desc_grupo;
         this.idSubGrupo = this.selecionado.split("#")[1];
         this.nomeSubGrupo = this.grupoSelecionado.label;
+        this.descSubGrupo = this.grupoSelecionado.desc_subgrupo;
+        this.descricaoGrupo = this.descSubGrupo;
       }
+
+      this.carregaCasosGrupos();
     },
   },
   props: {},
   methods: {
+    carregaCasosGrupos() {
+      this.carregaUsuGrupo();
+    },
     procuraSelecionado(id, array) {
       for (const item of array) {
         if (item.id === id) {
@@ -374,6 +418,7 @@ export default {
               label: obj.nome_subgrupo,
               id_grupo: idGrupo,
               nome_grupo: obj.nome_grupo,
+              desc_subgrupo: obj.desc_subgrupo,
               tipo: "S",
               icon: "fa-solid fa-building-shield",
             });
@@ -387,6 +432,7 @@ export default {
         retorno.push({
           id: `G#${obj.id_grupo}`,
           label: obj.nome_grupo,
+          desc_grupo: obj.desc_grupo,
           children: retornasubGrupos(obj.id_grupo, vetor),
           tipo: "G",
           icon: "fa-solid fa-people-group",
@@ -397,35 +443,82 @@ export default {
     },
 
     async carregaUsuGrupo() {
+      const tipo = this.idSubGrupo ? 21 : 11;
+
       const params = {
+        codigo_sys_func: "20034",
         cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "20020",
-        tipo_crud: 4,
-        id_grupo: this.grupoSelecionado.id,
+        tipo: tipo,
+        id_grupo: this.idGrupo,
+        id_subgrupo: this.idSubGrupo,
       };
 
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
       this.store.telaCarregamento(false);
 
+      console.log(resposta.data);
+
       this.usuariosGrupo = resposta.data;
     },
 
-    adicionarGrupo() {
-      if (this.nomeSubGrupo) {
-        this.captionTelaCadGrupo = "Cadastrar Novo Sub Grupo";
-      } else {
-        this.captionTelaCadGrupo = "Cadastrar Novo Grupo";
-      }
-
+    addGrupo() {
+      this.captionTelaCadGrupo = "Cadastrar novo Grupo";
+      this.captionNomeGrupo = "Nome do Grupo";
+      this.captionDescGrupo = "Descrição do Grupo";
+      this.modoCadGrupo = "G";
+      this.acaoCadGrupo = "C";
+      this.cadNomeGrupo = null;
+      this.cadDescGrupo = null;
       this.telaCadGrupo = true;
     },
 
-    adicionarSubGrupo() {
-      this.captionSubgrupo = `Cadastrar Subgrupo do grupo: ${this.nomeGrupo}`;
+    editGrupo() {
+      this.captionTelaCadGrupo = "Editar Grupo";
+      this.captionNomeGrupo = "Nome do Grupo";
+      this.cadNomeGrupo = this.nomeGrupo;
+      this.captionDescGrupo = "Descrição do Grupo";
+      this.cadDescGrupo = this.descGrupo;
+      this.modoCadGrupo = "G";
+      this.acaoCadGrupo = "E";
+      this.telaCadGrupo = true;
     },
 
-    async salvarGrupo() {
+    addSubGrupo() {
+      this.captionTelaCadGrupo = "Cadastrar novo Subgrupo";
+      this.captionDescGrupo = "Descrição do Subgrupo";
+      this.modoCadGrupo = "S";
+      this.acaoCadGrupo = "C";
+      this.cadNomeGrupo = null;
+      this.cadDescGrupo = null;
+      this.telaCadGrupo = true;
+    },
+
+    editSubGrupo() {
+      this.captionTelaCadGrupo = "Editar Subgrupo";
+      this.captionNomeGrupo = "Nome do Subgrupo";
+      this.cadNomeGrupo = this.nomeSubGrupo;
+      this.captionDescGrupo = "Descrição do Subgrupo";
+      this.cadDescGrupo = this.descSubGrupo;
+      this.modoCadGrupo = "S";
+      this.acaoCadGrupo = "E";
+      this.telaCadGrupo = true;
+    },
+
+    addUsuGrupos() {
+      this.nomePolicialPesquisa = null;
+      this.nomesPesquisados = null;
+      this.telaProcuraPolicial = true;
+    },
+
+    addPolicial() {
+      this.nomePolicialPesquisa = "";
+      this.telaProcuraPolicial = true;
+    },
+
+    async salvarOperacaoGrupo() {
+      // Passo 01: Validação do dados
+
       if (!this.cadNomeGrupo || this.cadNomeGrupo.lenght < 5) {
         this.store.alerta("Informar um nome de GRUPO válido");
         return false;
@@ -436,16 +529,65 @@ export default {
         return false;
       }
 
-      const params = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "20019",
-        tipo_crud: 1,
-        nome: this.cadNomeGrupo,
-        descricao: this.cadDescGrupo,
-      };
+      // Passo 02: montar os parâmetros conforme as opções
+
+      let params = {};
+
+      if (this.modoCadGrupo == "G") {
+        // Caso for um  Grupo
+        if (this.acaoCadGrupo == "C") {
+          // Caso seja um insert
+          params = {
+            cpf_log: this.store.login.cpf_log,
+            codigo_sys_func: "20033",
+            tipo: 1, // Operações com Grupos
+            tipo_crud: 1, // Insert
+            nome_grupo: this.cadNomeGrupo,
+            desc_grupo: this.cadDescGrupo,
+          };
+        } else {
+          // Caso seja um update
+          params = {
+            cpf_log: this.store.login.cpf_log,
+            codigo_sys_func: "20033",
+            tipo: 1, // Operações com Grupos
+            tipo_crud: 3, // Update
+            nome_grupo: this.cadNomeGrupo,
+            desc_grupo: this.cadDescGrupo,
+            id: this.idGrupo,
+          };
+        }
+      } else {
+        // Caso for um sub grupo
+        if (this.acaoCadGrupo == "C") {
+          // Caso seja um insert
+          params = {
+            cpf_log: this.store.login.cpf_log,
+            codigo_sys_func: "20033",
+            tipo: 2, // Operações com Grupos
+            tipo_crud: 1, // Insert
+            nome_subgrupo: this.cadNomeGrupo,
+            desc_subgrupo: this.cadDescGrupo,
+            id: this.idGrupo,
+          };
+        } else {
+          // Caso seja um update
+          params = {
+            cpf_log: this.store.login.cpf_log,
+            codigo_sys_func: "20033",
+            tipo: 2, // Operações com Grupos
+            tipo_crud: 3, // Insert
+            nome_subgrupo: this.cadNomeGrupo,
+            desc_subgrupo: this.cadDescGrupo,
+            id_subgrupo: this.idSubGrupo,
+          };
+        }
+      }
 
       try {
         const resposta = await api.post("/consulta", params);
+
+        console.log(resposta);
 
         if (resposta.data.status_ret == 0) {
           this.cadNomeGrupo = null;
@@ -505,32 +647,33 @@ export default {
       return true;
     },
     async AddPolicialGrupo(policial) {
-      const params = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "20020",
-        tipo_crud: 1,
-        id_grupo: this.grupoSelecionado.id,
-        id_usuario: policial.id,
-        cpf_atribuicao: this.store.login.cpf_log,
-      };
+      let params = {};
 
-      const params2 = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "20015",
-        tipo_crud: 3,
-        id: policial.id,
-        usuario_nint: true,
-      };
+      if (this.idSubGrupo) {
+        // Caso seja um subgrupo selecionado
+        params = {
+          codigo_sys_func: "20034",
+          cpf_log: this.store.login.cpf_log,
+          tipo: 2,
+          tipo_crud: 1,
+          id_usuario: policial.id,
+          id_subgrupo: this.idSubGrupo,
+        };
+      } else {
+        // Caso seja um grupo selecionado
+        params = {
+          codigo_sys_func: "20034",
+          cpf_log: this.store.login.cpf_log,
+          tipo: 1,
+          tipo_crud: 1,
+          id_usuario: policial.id,
+          id_grupo: this.idGrupo,
+        };
+      }
 
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
-      const resposta2 = await api.post("/consulta", params2);
       this.store.telaCarregamento(false);
-
-      if (resposta2.data.status_ret == 1) {
-        this.store.alerta(resposta.data.retorno);
-        return false;
-      }
 
       if (resposta.data.status_ret == 0) {
         this.telaProcuraPolicial = false;
@@ -540,31 +683,22 @@ export default {
         this.store.alerta(resposta.data.retorno);
       }
     },
-    async removerUsuarioGrupo(id, id_policial) {
-      const params = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "20020",
-        tipo_crud: 2,
-        id: id,
-      };
+    async removerUsuarioGrupo(id_policial, id_grupo, id_subgrupo) {
+      const tipo = id_subgrupo ? 2 : 1;
 
-      const params2 = {
+      const params = {
+        codigo_sys_func: "20034",
         cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "20015",
-        tipo_crud: 3,
-        id: id_policial,
-        usuario_nint: false,
+        tipo: tipo,
+        tipo_crud: 2,
+        id_usuario: id_policial,
+        id_grupo: id_grupo,
+        id_subgrupo: id_subgrupo,
       };
 
       this.store.telaCarregamento(true);
       const resposta = await api.post("/consulta", params);
-      const resposta2 = await api.post("/consulta", params2);
       this.store.telaCarregamento(false);
-
-      if (resposta2.data.status_ret == 1) {
-        this.store.alerta(resposta.data.retorno);
-        return false;
-      }
 
       if (resposta.data.status_ret == 0) {
         this.telaProcuraPolicial = false;

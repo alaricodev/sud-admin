@@ -8,7 +8,7 @@
         style="right: 5px; top: 5px; z-index: 9"
         icon="close"
         color="red"
-        @click="remover(usuario.id_usuarios_x_grupo_nint, usuario.id_usuario)"
+        @click="remover(usuario.id, idGrupo, idSubGrupo)"
       >
         <q-tooltip
           :delay="500"
@@ -47,7 +47,7 @@
 
       <div class="full-width">
         <div class="text-subtitle2 text-center">
-          {{ abreviarSobrenomes(usuario.nome_usuario) }}
+          {{ abreviarSobrenomes(usuario.nome) }}
         </div>
         <div
           class="q-pb-sm text-lowercase text-center text-caption text-grey-6"
@@ -82,19 +82,27 @@ export default {
       type: Function,
       required: true,
     },
+    idGrupo: {
+      type: Number,
+      required: false,
+    },
+    idSubGrupo: {
+      type: Number,
+      required: false,
+    },
   },
   methods: {
     retornaFoto(foto) {
       return `https://getin.pc.sc.gov.br/get_files_imgUser/${foto}`;
     },
-    async remover(id, id_usuario) {
+    async remover(id_usuario, idGrupo, idSubGrupo) {
       Dialog.create({
         title: "Remoção do Grupo",
         message: "Deseja remover esse usuário do Grupo ? ",
         cancel: true,
         persistent: true,
       }).onOk(async () => {
-        this.funcao(id, id_usuario);
+        this.funcao(id_usuario, idGrupo, idSubGrupo);
       });
     },
   },
