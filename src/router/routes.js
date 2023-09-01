@@ -32,7 +32,7 @@ const routes = [
     path: "/franquearacessoinfo/:id",
     component: () => import("layouts/MainLayout.vue"),
     children: [
-      { path: "", component: () => import("pages/FranquearAcessoInfo.vue") },
+      { path: "", component: () => import("pages/FranquearAcessoCaso.vue") },
     ],
   },
   {
