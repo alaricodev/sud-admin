@@ -236,173 +236,207 @@
         />
       </div>
     </div>
+    <q-tabs
+      v-model="tab"
+      dense
+      class="text-grey"
+      active-color="primary"
+      indicator-color="primary"
+      align="justify"
+      narrow-indicator
+    >
+      <q-tab name="acessos" label="Acessos" icon="fa-solid fa-user-group" />
+      <q-tab
+        name="tramitacoes"
+        label="Tramitacoes"
+        icon="fa-solid fa-signs-post"
+      />
+    </q-tabs>
 
-    <q-splitter v-model="divisao" style="height: 700px">
-      <template v-slot:before>
-        <div class="q-pa-md">
-          <div class="q-ma-md row" style="width: 98%">
-            <q-btn
-              label="NINT"
-              flat
-              icon="fa-solid fa-plus"
-              @click="escolherGrupo()"
-              class="q-mx-sm"
-            />
-            <q-btn
-              label="NINT"
-              flat
-              color="red"
-              icon="fa-solid fa-minus"
-              @click="removerAcessoGrupo(grupoSelecionado)"
-              class="q-mx-sm"
-            />
-            <q-btn
-              label="DESPACHAR"
-              flat
-              color="grey-8"
-              icon="fa-regular fa-share-from-square"
-              @click="telaDespacharDenuncia()"
-              class="q-mx-sm"
-            />
-          </div>
-          <q-separator color="primary" />
-          <div
-            class="q-ma-sm row"
-            style="width: 98%"
-            v-for="grupo in casosGrupo"
-            :key="grupo.id"
-          >
-            <div class="q-pa-sm" style="width: 500px">
-              <q-expansion-item
-                class="shadow-1 overflow-hidden"
-                style="border-radius: 10px"
-                icon="fa-solid fa-building-shield"
-                :label="grupo.nome_grupo"
-                :caption="grupo.desc_grupo"
-                header-class="bg-primary text-white"
-                expand-icon-class="text-white"
-                @click="selecionar(grupo, null)"
+    <q-separator />
+    <q-tab-panels v-model="tab" animated>
+      <q-tab-panel name="acessos">
+        <q-splitter v-model="divisao" style="height: 700px">
+          <template v-slot:before>
+            <div class="q-pa-md">
+              <div class="q-ma-md row" style="width: 98%">
+                <q-btn
+                  label="NINT"
+                  flat
+                  icon="fa-solid fa-plus"
+                  @click="escolherGrupo()"
+                  class="q-mx-sm"
+                />
+                <q-btn
+                  label="NINT"
+                  flat
+                  color="red"
+                  icon="fa-solid fa-minus"
+                  @click="removerAcessoGrupo(grupoSelecionado)"
+                  class="q-mx-sm"
+                />
+                <q-btn
+                  label="DESPACHAR"
+                  flat
+                  color="grey-8"
+                  icon="fa-regular fa-share-from-square"
+                  @click="telaDespacharDenuncia()"
+                  class="q-mx-sm"
+                />
+              </div>
+              <q-separator color="primary" />
+              <div
+                class="q-ma-sm row"
+                style="width: 98%"
+                v-for="grupo in casosGrupo"
+                :key="grupo.id"
               >
-                <q-card>
-                  <q-card-section>
-                    <q-list>
-                      <div
-                        v-for="item of subGruposDoGrupo(grupo.id)"
-                        :key="item.id"
-                      >
-                        <q-item
-                          clickable
-                          v-ripple
-                          @click="selecionar(grupo, item)"
-                        >
-                          <q-item-section avatar>
-                            <q-avatar
-                              rounded
-                              color="grey-6"
-                              text-color="white"
-                              icon="fa-solid fa-user-group"
-                            />
-                          </q-item-section>
-                          <q-item-section>
-                            <q-item-label>
-                              {{ item.nome_subgrupo }}
-                            </q-item-label>
-                            <q-item-label caption>
-                              {{ item.desc_subgrupo }}
-                            </q-item-label>
-                          </q-item-section>
-                          <q-item-section side top>
-                            <q-icon
-                              v-if="
-                                grupo.id == grupoSelecionado &&
-                                item.id == subGrupoSelecionado
-                              "
-                              name="check"
-                              color="green"
-                            />
-                          </q-item-section>
-                        </q-item>
-                      </div>
-                    </q-list>
-                  </q-card-section>
-                </q-card>
-              </q-expansion-item>
+                <div class="q-pa-sm" style="width: 500px">
+                  <q-expansion-item
+                    class="shadow-1 overflow-hidden"
+                    style="border-radius: 10px"
+                    icon="fa-solid fa-building-shield"
+                    :label="grupo.nome_grupo"
+                    :caption="grupo.desc_grupo"
+                    header-class="bg-primary text-white"
+                    expand-icon-class="text-white"
+                    @click="selecionar(grupo, null)"
+                  >
+                    <q-card>
+                      <q-card-section>
+                        <q-list>
+                          <div
+                            v-for="item of subGruposDoGrupo(grupo.id)"
+                            :key="item.id"
+                          >
+                            <q-item
+                              clickable
+                              v-ripple
+                              @click="selecionar(grupo, item)"
+                            >
+                              <q-item-section avatar>
+                                <q-avatar
+                                  rounded
+                                  color="grey-6"
+                                  text-color="white"
+                                  icon="fa-solid fa-user-group"
+                                />
+                              </q-item-section>
+                              <q-item-section>
+                                <q-item-label>
+                                  {{ item.nome_subgrupo }}
+                                </q-item-label>
+                                <q-item-label caption>
+                                  {{ item.desc_subgrupo }}
+                                </q-item-label>
+                              </q-item-section>
+                              <q-item-section side top>
+                                <q-icon
+                                  v-if="
+                                    grupo.id == grupoSelecionado &&
+                                    item.id == subGrupoSelecionado
+                                  "
+                                  name="check"
+                                  color="green"
+                                />
+                              </q-item-section>
+                            </q-item>
+                          </div>
+                        </q-list>
+                      </q-card-section>
+                    </q-card>
+                  </q-expansion-item>
+                </div>
+              </div>
             </div>
-          </div>
+          </template>
+
+          <template v-slot:after>
+            <div class="q-pa-md">
+              <div class="q-ma-md row" style="width: 98%">
+                <q-btn
+                  label="Subgrupo"
+                  flat
+                  icon="fa-solid fa-plus"
+                  @click="escolherSubGrupo(grupoSelecionado)"
+                  class="q-mx-sm"
+                />
+                <q-btn
+                  label="subgrupo"
+                  flat
+                  color="red"
+                  icon="fa-solid fa-minus"
+                  @click="escolherGrupo()"
+                  class="q-mx-sm"
+                />
+              </div>
+              <q-separator color="primary" />
+              <div class="q-ma-md row" style="width: 98%">
+                <q-breadcrumbs class="text-green">
+                  <template v-slot:separator>
+                    <q-icon size="1.5em" name="chevron_right" color="primary" />
+                  </template>
+
+                  <q-breadcrumbs-el icon="home" />
+                  <q-breadcrumbs-el
+                    v-if="dadosGrupoSel"
+                    :label="dadosGrupoSel.nome_grupo"
+                    icon="fa-solid fa-building-shield"
+                  />
+                  <q-breadcrumbs-el
+                    v-if="dadosSubGrupoSel"
+                    :label="dadosSubGrupoSel.nome_subgrupo"
+                    icon="fa-solid fa-user-group"
+                  />
+                </q-breadcrumbs>
+              </div>
+              <div class="q-ma-md row" style="width: 98%"></div>
+              <div class="q-ma-md row" style="width: 98%">
+                <div
+                  v-if="dadosCarregado"
+                  class="full-width text-h5 text-grey-8"
+                >
+                  {{ dadosGrupoSel?.nome_grupo }}
+                </div>
+
+                <div v-for="uso in usuariosGrupo" :key="uso.id">
+                  <usuario-card-small-show :usuario="uso" />
+                </div>
+              </div>
+              <div class="q-ma-md row" style="width: 98%">
+                <div
+                  v-if="dadosCarregado"
+                  class="full-width text-h5 text-grey-8"
+                >
+                  {{ dadosSubGrupoSel?.nome_subgrupo }}
+                </div>
+                <div v-for="uso in usuariosSubGrupo" :key="uso.id">
+                  <usuario-card-small-show :usuario="uso" />
+                </div>
+              </div>
+            </div>
+          </template>
+        </q-splitter>
+      </q-tab-panel>
+
+      <q-tab-panel name="tramitacoes">
+        <div>
+          <caso-tramitacoes :idCaso="id" />
         </div>
-      </template>
-
-      <template v-slot:after>
-        <div class="q-pa-md">
-          <div class="q-ma-md row" style="width: 98%">
-            <q-btn
-              label="Subgrupo"
-              flat
-              icon="fa-solid fa-plus"
-              @click="escolherSubGrupo(grupoSelecionado)"
-              class="q-mx-sm"
-            />
-            <q-btn
-              label="subgrupo"
-              flat
-              color="red"
-              icon="fa-solid fa-minus"
-              @click="escolherGrupo()"
-              class="q-mx-sm"
-            />
-          </div>
-          <q-separator color="primary" />
-          <div class="q-ma-md row" style="width: 98%">
-            <q-breadcrumbs class="text-green">
-              <template v-slot:separator>
-                <q-icon size="1.5em" name="chevron_right" color="primary" />
-              </template>
-
-              <q-breadcrumbs-el icon="home" />
-              <q-breadcrumbs-el
-                v-if="dadosGrupoSel"
-                :label="dadosGrupoSel.nome_grupo"
-                icon="fa-solid fa-building-shield"
-              />
-              <q-breadcrumbs-el
-                v-if="dadosSubGrupoSel"
-                :label="dadosSubGrupoSel.nome_subgrupo"
-                icon="fa-solid fa-user-group"
-              />
-            </q-breadcrumbs>
-          </div>
-          <div class="q-ma-md row" style="width: 98%"></div>
-          <div class="q-ma-md row" style="width: 98%">
-            <div v-if="dadosCarregado" class="full-width text-h5 text-grey-8">
-              {{ dadosGrupoSel?.nome_grupo }}
-            </div>
-
-            <div v-for="uso in usuariosGrupo" :key="uso.id">
-              <usuario-card-small-show :usuario="uso" />
-            </div>
-          </div>
-          <div class="q-ma-md row" style="width: 98%">
-            <div v-if="dadosCarregado" class="full-width text-h5 text-grey-8">
-              {{ dadosSubGrupoSel?.nome_subgrupo }}
-            </div>
-            <div v-for="uso in usuariosSubGrupo" :key="uso.id">
-              <usuario-card-small-show :usuario="uso" />
-            </div>
-          </div>
-        </div>
-      </template>
-    </q-splitter>
+      </q-tab-panel>
+    </q-tab-panels>
   </q-page>
 </template>
 
 <script>
 import UsuarioCardSmallShow from "src/components/UsuarioCardSmallShow.vue";
+import CasoTramitacoes from "src/components/CasoTramitacoes.vue";
 import { useStore } from "src/stores/store";
 import { api } from "src/boot/axios";
 import { Dialog } from "quasar";
 export default {
   name: "FranquearAcessoCaso",
-  components: { UsuarioCardSmallShow },
+  components: { UsuarioCardSmallShow, CasoTramitacoes },
   created() {
     this.id = this.$route.params.id;
     this.carregarCaso(this.id);
@@ -457,6 +491,9 @@ export default {
       //TREE
       expanded: null,
       nodos: [],
+
+      // TABS
+      tab: "acessos",
     };
   },
   props: {},
@@ -782,4 +819,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style>
+.display1 {
+  border-radius: 5px;
+  border-left: 4px solid orange;
+}
+</style>

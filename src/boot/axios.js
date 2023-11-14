@@ -12,7 +12,9 @@ let api = "";
 if (process.env.DEV) {
   api = axios.create({ baseURL: "http://10.121.23.44:5001" });
 } else {
-  api = axios.create({ baseURL: "https://sistemas.pc.sc.gov.br/sud_backend/" });
+  api = axios.create({
+    baseURL: "https://sistemas.pc.sc.gov.br/sud_backend/",
+  });
 }
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api

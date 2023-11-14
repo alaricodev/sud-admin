@@ -20,28 +20,37 @@
                 narrow-indicator
               >
                 <q-tab name="1" label="Texto Denúncia" icon="description" />
-
-                <q-tab
-                  name="2"
-                  label="Escola"
-                  icon="fa-solid fa-school"
-                  v-if="dados.locais_eletronicos"
-                />
-
+                <q-tab name="2" label="Perguntas" icon="help" />
                 <q-tab
                   name="3"
+                  label="Local dos Fatos"
+                  icon="map"
+                  v-if="dados.enderecos"
+                />
+                <q-tab
+                  name="31"
                   label="Local Eletrônico"
                   icon="memory"
                   v-if="dados.locais_eletronicos"
                 />
-
+                <q-tab
+                  name="4"
+                  label="Denunciante"
+                  icon="person"
+                  v-if="dados.denunciantes"
+                />
                 <q-tab
                   name="5"
                   label="Envolvidos"
                   icon="group"
                   v-if="dados.envolvidos"
                 />
-
+                <q-tab
+                  name="51"
+                  label="Veículos"
+                  icon="fa-solid fa-car"
+                  v-if="dados.veiculos"
+                />
                 <q-tab
                   name="6"
                   label="Arquivos"
@@ -50,11 +59,6 @@
                 />
 
                 <q-tab name="8" label="Acompanhamento" icon="edit_note" />
-                <q-tab
-                  name="81"
-                  label="Tramitações"
-                  icon="fa-solid fa-signs-post"
-                />
                 <q-tab
                   name="9"
                   label="Mais informações"
@@ -71,15 +75,27 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="2">
-                  <caso-escola :dados="dados.denuncia_sos_escola[0]" />
+                  <sud-info-perguntas :perguntas="dados.denuncia_geral[0]" />
                 </q-tab-panel>
 
-                <q-tab-panel name="3">
+                <q-tab-panel name="3" v-if="dados.enderecos">
+                  <caso-endereco-fato :endereco="dados.enderecos[0]" />
+                </q-tab-panel>
+
+                <q-tab-panel name="31">
                   <caso-local-eletronico :dados="dados.locais_eletronicos[0]" />
+                </q-tab-panel>
+
+                <q-tab-panel name="4">
+                  <caso-denunciante :denunciante="dados.denunciantes[0]" />
                 </q-tab-panel>
 
                 <q-tab-panel name="5">
                   <caso-envolvidos :dados="dados.envolvidos" />
+                </q-tab-panel>
+
+                <q-tab-panel name="51">
+                  <caso-veiculos :dados="dados.veiculos" />
                 </q-tab-panel>
 
                 <q-tab-panel name="6">
@@ -88,10 +104,6 @@
 
                 <q-tab-panel name="8">
                   <sud-info-acompanhamento :id="dados.casos[0].id" />
-                </q-tab-panel>
-
-                <q-tab-panel name="81">
-                  <caso-tramitacoes :idCaso="dados.casos[0].id" />
                 </q-tab-panel>
 
                 <q-tab-panel name="9">
@@ -116,27 +128,33 @@ import { useStore } from "src/stores/store";
 import { api } from "src/boot/axios";
 import { formatarDataExtenso, extrairIPv4 } from "src/utils/util";
 import SudInfoTextoDenuncia from "src/components/SudInfoTextoDenuncia.vue";
+import SudInfoPerguntas from "src/components/SudInfoPerguntas.vue";
+import CasoDenunciante from "src/components/CasoDenunciante.vue";
 import SudInfoAcompanhamento from "src/components/SudInfoAcompanhamento.vue";
+//import MenuAcao from "src/components/MenuAcao.vue";
 import CasoArquivos from "src/components/CasoArquivos.vue";
+import CasoEnderecoFato from "src/components/CasoEnderecoFato.vue";
 import CasoLocalEletronico from "src/components/CasoLocalEletronico.vue";
+import CasoVeiculos from "src/components/CasoVeiculos.vue";
 import CasoEnvolvidos from "src/components/CasoEnvolvidos.vue";
-import CasoEscola from "src/components/CasoEscola.vue";
 import CasoMaisInformacao from "src/components/CasoMaisInformacao.vue";
 import HeaderCaso from "src/components/HeaderCaso.vue";
-import CasoTramitacoes from "src/components/CasoTramitacoes.vue";
 export default {
   components: {
+    //MenuAcao,
     HeaderCaso,
     SudInfoTextoDenuncia,
+    SudInfoPerguntas,
+    CasoDenunciante,
     SudInfoAcompanhamento,
     CasoArquivos,
+    CasoEnderecoFato,
     CasoLocalEletronico,
+    CasoVeiculos,
     CasoEnvolvidos,
-    CasoEscola,
     CasoMaisInformacao,
-    CasoTramitacoes,
   },
-  name: "SosEscolaCaso",
+  name: "sudMaisInfo",
   created() {
     this.carregarCaso(this.$route.params.id);
   },
@@ -247,6 +265,16 @@ export default {
           default:
             return "grey-8";
         }
+      }
+    },
+    condicaoAba(codigo) {
+      // Códigos:
+      // DA01: Denúnicia Anônima
+
+      let retorno = false;
+
+      if (codigo == "1") {
+        // texto da denúncia. Aparece em todos, menos no disque denúncia
       }
     },
   },

@@ -21,6 +21,11 @@
               <q-tab name="6" label="Arquivos" icon="cloud_download" />
               <q-tab name="8" label="Acompanhamento" icon="edit_note" />
               <q-tab
+                name="81"
+                label="Tramitações"
+                icon="fa-solid fa-signs-post"
+              />
+              <q-tab
                 name="9"
                 label="Mais informações"
                 icon="info"
@@ -41,6 +46,10 @@
 
               <q-tab-panel name="8">
                 <sud-info-acompanhamento :id="dados.casos[0].id" />
+              </q-tab-panel>
+
+              <q-tab-panel name="81">
+                <caso-tramitacoes :idCaso="dados.casos[0].id" />
               </q-tab-panel>
 
               <q-tab-panel name="9">
@@ -68,6 +77,7 @@ import SudInfoAcompanhamento from "src/components/SudInfoAcompanhamento.vue";
 import CasoMaisInformacao from "src/components/CasoMaisInformacao.vue";
 import CasoArquivos from "src/components/CasoArquivos.vue";
 import HeaderCaso from "src/components/HeaderCaso.vue";
+import CasoTramitacoes from "src/components/CasoTramitacoes.vue";
 
 export default {
   components: {
@@ -76,6 +86,7 @@ export default {
     CasoMaisInformacao,
     CasoArquivos,
     HeaderCaso,
+    CasoTramitacoes,
   },
   name: "WhatsappMaisInfo",
   created() {
@@ -143,7 +154,7 @@ export default {
 
       this.dados = resposta.data;
 
-      console.log(this.dados.casos[0]);
+      console.log(this.dados);
 
       if (this.dados.status_ret == 1) {
         this.store.alerta(this.dados.retorno);

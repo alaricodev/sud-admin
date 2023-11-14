@@ -60,6 +60,11 @@
 
                 <q-tab name="8" label="Acompanhamento" icon="edit_note" />
                 <q-tab
+                  name="81"
+                  label="Tramitações"
+                  icon="fa-solid fa-signs-post"
+                />
+                <q-tab
                   name="9"
                   label="Mais informações"
                   icon="info"
@@ -106,6 +111,10 @@
                   <sud-info-acompanhamento :id="dados.casos[0].id" />
                 </q-tab-panel>
 
+                <q-tab-panel name="81">
+                  <caso-tramitacoes :idCaso="dados.casos[0].id" />
+                </q-tab-panel>
+
                 <q-tab-panel name="9">
                   <caso-mais-informacao :dados="dadosMaisInfo()" />
                 </q-tab-panel>
@@ -139,6 +148,7 @@ import CasoVeiculos from "src/components/CasoVeiculos.vue";
 import CasoEnvolvidos from "src/components/CasoEnvolvidos.vue";
 import CasoMaisInformacao from "src/components/CasoMaisInformacao.vue";
 import HeaderCaso from "src/components/HeaderCaso.vue";
+import CasoTramitacoes from "src/components/CasoTramitacoes.vue";
 export default {
   components: {
     //MenuAcao,
@@ -153,6 +163,7 @@ export default {
     CasoVeiculos,
     CasoEnvolvidos,
     CasoMaisInformacao,
+    CasoTramitacoes,
   },
   name: "sudMaisInfo",
   created() {

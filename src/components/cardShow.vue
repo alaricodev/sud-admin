@@ -53,11 +53,19 @@
             :icon="avatar.icon"
             :color="avatar.color"
             text-color="white"
-          />
+          >
+            <q-tooltip
+              :delay="500"
+              class="bg-primary text-body2"
+              :offset="[10, 10]"
+            >
+              {{ avatar.nome }}
+            </q-tooltip>
+          </q-avatar>
         </q-item-section>
         <q-item-section>
           <div class="row">
-            {{ avatar.nome }}
+            {{ dados.protocolo }}
             <q-icon
               v-if="dados.encaminhado_nint"
               class="q-ml-md"
@@ -74,7 +82,7 @@
             </q-icon>
           </div>
         </q-item-section>
-        <q-item-section> {{ dados.protocolo }} </q-item-section>
+        <!-- <q-item-section> {{ dados.protocolo }} </q-item-section> -->
 
         <q-item-section class="text-subtitle2">
           {{ formatarDataGrid(dados.data_caso) }}
