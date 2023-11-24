@@ -157,5 +157,8 @@ export const useStore = defineStore("store", {
           return "<sem nome>";
       }
     },
+    retornaFoto(foto) {
+      return `https://getin.pc.sc.gov.br/get_files_imgUser/${foto}`;
+    },
   },
 });

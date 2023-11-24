@@ -54,7 +54,10 @@
               v-for="grupo in gruposFiltrados"
               :key="grupo.id"
               class="q-pa-sm"
-              @click="despachar(1, grupo.id)"
+              @click="
+                grupoSelecionado = grupo;
+                despachar(1, grupo.id);
+              "
             >
               <q-item clickable v-ripple class="bg-grey-3">
                 <q-item-section avatar>
@@ -83,11 +86,42 @@
   <q-dialog v-model="telaDados" persistent>
     <q-card style="min-width: 350px">
       <q-card-section>
+        <div class="text-overline">USUÁRIO</div>
+        <pre>{{ quemEhVc }}</pre>
+      </q-card-section>
+      <q-separator color="primary" />
+      <q-card-section>
+        <div class="text-overline">CARGA</div>
+        <pre>{{ carga }}</pre>
+      </q-card-section>
+      <q-separator color="primary" />
+      <q-card-section>
+        <div class="text-overline">ORIGEM</div>
         <pre>{{ origemCarga }}</pre>
       </q-card-section>
       <q-separator color="primary" />
       <q-card-section>
+        <div class="text-overline">DESTINO</div>
         <pre>{{ destinoCarga }} </pre>
+      </q-card-section>
+      <q-separator color="primary" />
+      <q-card-actions>
+        <q-btn flat label="fechar" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- Tela Erro -->
+  <q-dialog v-model="telaErro" persistent>
+    <q-card style="min-width: 350px">
+      <q-card-section>
+        <div class="text-overline">Dados</div>
+        <pre>{{ dadosErro }}</pre>
+      </q-card-section>
+      <q-separator color="primary" />
+      <q-card-section>
+        <div class="text-overline">REPOSTA</div>
+        <pre>{{ respostaErro }}</pre>
       </q-card-section>
       <q-separator color="primary" />
       <q-card-actions>
@@ -194,7 +228,10 @@
             v-for="subGrupo in subGruposFiltrados"
             :key="subGrupo.id"
             class="q-pa-sm"
-            @click="despachar(2, subGrupo.id)"
+            @click="
+              subGrupoSelecionado = subGrupo;
+              despachar(2, subGrupo.id);
+            "
           >
             <q-item clickable v-ripple class="bg-grey-3">
               <q-item-section avatar>
@@ -276,7 +313,10 @@
                 border-radius: 5px;
                 border: 1px solid rgb(201, 198, 198);
               "
-              @click="despachar(3, policial.id)"
+              @click="
+                policialSelecionado = policial;
+                despachar(3, policial.id);
+              "
             >
               <q-item-section avatar>
                 <q-avatar>
@@ -364,6 +404,12 @@
                 </q-item-section>
                 <q-item-section>Tela Policial </q-item-section>
               </q-item>
+              <q-item clickable @click="telaDados = true">
+                <q-item-section avatar>
+                  <q-icon name="fa-solid fa-user-check" />
+                </q-item-section>
+                <q-item-section>Tela Dados </q-item-section>
+              </q-item>
             </q-list>
           </q-menu>
         </q-btn>
@@ -388,50 +434,11 @@
               </div>
             </div>
           </div>
-
-          <q-timeline layout="comfortable" color="primary">
-            <q-timeline-entry
-              title="Recebimento da Denúncia"
-              subtitle="February 21, 1986"
-              icon="fa-regular fa-envelope"
-            >
-              <div>
-                <ul>
-                  <li>Denúncia Anônima</li>
-                </ul>
-              </div>
-            </q-timeline-entry>
-
-            <q-timeline-entry
-              title="Tramitação"
-              subtitle="February 21, 1986"
-              icon="fa-regular fa-paper-plane"
-            >
-              <div>
-                <ul>
-                  <li>DE: DINT</li>
-                  <li>PARA: NINT - Grande Florianópolis</li>
-                  <li>DESPACHO: Para Conhecimento</li>
-                  <li>USUÁRIO: Alarico</li>
-                </ul>
-              </div>
-            </q-timeline-entry>
-
-            <q-timeline-entry
-              title="Tramitação"
-              subtitle="February 21, 1986"
-              icon="fa-regular fa-paper-plane"
-            >
-              <div>
-                <ul>
-                  <li><b>DE:</b> NINT - Grande Florianópolis</li>
-                  <li><b>PARA:</b> Subgrupo DECOD</li>
-                  <li><b>DESPACHO:</b> Para Conhecimento</li>
-                  <li><b>USUÁRIO:</b> José da Silva</li>
-                </ul>
-              </div>
-            </q-timeline-entry>
-          </q-timeline>
+          <timeline-tramitacao
+            :tramitacoes="tramitacoes"
+            :grupos="grupos"
+            :subgrupos="subGrupos"
+          />
         </template>
         <template v-slot:after>
           <q-card style="box-shadow: none">
@@ -459,9 +466,10 @@ import LabelData from "./LabelData.vue";
 import { api } from "src/boot/axios";
 import { useStore } from "src/stores/store";
 import { Dialog } from "quasar";
+import TimelineTramitacao from "./TimelineTramitacao.vue";
 export default {
   name: "CasoTramitacoes",
-  components: { LabelData },
+  components: { LabelData, TimelineTramitacao },
   props: {
     idCaso: {
       type: Number,
@@ -500,6 +508,8 @@ export default {
       nomePesPolicial: null,
       dadosPolicial: null,
       policialSelecionado: null,
+      grupoSelecionado: null,
+      subGrupoSelecionado: null,
 
       quemEhVc: null,
       carga: null,
@@ -507,6 +517,10 @@ export default {
       telaDados: false,
 
       divisorTela: 50,
+
+      telaErro: false,
+      dadosErro: null,
+      respostaErro: null,
 
       dadosCarregados: false,
       caso: null,
@@ -551,24 +565,55 @@ export default {
   },
 
   methods: {
-    retCargaAtual() {
+    async retCargaAtual() {
       if (this.caso.carga_dipc) {
         return "DIPC";
-      } else {
-        if (this.caso.id_grupo_carga) {
-          return "NINT";
-        } else {
-          if (this.caso.id_subgrupo_carga) {
-            return "SUBGRUPO";
-          } else {
-            return "Usuário";
-          }
-        }
       }
+
+      if (this.caso.id_grupo_carga) {
+        const nome = this.grupos.find((g) => g.id == this.carga.id).nome_grupo;
+        return nome;
+      }
+
+      if (this.caso.id_subgrupo_carga) {
+        const nome = this.subGrupos.find(
+          (s) => s.id == this.carga.id
+        ).nome_subgrupo;
+        return `Subgrupo: ${nome}`;
+      }
+
+      if (this.caso.id_usuario_carga) {
+        const user = await this.carregaUsuario(this.caso.id_usuario_carga);
+        return user[0].nome;
+      }
+
+      return "";
+    },
+
+    async carregaUsuario(id) {
+      const params = {
+        codigo_sys_func: "10032",
+        cpf_log: this.store.login.cpf_log,
+        id: id,
+      };
+
+      const resposta = await api.post("/consulta", params);
+
+      return resposta.data;
     },
 
     async carregaDados() {
       this.store.telaCarregamento(true);
+
+      const the_param = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "20040",
+        id_caso: this.idCaso,
+      };
+
+      const respostaGeral = await api.post("/consulta", the_param);
+      console.log("---aqui----");
+      console.log(respostaGeral.data);
 
       // Carregar o caso
       const paramsCaso = {
@@ -591,15 +636,6 @@ export default {
         cpf_log: this.store.login.cpf_log,
         codigo_sys_func: "10028",
         id_caso: this.idCaso,
-      };
-
-      const paramsNomeByPass = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sysy_func: "10028",
-        id_caso: this.idCaso,
-        volume: 15,
-        palavra_chave: "bolinha de golfe",
-        tempo_servico: "03a11m14d",
       };
 
       const paramsAcessoUsuarios = {
@@ -631,6 +667,16 @@ export default {
       this.tramitacoes = respostaTramitacoes.data;
 
       // Carrega QuemEhVoce.
+      const param_quemSouEu = {
+        codigo_sys_func: "20037",
+        cpf_log: this.store.login.cpf_log,
+      };
+
+      const resposta = await api.post("/consulta", param_quemSouEu);
+      this.quemEhVc = resposta.data;
+
+      // De quem é a carga
+      this.carga = this.deQuemEhACarga();
 
       // Carrega Grupos
       const paramsGrupos = {
@@ -654,11 +700,12 @@ export default {
 
       this.store.telaCarregamento(false);
       this.criarArvore();
-      this.dadosCarregados = true;
 
       this.gruposFiltrados = this.grupos;
 
-      this.cargaAtual = this.retCargaAtual();
+      this.cargaAtual = await this.retCargaAtual();
+
+      this.dadosCarregados = true;
     },
 
     telaFranquearAcesso() {
@@ -796,68 +843,134 @@ export default {
       }
     },
 
-    async passarCarga() {
-      // Passo 01: Verificar se o cara tem ou não a carga
-      const params1 = {
-        codigo_sys_func: "20037",
-        cpf_log: this.store.login.cpf_log,
-      };
-
-      this.store.telaCarregamento(true);
-      const resposta = await api.post("/consulta", params1);
-      this.store.telaCarregamento(false);
-
-      this.quemEhVc = resposta.data;
-      this.carga = this.deQuemEhACarga();
-
+    estaComACarga() {
       if (this.carga.tipo == 1) {
-        // Carga DIPC
         if (this.quemEhVc.usuario[0].usuario_dipc) {
-          this.origemCarga = {
-            idCaso: this.caso.id,
-            dipc: true,
-            caption: "DIPC",
-            idGrupo: null,
-            idSubGrupo: null,
-            idUsuario: null,
-          };
-
-          this.telaShareGrupo = true;
+          return true;
         } else {
-          this.store.alerta("Esse usuário não está com a carga");
+          return false;
         }
-      } else if (this.carga.tipo == 2) {
-        // Grupo
-        if (this.quemEhVc.grupos.id_ == this.carga.id) {
+      }
+
+      if (this.carga.tipo == 2) {
+        if (this.quemEhVc.grupos) {
+          if (this.quemEhVc.grupos[0].id_grupo == this.carga.id) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+
+      if (this.carga.tipo == 3) {
+        if (this.quemEhVc.subgrupos) {
+          if (this.quemEhVc.subgrupos[0].id_subgrupo == this.carga.id) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+
+      if (this.carga.tipo == 4) {
+        if (this.quemEhVc.usuario[0].id == this.carga.id) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    },
+
+    async passarCarga() {
+      if (!this.estaComACarga()) {
+        this.store.alerta("Esse usuário não está com a carga");
+        return false;
+      }
+
+      switch (this.carga.tipo) {
+        case 1:
+          if (this.quemEhVc.usuario[0].usuario_dipc) {
+            this.origemCarga = {
+              idCaso: this.caso.id,
+              dipc: true,
+              caption: "DIPC",
+              idGrupo: null,
+              idSubGrupo: null,
+              idUsuario: null,
+            };
+
+            this.telaShareGrupo = true;
+          } else {
+            this.store.alerta("Esse usuário não está com a carga");
+          }
+          break;
+
+        case 2: // Grupo
+          const idGrupo = this.quemEhVc.grupos[0].id_grupo;
+          const nomeGrupo = this.grupos.find((grupo) => grupo.id == idGrupo);
+
+          if (this.carga.id == this.quemEhVc.grupos[0].id_grupo) {
+            this.origemCarga = {
+              idCaso: this.caso.id,
+              dipc: false,
+              caption: nomeGrupo,
+              idGrupo: idGrupo,
+              idSubGrupo: null,
+              idUsuario: null,
+            };
+            this.telaSubGrupo = true;
+          } else {
+            this.store.alerta("Esse usuário não está com a carga");
+          }
+          break;
+
+        case 3: // SubGrupo
+          const idSubGrupo = this.quemEhVc.subgrupos[0].id_subgrupo;
+          const nomeSubGrupo = this.subGrupos.find(
+            (sub) => sub.id == idSubGrupo
+          ).nome_subgrupo;
+
+          if (idSubGrupo == this.carga.id) {
+            this.origemCarga = {
+              idCaso: this.caso.id,
+              dipc: false,
+              caption: nomeSubGrupo,
+              idGrupo: null,
+              idSubGrupo: idSubGrupo,
+              idUsuario: null,
+            };
+            this.telaPolicial = true;
+          } else {
+            this.store.alerta("Esse usuário não está com a carga");
+          }
+          break;
+
+        case 4: // Usuário
+          const idSubGrupoLast = await this.retornaLastTramitacao(
+            this.caso.id,
+            this.quemEhVc.usuario[0].id
+          );
+
           this.origemCarga = {
             idCaso: this.caso.id,
             dipc: false,
-            caption: this.grupos.filter(
-              (item) => item.id == this.quemEhVc.grupo.id
-            )[0].nome_grupo,
-            idGrupo: this.quemEhVc.grupo.id,
+            caption: this.quemEhVc.usuario.nome,
+            idGrupo: null,
             idSubGrupo: null,
-            idUsuario: null,
+            idUsuario: this.quemEhVc.usuario[0].id,
           };
-          this.telaSubGrupo = true;
-        } else {
-          this.store.alerta("Esse usuário não está com a carga");
-        }
-      } else if (this.carga.tipo == 3) {
-        // SubGrupo
-        if (this.quemEhVc.subgrupos.id_ == this.carga.id) {
-          this.telaPolicial = true;
-        } else {
-          this.store.alerta("Esse usuário não está com a carga");
-        }
-      } else if (this.carga.tipo == 4) {
-        // Usuário
-        console.log("passou");
-      } else {
-        this.store.alerta("Caso sem carga definida !");
-      }
 
-      //this.telaDados = true;
+          this.despachar(4, idSubGrupoLast.id_subgrupo_origem);
+          break;
+
+        default:
+          this.store.alerta("Caso sem carga definida !");
+          break;
+      }
     },
 
     deQuemEhACarga() {
@@ -898,10 +1011,64 @@ export default {
       var timming = 0;
     },
 
+    async retornaLastTramitacao(idCaso, idUsuario) {
+      const param = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "10033",
+        idcaso: idCaso,
+        idusuario: idUsuario,
+      };
+
+      const resposta = await api.post("/consulta", param);
+
+      return resposta.data[0];
+    },
+
     async tramitar() {
-      this.store.alerta(
-        `Carga Atual: ${this.cargaAtual}, para: ${this.tipoDespacho}`
-      );
+      if (this.despacho == "") {
+        this.store.alerta("Favor preencher o motivo da tramitação.");
+        return false;
+      }
+
+      //1: DIPC para NINT; 2: NINT para subgrupo; 3: Subgrupo para usuário
+      // -1: NINT para DIPC; -2: Subgrupo para NINT; -3: usuário para subgrupo
+
+      const params = {
+        codigo_sys_func: "20038",
+        cpf_log: this.store.login.cpf_log,
+
+        id_caso: this.caso.id,
+        id_usuario_dest: this.destinoCarga.idUsuario,
+        id_usuario_origem: this.origemCarga.idUsuario,
+        id_grupo_dest: this.destinoCarga.idGrupo,
+        id_grupo_origem: this.origemCarga.idGrupo,
+        id_subgrupo_dest: this.destinoCarga.idSubGrupo,
+        id_subgrupo_origem: this.origemCarga.idSubGrupo,
+        tipo: this.destinoCarga.tipo,
+        motivo: this.despacho,
+      };
+
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params);
+      this.store.telaCarregamento(false);
+
+      if (resposta.data.status_ret == 0) {
+        // Recarregar os dados
+        this.carregaDados();
+
+        // Fechar todas as telas
+        this.telaDespacho = false;
+        this.telaShareGrupo = false;
+        this.telaSubGrupo = false;
+        this.telaPolicial = false;
+
+        // Limpar o motivo
+        this.despacho = "";
+      } else {
+        this.dadosErro = resposta.data;
+        this.respostaErro = resposta;
+        this.telaErro = true;
+      }
     },
 
     async despachar(tipoDespacho, id) {
@@ -914,13 +1081,28 @@ export default {
       -2 - Retorno de Subgrupo para NINT
       -3 - Retorno de usuário para subgrupo
        */
+
+      // Passo 01: Verificar se o cara tem ou não a carga
+      const params1 = {
+        codigo_sys_func: "20037",
+        cpf_log: this.store.login.cpf_log,
+      };
+
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params1);
+      this.store.telaCarregamento(false);
+
+      this.quemEhVc = resposta.data;
+
       switch (tipoDespacho) {
         case 1:
+          const nomeGrupo = this.grupos.filter((item) => item.id === id)[0]
+            .nome_grupo;
           this.destinoCarga = {
             tipo: tipoDespacho,
             idCaso: this.caso.id,
             dipc: false,
-            caption: this.grupos.filter((item) => item.id === id)[0].nome_grupo,
+            caption: nomeGrupo,
             idGrupo: id,
             idSubGrupo: null,
             idUsuario: null,
@@ -928,12 +1110,14 @@ export default {
           break;
 
         case 2:
+          const nomeSubgrupo = this.subGrupos.filter(
+            (item) => item.id === id
+          )[0].nome_subgrupo;
           this.destinoCarga = {
             tipo: tipoDespacho,
             idCaso: this.caso.id,
             dipc: false,
-            caption: this.subGrupos.filter((item) => item.id === id)[0]
-              .nome_subgrupo,
+            caption: nomeSubgrupo,
             idGrupo: null,
             idSubGrupo: id,
             idUsuario: null,
@@ -941,7 +1125,27 @@ export default {
           break;
 
         case 3:
-          this.captionDespacho = `Subgrupo para Usuário, id ${id}`;
+          this.destinoCarga = {
+            tipo: tipoDespacho,
+            idCaso: this.caso.id,
+            dipc: false,
+            caption: this.policialSelecionado.nome,
+            idGrupo: null,
+            idSubGrupo: null,
+            idUsuario: this.policialSelecionado.id,
+          };
+          break;
+
+        case 4:
+          this.destinoCarga = {
+            tipo: -3,
+            idCaso: this.caso.id,
+            dipc: false,
+            caption: "",
+            idGrupo: null,
+            idSubGrupo: id,
+            idUsuario: null,
+          };
           break;
 
         case -1:
