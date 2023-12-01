@@ -106,10 +106,15 @@ export default defineComponent({
       this.store.telaCarregamento(true);
 
       const params = {
-        cpf_log: this.store.login.cpf_log,
         codigo_sys_func: "10013",
+        cpf_log: this.store.login.cpf_log,
         ativo: false,
         arquivado: true,
+        somente_carga: this.store.filtros.somenteCarga,
+        finalizado: this.store.filtros.finalizados,
+        tipo: this.store.filtros.tipo,
+        data_caso_inicio: this.store.filtros.data_inicial,
+        data_caso_fim: this.store.filtros.data_final,
       };
 
       const resposta = await api.post("/consulta", params);

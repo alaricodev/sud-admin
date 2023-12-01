@@ -10,7 +10,10 @@
               color="primary"
               class="q-mr-md"
             />
-            <div class="text-h5">Denúncias</div>
+            <div class="text-h5">
+              Denúncias
+              <span class="text-grey-6">{{ store.filtros.totalCasos }}</span>
+            </div>
             <q-space />
           </div>
         </div>
@@ -84,19 +87,23 @@ export default defineComponent({
         codigo_sys_func: "10013",
         cpf_log: store.login.cpf_log,
         ativo: true,
-        arquivado: false,
+        arquivado: store.filtros.arquivados,
+        somente_carga: store.filtros.somenteCarga,
+        finalizado: store.filtros.finalizados,
+        tipo: store.filtros.tipo,
+        data_caso_inicio: store.filtros.data_inicial,
+        data_caso_fim: store.filtros.data_final,
       };
 
       const resposta = await api.post("/consulta", params);
 
-      // if (resposta.data.status_ret) {
-      //   this.store.alerta(resposta.data.retorno);
-      // } else {
-
-      // }
-
-      denuncias.value = store.filtroCasos(resposta.data);
+      //denuncias.value = store.filtroCasos(resposta.data);
+      //denunciasFiltrada.value = paginacao(denuncias.value, 30, 1);
+      denuncias.value = resposta.data;
       denunciasFiltrada.value = paginacao(denuncias.value, 30, 1);
+      if (denuncias.value) {
+        store.filtros.totalCasos = denuncias.value.length;
+      }
 
       store.telaCarregamento(false);
     }

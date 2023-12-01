@@ -147,8 +147,6 @@ export default {
         relato: this.replaceAll(this.relato, "'", ""),
       };
 
-      console.log(ret);
-
       return ret;
     },
 
@@ -198,7 +196,6 @@ export default {
           );
 
           if (!res.data.erro) {
-            console.log(res.data);
             this.alerta("REGISTRO FEITO COM SUCESSO !");
             this.files = null;
             this.telefone = null;
@@ -214,9 +211,7 @@ export default {
         return true;
       }
     },
-    limparDataHora() {
-      console.log(this.extractChatInfo(this.relato));
-    },
+    limparDataHora() {},
     extrairLixo() {
       const regex = /\[\d{2}:\d{2}, \d{2}\/\d{2}\/\d{4}\]/g;
       const texto = this.relato.replace(regex, "");

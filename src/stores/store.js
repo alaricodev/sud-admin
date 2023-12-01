@@ -27,7 +27,14 @@ export const useStore = defineStore("store", {
     filtros: {
       exibirEncaminhados: true,
       encaminhados: true,
+      somenteCarga: true,
+      arquivados: false,
+      finalizados: 2,
       tipo: "TODOS",
+      opDiasData: -365,
+      data_inicial: "1970-01-01",
+      data_final: "2050-01-01",
+      totalCasos: 0,
     },
   }),
   getters: {
@@ -39,7 +46,7 @@ export const useStore = defineStore("store", {
         return array;
       }
 
-      // Primeiro Filtro: Exibir as informações compartilhadas
+      // Primeiro Filtro: Exibir as informaçstoões compartilhadas
       if (!this.login.dipc) {
         this.filtros.encaminhados = false;
       }
@@ -159,6 +166,17 @@ export const useStore = defineStore("store", {
     },
     retornaFoto(foto) {
       return `https://getin.pc.sc.gov.br/get_files_imgUser/${foto}`;
+    },
+    dataFinal() {
+      let dataAtual = new Date();
+      dataAtual.setHours(23, 59, 59, 9999);
+    },
+    dataInicial(dias) {
+      // Obtém a data atual
+      let dataAtual = new Date();
+      dataAtual.setDate(dataAtual.getDate() + dias);
+      dataAtual.setHours(0, 0, 0, 0);
+      return dataAtual;
     },
   },
 });

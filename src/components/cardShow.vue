@@ -66,7 +66,7 @@
         <q-item-section>
           <div class="row">
             {{ dados.protocolo }}
-            <q-icon
+            <!-- <q-icon
               v-if="dados.encaminhado_nint"
               class="q-ml-md"
               name="fa-regular fa-share-from-square"
@@ -79,7 +79,19 @@
               >
                 Informação encaminhada: NINT
               </q-tooltip>
-            </q-icon>
+            </q-icon> -->
+          </div>
+        </q-item-section>
+        <q-item-section>
+          <div v-if="dados.data_arquivamento">
+            <q-icon name="fa-solid fa-box-archive" size="sm" color="brown" />
+          </div>
+          <div v-if="dados.finalizado">
+            <q-icon
+              name="fa-solid fa-flag-checkered"
+              size="sm"
+              color="orange"
+            />
           </div>
         </q-item-section>
         <!-- <q-item-section> {{ dados.protocolo }} </q-item-section> -->
@@ -223,6 +235,7 @@ export default {
       valorConfirma: ref(""),
     };
   },
+
   computed: {
     avatar() {
       if (this.dados.tipo == "WHATSAPP") {

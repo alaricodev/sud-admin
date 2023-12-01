@@ -261,8 +261,12 @@
                     </q-tab-panel>
 
                     <q-tab-panel name="casos">
-                      <div class="text-h6">Alarms</div>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      <div v-if="nomeGrupo">
+                        <tabela-casos :tipo="2" :id="idGrupo" />
+                      </div>
+                      <div v-if="nomeSubGrupo">
+                        <tabela-casos :tipo="3" :id="idSubGrupo" />
+                      </div>
                     </q-tab-panel>
                   </q-tab-panels>
                 </q-card>
@@ -280,10 +284,10 @@ import { useStore } from "src/stores/store";
 import { api } from "src/boot/axios";
 import { abreviarSobrenomes } from "src/utils/util.js";
 import UsuarioCardSmall from "./UsuarioCardSmall.vue";
-import { ref } from "vue";
+import TabelaCasos from "./TabelaCasos.vue";
 
 export default {
-  components: { UsuarioCardSmall },
+  components: { UsuarioCardSmall, TabelaCasos },
   name: "ConfigGrupo",
   created() {
     this.carregaGrupo();
@@ -385,16 +389,78 @@ export default {
       return null;
     },
     async carregaGrupo() {
-      const params = {
+      //10025 (grupos), 10026 subgrupos
+      const paramG = {
         cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "20033",
-        tipo: 3, // Vai retornar apenas os dados
+        codigo_sys_func: "10025",
+      };
+
+      const paramS = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "10026",
+      };
+
+      const paramNint = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "10034",
       };
 
       this.store.telaCarregamento(true);
-      const resposta = await api.post("/consulta", params);
+
+      const respostaG = await api.post("/consulta", paramG);
+      const respostaS = await api.post("/consulta", paramS);
+      const respostaNint = await api.post("/consulta", paramNint);
+
       this.store.telaCarregamento(false);
-      this.grupos = this.carregaArrayGrupo(resposta.data);
+
+      this.grupos = this.montarArvore(
+        respostaG.data,
+        respostaS.data,
+        this.store.login.nint ? respostaNint.data[0] : 0
+      );
+    },
+
+    montarArvore(rGrupos, rSubGrupos, infoNint) {
+      let grupos = [];
+
+      let masterGrupos = [];
+
+      if (this.store.login.nint) {
+        masterGrupos = rGrupos.filter((el) => el.id == infoNint.id);
+      } else {
+        masterGrupos = rGrupos;
+      }
+
+      for (let grupo of masterGrupos) {
+        let subgrupos = rSubGrupos.filter((el) => el.id_grupo == grupo.id);
+
+        let filho = [];
+
+        if (subgrupos) {
+          for (let subgrupo of subgrupos) {
+            filho.push({
+              id: `S#${subgrupo.id}`,
+              label: subgrupo.nome_subgrupo,
+              id_grupo: grupo.id,
+              nome_grupo: subgrupo.nome_grupo,
+              desc_subgrupo: subgrupo.desc_subgrupo,
+              tipo: "S",
+              icon: "fa-solid fa-building-shield",
+            });
+          }
+        }
+
+        grupos.push({
+          id: `G#${grupo.id}`,
+          label: grupo.nome_grupo,
+          desc_grupo: grupo.desc_grupo,
+          children: filho,
+          tipo: "G",
+          icon: "fa-solid fa-people-group",
+        });
+      }
+
+      return grupos;
     },
 
     carregaArrayGrupo(vetor) {
@@ -457,8 +523,6 @@ export default {
       const resposta = await api.post("/consulta", params);
       this.store.telaCarregamento(false);
 
-      console.log(resposta.data);
-
       this.usuariosGrupo = resposta.data;
     },
 
@@ -506,6 +570,11 @@ export default {
     },
 
     addUsuGrupos() {
+      if (!this.idSubGrupo && this.store.login.nint) {
+        this.store.alerta("Somente DIPC");
+        return false;
+      }
+
       this.nomePolicialPesquisa = null;
       this.nomesPesquisados = null;
       this.telaProcuraPolicial = true;
@@ -586,8 +655,6 @@ export default {
 
       try {
         const resposta = await api.post("/consulta", params);
-
-        console.log(resposta);
 
         if (resposta.data.status_ret == 0) {
           this.cadNomeGrupo = null;

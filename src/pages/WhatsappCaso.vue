@@ -154,8 +154,6 @@ export default {
 
       this.dados = resposta.data;
 
-      console.log(this.dados);
-
       if (this.dados.status_ret == 1) {
         this.store.alerta(this.dados.retorno);
       } else {

@@ -29,37 +29,41 @@
         :subtitle="`${formatarDataCurta(tramitacao.data_tramitacao)} -  ${
           tramitacoes.length - index
         }ª Tramitação`"
-        icon="fa-regular fa-envelope"
+        icon="fa-solid fa-arrow-down-up-across-line"
       >
         <div>
-          <ul style="list-style: none">
-            <li class="q-ma-xs">
-              <label-data label="DE:" :texto="retornaOrigem(tramitacao)" />
-            </li>
+          <q-expansion-item
+            popup
+            header-class="text-primary text-bold"
+            icon="mail"
+            :label="`PARA: ${retornaDestino(tramitacao)}`"
+            :caption="`DE: ${retornaOrigem(tramitacao)}`"
+          >
+            <q-separator />
+            <q-card>
+              <q-card-section>
+                <q-chip class="col">
+                  <q-avatar>
+                    <img
+                      :src="retornaFoto(dadosUsuario(tramitacao.id_usuario, 2))"
+                    />
+                  </q-avatar>
+                  {{ dadosUsuario(tramitacao.id_usuario, 1) }}
+                </q-chip>
 
-            <li class="q-ma-xs">
-              <label-data label="PARA:" :texto="retornaDestino(tramitacao)" />
-            </li>
-            <li class="q-ma-xs">
-              <q-btn
-                color="primary"
-                label="Motivação"
-                @click="lerMotivo(tramitacao)"
-              />
-              <q-chip>
-                <q-avatar>
-                  <img
-                    :src="retornaFoto(dadosUsuario(tramitacao.id_usuario, 2))"
-                  />
-                </q-avatar>
-                {{ dadosUsuario(tramitacao.id_usuario, 1) }}
-              </q-chip>
-              <!-- <div>
-                <div class="limitar-texto" v-html="tramitacao.motivo" />
-              </div>
-              <q-btn flat label="Ler mais..." color="black" /> -->
-            </li>
-          </ul>
+                <q-btn
+                  v-if="tramitacao.id_usuario == store.login.id_usuario"
+                  flat
+                  icon="edit"
+                  color="primary"
+                />
+              </q-card-section>
+              <q-separator color="primary" />
+              <q-card-section>
+                <div v-html="tramitacao.motivo"></div>
+              </q-card-section>
+            </q-card>
+          </q-expansion-item>
         </div>
       </q-timeline-entry>
     </q-timeline>
@@ -68,24 +72,16 @@
 
 <script>
 import { formatarDataCurta } from "src/utils/util";
-import { api } from "src/boot/axios";
 import { useStore } from "src/stores/store";
-import LabelData from "./LabelData.vue";
 
 export default {
-  components: { LabelData },
+  //components: { LabelData },
   name: "TimelineTramitacao",
   async created() {
-    if (this.tramitacoes) {
-      this.usuarios = await this.carregaUsuarios();
-      console.log("====-=-=-=-=-=-=");
-      console.log(this.usuarios);
-      this.dadosCarregados = true;
-    }
+    this.dadosCarregados = true;
   },
   data() {
     return {
-      usuarios: null,
       telaMotivo: false,
       despacho: null,
       dadosCarregados: false,
@@ -107,6 +103,10 @@ export default {
     subgrupos: {
       type: Object,
       required: false,
+    },
+    usuarios: {
+      type: Object,
+      required: true,
     },
   },
   methods: {
@@ -131,10 +131,6 @@ export default {
 
       if (tramitacao.id_usuario_origem) {
         id = tramitacao.id_usuario_origem;
-        console.log("---------");
-        console.log(id);
-        console.log(this.usuarios);
-        console.log("---------");
         const user = this.usuarios.find((ud) => ud.id == id);
         return user.nome;
       }
@@ -144,8 +140,6 @@ export default {
 
     retornaDestino(tramitacao) {
       let id;
-
-      console.log(tramitacao);
 
       if (tramitacao.dipc_destino) {
         return "DIPC";
@@ -194,22 +188,10 @@ export default {
       return `array${JSON.stringify([...new Set(arr)])}`;
     },
 
-    async carregaUsuarios() {
-      const params = {
-        codigo_sys_func: "10031",
-        cpf_log: this.store.login.cpf_log,
-        arr_ids: this.montaArrayUser(),
-      };
-
-      const resposta = await api.post("/consulta", params);
-
-      return resposta.data;
-    },
-
     dadosUsuario(id, tipo) {
       if (this.usuarios) {
         const temp = this.usuarios.find((us) => us.id == id);
-        console.log(temp);
+
         if (temp) {
           if (tipo == 1) {
             return temp.nome;
@@ -226,7 +208,6 @@ export default {
       if (foto) {
         return `https://getin.pc.sc.gov.br/get_files_imgUser/${foto}`;
       } else {
-        console.log("foto nula");
         return null;
       }
     },

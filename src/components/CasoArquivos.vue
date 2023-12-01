@@ -1,4 +1,46 @@
 <template>
+  <!-- mostrar midias -->
+  <q-dialog v-model="telaMidia" full-width full-height>
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Full Width</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <div v-if="arquivoSelecionado.tipo.toUpperCase() == 'IMAGEM'">
+          <q-img
+            :src="`${url}/downloadmidia/${arquivoSelecionado.nome}`"
+            :ratio="4 / 3"
+            class="flex flex-center"
+            style="width: 40%; height: 40%"
+          />
+        </div>
+        <div v-if="arquivoSelecionado.tipo.toUpperCase() == 'VÍDEO'">
+          <video controls width="640" height="360">
+            <source
+              :src="`${url}/downloadmidia/${arquivoSelecionado.nome}`"
+              type="video/mp4"
+            />
+            Seu navegador não suporta o elemento de vídeo.
+          </video>
+        </div>
+        <div v-if="arquivoSelecionado.tipo.toUpperCase() == 'AUDIO'">
+          <q-audio controls>
+            <source
+              :src="`${url}/downloadmidia/${arquivoSelecionado.nome}`"
+              type="audio/mp3"
+            />
+          </q-audio>
+        </div>
+      </q-card-section>
+
+      <q-card-actions align="right" class="bg-white text-teal">
+        <q-btn flat label="OK" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- Tela principal -->
   <div v-if="arquivos" class="flex flex-center q-ma-md">
     <q-card
       class="my-card q-ma-md"
@@ -28,10 +70,12 @@
         <q-btn
           v-if="
             arquivo.tipo.toUpperCase() == 'AUDIO' ||
-            arquivo.tipo.toUpperCase() == 'VÍDEO'
+            arquivo.tipo.toUpperCase() == 'VÍDEO' ||
+            arquivo.tipo.toUpperCase() == 'IMAGEM'
           "
           color="primary"
           icon="fa-solid fa-play"
+          @click="mostraArquivo(arquivo)"
         />
       </q-card-actions>
     </q-card>
@@ -48,10 +92,23 @@ import { format } from "quasar";
 export default {
   name: "CasoArquivos",
 
+  created() {
+    console.log(this.arquivos);
+    this.url = api.defaults.baseURL;
+  },
+
   setup() {
     const { humanStorageSize } = format;
     return {
       humanStorageSize,
+    };
+  },
+
+  data() {
+    return {
+      telaMidia: false,
+      arquivoSelecionado: null,
+      url: null,
     };
   },
 
@@ -75,6 +132,10 @@ export default {
         default:
           return "fa-regular fa-file";
       }
+    },
+    mostraArquivo(arquivo) {
+      this.arquivoSelecionado = arquivo;
+      this.telaMidia = true;
     },
     downloadFile(arquivo) {
       if (arquivo.nome.trim() !== "") {

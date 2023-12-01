@@ -1,10 +1,40 @@
 <template>
+  <!-- Tela de Finalização do Caso -->
+  <q-dialog
+    v-model="telaFinalizacao"
+    persistent
+    @before-show="motivoFinalizacao = ''"
+    style="max-width: 500px; max-height: 400px"
+  >
+    <q-card>
+      <q-bar>
+        <q-icon name="fa-solid fa-user-check" />
+        <div class="text-body1">Finalização do Caso</div>
+        <q-space />
+        <q-btn flat icon="close" size="sm" v-close-popup></q-btn>
+      </q-bar>
+      <q-card-section>
+        <div class="text-overline">Finalização do Caso</div>
+      </q-card-section>
+
+      <q-card-section>
+        <q-editor v-model="motivoFinalizacao" />
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Despachar" @click="finalizarCaso()" />
+        <!-- <q-btn flat label="Dados" @click="telaDados = true" /> -->
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
   <!-- Tela de encaminhamento / despacho -->
   <q-dialog
     v-model="telaDespacho"
     persistent
     @before-show="despacho = ''"
-    style="max-width: 500px; max-height: 400px"
+    full-width
+    full-height
   >
     <q-card>
       <q-bar>
@@ -23,13 +53,18 @@
         </div>
       </q-card-section>
 
-      <q-card-section>
-        <q-editor v-model="despacho" />
+      <q-card-section style="height: 70%">
+        <q-editor
+          v-model="despacho"
+          :toolbar="editorFunc"
+          :fonts="fonts"
+          style="height: 95%"
+        />
       </q-card-section>
 
       <q-card-actions align="right">
         <q-btn flat label="Despachar" @click="tramitar()" />
-        <q-btn flat label="Dados" @click="telaDados = true" />
+        <!-- <q-btn flat label="Dados" @click="telaDados = true" /> -->
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -217,7 +252,7 @@
         <q-btn flat icon="close" size="sm" v-close-popup></q-btn>
       </q-bar>
       <q-card-section>
-        <label-data label="GRUPO:" :texto="nomeGrupo" />
+        <label-data label="GRUPO:" :texto="carga.nome" />
       </q-card-section>
 
       <q-separator color="primary" />
@@ -251,16 +286,6 @@
       </q-card-section>
       <q-separator color="primary" />
       <q-card-actions align="right">
-        <q-btn
-          flat
-          label="Retornar para DIPC"
-          color="blue-grey-9"
-          @click="despachar(-1, 1)"
-        >
-          <q-tooltip class="bg-primary text-body2" :offset="[10, 10]">
-            Retornar a carga a DIPC
-          </q-tooltip>
-        </q-btn>
         <q-btn flat label="Cancelar" color="red" v-close-popup></q-btn>
       </q-card-actions>
     </q-card>
@@ -345,16 +370,6 @@
       </q-card-section>
       <q-separator color="primary" />
       <q-card-actions align="right">
-        <q-btn
-          flat
-          label="Retornar para o Subgrupo"
-          color="blue-grey-9"
-          @click="despachar(-3, policial.id)"
-        >
-          <q-tooltip class="bg-primary text-body2" :offset="[10, 10]">
-            Retornar a carga ao Subgrupo
-          </q-tooltip>
-        </q-btn>
         <q-btn flat label="Cancelar" color="red" v-close-popup />
       </q-card-actions>
     </q-card>
@@ -366,18 +381,36 @@
         <q-btn flat icon="fa-solid fa-ellipsis-vertical">
           <q-menu transition-show="scale" transition-hide="scale">
             <q-list style="min-width: 100px">
-              <q-item clickable @click="passarCarga()">
+              <q-item
+                clickable
+                @click="passarCarga()"
+                :disable="caso.finalizado"
+              >
                 <q-item-section avatar>
                   <q-icon name="fa-solid fa-dolly" />
                 </q-item-section>
                 <q-item-section>Passar Carga</q-item-section>
               </q-item>
               <q-separator />
-              <q-item clickable @click="telaFranquearAcesso()">
+              <q-item
+                clickable
+                @click="retornarCarga()"
+                :disable="caso.finalizado"
+              >
                 <q-item-section avatar>
-                  <q-icon name="fa-solid fa-user-check" />
+                  <q-icon name="fa-solid fa-rotate-left" />
                 </q-item-section>
-                <q-item-section>Franquear acesso</q-item-section>
+                <q-item-section>Devolver a carga</q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                @click="telaMotivoFinalizacao()"
+                :disable="caso.finalizado"
+              >
+                <q-item-section avatar>
+                  <q-icon name="fa-regular fa-calendar-xmark" />
+                </q-item-section>
+                <q-item-section>Finalizar Caso</q-item-section>
               </q-item>
               <q-separator />
               <q-item clickable @click="prompt = true">
@@ -385,30 +418,6 @@
                   <q-icon name="fa-solid fa-user-check" />
                 </q-item-section>
                 <q-item-section>By pass</q-item-section>
-              </q-item>
-              <q-item clickable @click="telaShareGrupo = true">
-                <q-item-section avatar>
-                  <q-icon name="fa-solid fa-user-check" />
-                </q-item-section>
-                <q-item-section>Tela de grupos nint</q-item-section>
-              </q-item>
-              <q-item clickable @click="telaSubGrupo = true">
-                <q-item-section avatar>
-                  <q-icon name="fa-solid fa-user-check" />
-                </q-item-section>
-                <q-item-section>Tela de Subgrupo </q-item-section>
-              </q-item>
-              <q-item clickable @click="escolherPolicial()">
-                <q-item-section avatar>
-                  <q-icon name="fa-solid fa-user-check" />
-                </q-item-section>
-                <q-item-section>Tela Policial </q-item-section>
-              </q-item>
-              <q-item clickable @click="telaDados = true">
-                <q-item-section avatar>
-                  <q-icon name="fa-solid fa-user-check" />
-                </q-item-section>
-                <q-item-section>Tela Dados </q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -422,39 +431,71 @@
     <div class="full-width">
       <q-splitter v-model="divisorTela" style="height: 600px">
         <template v-slot:before>
-          <div class="full-width">
-            <div>
-              <div>
-                <q-chip>
-                  <q-avatar>
-                    <img :src="retornaFoto(store.login.foto_usuario)" />
-                  </q-avatar>
-                  {{ store.login.nome_usuario }}
-                </q-chip>
-              </div>
-            </div>
+          <div class="full-width q-pa-md" v-if="!tramitacoes">
+            <q-banner class="bg-grey-3">
+              <template v-slot:avatar>
+                <q-icon
+                  name="fa-solid fa-arrow-down-up-across-line"
+                  color="red-8"
+                />
+              </template>
+              Nenhuma Tramitação efetuada
+              <template v-slot:action>
+                <q-btn
+                  flat
+                  icon="fa-solid fa-dolly"
+                  color="primary"
+                  label="Passar a Carga"
+                  @click="passarCarga()"
+                />
+              </template>
+            </q-banner>
           </div>
           <timeline-tramitacao
             :tramitacoes="tramitacoes"
             :grupos="grupos"
             :subgrupos="subGrupos"
+            :usuarios="usuarios"
           />
         </template>
         <template v-slot:after>
-          <q-card style="box-shadow: none">
-            <q-card-section>
-              <div class="full-width">
-                <div class="text-overline">Acessos:</div>
-              </div>
-              <q-tree
-                :nodes="arvore"
-                node-key="id"
-                selected-color="primary"
-                v-model:selected="nodoSelecionado"
-                default-expand-all
-              />
-            </q-card-section>
-          </q-card>
+          <div class="q-ml-md">
+            <div class="full-width">
+              <div class="text-overline">Acessos: {{ nodoSelecionado }}</div>
+            </div>
+            <q-tree
+              class="q-mt-md"
+              :nodes="arvore"
+              node-key="id"
+              selected-color="primary"
+              v-model:selected="nodoSelecionado"
+              default-expand-all
+            />
+          </div>
+          <div class="q-pa-md q-gutter-sm" v-if="caso.finalizado">
+            <q-banner rounded class="bg-red-6 text-white">
+              <template v-slot:avatar>
+                <q-icon name="fa-regular fa-calendar-xmark" color="white" />
+              </template>
+              ESSE CASO ESTÁ <b>FINALIZADO</b>!
+              <!-- <div class="full-width bg-red-3 q-ma-sm q-pa-sm">
+                <div v-html="this.caso.motivo_finalizado"></div>
+              </div> -->
+
+              <template v-slot:action>
+                <q-btn
+                  color="red-4"
+                  label="Ler Motivo"
+                  @click="store.alerta(caso.motivo_finalizado)"
+                />
+                <q-btn
+                  color="red-4"
+                  label="Reabrir o Caso"
+                  @click="reabrirCaso()"
+                />
+              </template>
+            </q-banner>
+          </div>
         </template>
       </q-splitter>
     </div>
@@ -467,6 +508,8 @@ import { api } from "src/boot/axios";
 import { useStore } from "src/stores/store";
 import { Dialog } from "quasar";
 import TimelineTramitacao from "./TimelineTramitacao.vue";
+import { editorFunc, fonts } from "../utils/variaveis.js";
+
 export default {
   name: "CasoTramitacoes",
   components: { LabelData, TimelineTramitacao },
@@ -479,12 +522,16 @@ export default {
 
   setup() {
     const store = useStore();
-    return { store, api };
+
+    return { store, api, editorFunc, fonts };
   },
   data() {
     return {
       // Franquear acesso
       telaAcesso: false,
+
+      motivoFinalizacao: null,
+      telaFinalizacao: false,
 
       telaShareGrupo: false,
       shareGrupo: null,
@@ -510,6 +557,7 @@ export default {
       policialSelecionado: null,
       grupoSelecionado: null,
       subGrupoSelecionado: null,
+      usuarios: null,
 
       quemEhVc: null,
       carga: null,
@@ -541,9 +589,11 @@ export default {
 
   computed: {
     subGruposFiltrados() {
-      return this.subGrupos.filter(
-        (item) => item.id_grupo == this.idGrupoSelecionado
-      );
+      if (this.carga.tipo == 2) {
+        return this.subGrupos.filter((item) => item.id_grupo == this.carga.id);
+      } else {
+        return [];
+      }
     },
     nomeGrupo() {
       return this.grupos.find((item) => item.id == this.idGrupoSelecionado)
@@ -565,43 +615,6 @@ export default {
   },
 
   methods: {
-    async retCargaAtual() {
-      if (this.caso.carga_dipc) {
-        return "DIPC";
-      }
-
-      if (this.caso.id_grupo_carga) {
-        const nome = this.grupos.find((g) => g.id == this.carga.id).nome_grupo;
-        return nome;
-      }
-
-      if (this.caso.id_subgrupo_carga) {
-        const nome = this.subGrupos.find(
-          (s) => s.id == this.carga.id
-        ).nome_subgrupo;
-        return `Subgrupo: ${nome}`;
-      }
-
-      if (this.caso.id_usuario_carga) {
-        const user = await this.carregaUsuario(this.caso.id_usuario_carga);
-        return user[0].nome;
-      }
-
-      return "";
-    },
-
-    async carregaUsuario(id) {
-      const params = {
-        codigo_sys_func: "10032",
-        cpf_log: this.store.login.cpf_log,
-        id: id,
-      };
-
-      const resposta = await api.post("/consulta", params);
-
-      return resposta.data;
-    },
-
     async carregaDados() {
       this.store.telaCarregamento(true);
 
@@ -611,99 +624,34 @@ export default {
         id_caso: this.idCaso,
       };
 
-      const respostaGeral = await api.post("/consulta", the_param);
-      console.log("---aqui----");
-      console.log(respostaGeral.data);
+      this.store.telaCarregamento(true);
 
-      // Carregar o caso
-      const paramsCaso = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "10023",
-        id_caso: this.idCaso,
-      };
-
-      const respostaCaso = await api.post("/consulta", paramsCaso);
-      this.caso = respostaCaso.data[0];
-
-      // Carregar Acessos
-      const paramsAcessoGrupo = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "10027",
-        id_caso: this.idCaso,
-      };
-
-      const paramsAcessoSubGrupo = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "10028",
-        id_caso: this.idCaso,
-      };
-
-      const paramsAcessoUsuarios = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "10029",
-        id_caso: this.idCaso,
-      };
-
-      const resposta1 = await api.post("/consulta", paramsAcessoGrupo);
-      const resposta2 = await api.post("/consulta", paramsAcessoSubGrupo);
-      const resposta3 = await api.post("/consulta", paramsAcessoUsuarios);
-
-      this.acessoGrupos = resposta1.data;
-      this.acessoSubGrupos = resposta2.data;
-      this.acessoUsuarios = resposta3.data;
-
-      // Carregar Tramitações
-      const paramsTramitacoes = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "10024",
-        id_caso: this.idCaso,
-      };
-
-      const respostaTramitacoes = await api.post(
-        "/consulta",
-        paramsTramitacoes
-      );
-
-      this.tramitacoes = respostaTramitacoes.data;
-
-      // Carrega QuemEhVoce.
-      const param_quemSouEu = {
-        codigo_sys_func: "20037",
-        cpf_log: this.store.login.cpf_log,
-      };
-
-      const resposta = await api.post("/consulta", param_quemSouEu);
-      this.quemEhVc = resposta.data;
-
-      // De quem é a carga
-      this.carga = this.deQuemEhACarga();
-
-      // Carrega Grupos
-      const paramsGrupos = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "10025",
-      };
-
-      const respostaGrupos = await api.post("/consulta", paramsGrupos);
-
-      this.grupos = respostaGrupos.data;
-
-      // Carrega Subgrupos
-      const paramsSubGrupos = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "10026",
-      };
-
-      const respostaSubGrupos = await api.post("/consulta", paramsSubGrupos);
-
-      this.subGrupos = respostaSubGrupos.data;
+      const resposta = await api.post("/consulta", the_param);
 
       this.store.telaCarregamento(false);
-      this.criarArvore();
+
+      this.caso = resposta.data.caso[0];
+      this.acessoGrupos = resposta.data.acessoGrupos;
+      this.acessoSubGrupos = resposta.data.acessoSubGrupos;
+      this.acessoUsuarios = resposta.data.acessoUsuarios;
+
+      if (resposta.data.tramitacoes) {
+        // Caso haja tramitações
+        this.tramitacoes = resposta.data.tramitacoes.sort((a, b) => {
+          return b.id - a.id; // Colocar em ordem decrescente
+        });
+      }
+
+      this.quemEhVc = resposta.data.quemehvc;
+      this.carga = resposta.data.carga;
+      this.grupos = resposta.data.grupos;
+      this.subGrupos = resposta.data.subgrupos;
+      this.usuarios = resposta.data.usuarios;
 
       this.gruposFiltrados = this.grupos;
+      this.cargaAtual = this.carga.nome;
 
-      this.cargaAtual = await this.retCargaAtual();
+      this.criarArvore();
 
       this.dadosCarregados = true;
     },
@@ -747,8 +695,12 @@ export default {
       });
     },
 
-    async criarArvore() {
+    criarArvore() {
       let temp = [];
+
+      if (!this.acessosubGrupos) {
+        this.acessoSubGrupos = [];
+      }
 
       temp.push({
         id: "G",
@@ -759,58 +711,52 @@ export default {
 
       if (this.acessoGrupos) {
         for (let obj_grupo of this.acessoGrupos) {
-          // const temp_subgrupo_acesso = this.acessoSubGrupos.filter(
-          //   (o) => o.id_grupo == obj_grupo.id
-          // );
+          let temp_subgrupo_acesso = this.acessoSubGrupos.filter(
+            (o) => o.id_grupo == obj_grupo.id_grupo
+          );
+
+          let filho = [];
+          if (this.acessoSubGrupos) {
+            for (let obj of temp_subgrupo_acesso) {
+              filho.push({
+                id: `SG#${obj.id}`,
+                id_original: obj.id,
+                label: obj.nome_subgrupo,
+                caption: obj.desc_subgrupo,
+                icon: "fa-solid fa-house-user",
+              });
+            }
+          }
 
           temp[0].children.push({
             id: `G#${obj_grupo.id}`,
             id_original: obj_grupo.id,
             label: obj_grupo.nome_grupo,
             icon: "fa-solid fa-building-shield",
-            children: [],
+            children: filho,
           });
         }
       }
-
-      function adicionarN2(id, item) {
-        for (let b1 of temp) {
-          for (let b2 of b1.children) {
-            if (b2.id == id) {
-              b2.children.push(item);
-            }
-          }
-        }
-      }
-
-      if (this.acessoSubGrupos) {
-        for (let obj1 of this.acessoSubGrupos) {
-          adicionarN2(`G#${obj1.id_grupo}`, {
-            id: `SG#${obj1.id}`,
-            id_original: obj1.id,
-            label: obj1.nome_subgrupo,
-            caption: obj1.desc_subgrupo,
-            icon: "fa-solid fa-house-user",
-          });
-        }
-      }
-
-      temp.push({
-        id: "U",
-        label: "USUÁRIOS",
-        icon: "fa-regular fa-user",
-        children: [],
-      });
 
       if (this.acessoUsuarios) {
+        let filhosUser = [];
+
         for (let obj_usuario of this.acessoUsuarios) {
-          temp[1].children.push({
+          filhosUser.push({
             id: `U#${obj_usuario.id}`,
             label: obj_usuario.nome,
             avatar: this.retornaFoto(obj_usuario.foto),
           });
         }
+
+        temp.push({
+          id: "U",
+          label: "USUÁRIOS",
+          icon: "fa-regular fa-user",
+          children: filhosUser,
+        });
       }
+
       this.arvore = temp;
     },
 
@@ -845,7 +791,7 @@ export default {
 
     estaComACarga() {
       if (this.carga.tipo == 1) {
-        if (this.quemEhVc.usuario[0].usuario_dipc) {
+        if (this.quemEhVc.usuario_dipc) {
           return true;
         } else {
           return false;
@@ -853,8 +799,8 @@ export default {
       }
 
       if (this.carga.tipo == 2) {
-        if (this.quemEhVc.grupos) {
-          if (this.quemEhVc.grupos[0].id_grupo == this.carga.id) {
+        if (this.quemEhVc.id_grupo) {
+          if (this.quemEhVc.id_grupo == this.carga.id) {
             return true;
           } else {
             return false;
@@ -865,8 +811,8 @@ export default {
       }
 
       if (this.carga.tipo == 3) {
-        if (this.quemEhVc.subgrupos) {
-          if (this.quemEhVc.subgrupos[0].id_subgrupo == this.carga.id) {
+        if (this.quemEhVc.id_subgrupo) {
+          if (this.quemEhVc.id_subgrupo == this.carga.id) {
             return true;
           } else {
             return false;
@@ -877,7 +823,7 @@ export default {
       }
 
       if (this.carga.tipo == 4) {
-        if (this.quemEhVc.usuario[0].id == this.carga.id) {
+        if (this.quemEhVc.id == this.carga.id) {
           return true;
         } else {
           return false;
@@ -893,7 +839,7 @@ export default {
 
       switch (this.carga.tipo) {
         case 1:
-          if (this.quemEhVc.usuario[0].usuario_dipc) {
+          if (this.quemEhVc.usuario_dipc) {
             this.origemCarga = {
               idCaso: this.caso.id,
               dipc: true,
@@ -910,10 +856,10 @@ export default {
           break;
 
         case 2: // Grupo
-          const idGrupo = this.quemEhVc.grupos[0].id_grupo;
-          const nomeGrupo = this.grupos.find((grupo) => grupo.id == idGrupo);
+          const idGrupo = this.quemEhVc.id_grupo;
+          const nomeGrupo = this.quemEhVc.nome_grupo;
 
-          if (this.carga.id == this.quemEhVc.grupos[0].id_grupo) {
+          if (this.carga.id == this.quemEhVc.id_grupo) {
             this.origemCarga = {
               idCaso: this.caso.id,
               dipc: false,
@@ -929,10 +875,8 @@ export default {
           break;
 
         case 3: // SubGrupo
-          const idSubGrupo = this.quemEhVc.subgrupos[0].id_subgrupo;
-          const nomeSubGrupo = this.subGrupos.find(
-            (sub) => sub.id == idSubGrupo
-          ).nome_subgrupo;
+          const idSubGrupo = this.quemEhVc.id_subgrupo;
+          const nomeSubGrupo = this.quemEhVc.nome_subgrupo;
 
           if (idSubGrupo == this.carga.id) {
             this.origemCarga = {
@@ -952,16 +896,16 @@ export default {
         case 4: // Usuário
           const idSubGrupoLast = await this.retornaLastTramitacao(
             this.caso.id,
-            this.quemEhVc.usuario[0].id
+            this.quemEhVc.id
           );
 
           this.origemCarga = {
             idCaso: this.caso.id,
             dipc: false,
-            caption: this.quemEhVc.usuario.nome,
+            caption: this.quemEhVc.nome,
             idGrupo: null,
             idSubGrupo: null,
-            idUsuario: this.quemEhVc.usuario[0].id,
+            idUsuario: this.quemEhVc.id,
           };
 
           this.despachar(4, idSubGrupoLast.id_subgrupo_origem);
@@ -971,44 +915,6 @@ export default {
           this.store.alerta("Caso sem carga definida !");
           break;
       }
-    },
-
-    deQuemEhACarga() {
-      if (this.caso.carga_dipc) {
-        return {
-          nome: "DIPC",
-          tipo: 1,
-          id: null,
-        };
-      }
-
-      if (this.caso.id_grupo_carga) {
-        return {
-          nome: "NINT",
-          tipo: 2,
-          id: this.caso.id_grupo_carga,
-        };
-      }
-
-      if (this.caso.id_subgrupo_carga) {
-        return {
-          nome: "SUBGRUPO",
-          tipo: 3,
-          id: this.caso.id_subgrupo_carga,
-        };
-      }
-
-      if (this.caso.id_usuario_carga) {
-        return {
-          nome: "USUÁRIO",
-          tipo: 4,
-          id: this.caso.id_usuario_carga,
-        };
-      }
-    },
-
-    verficarCarga() {
-      var timming = 0;
     },
 
     async retornaLastTramitacao(idCaso, idUsuario) {
@@ -1065,7 +971,7 @@ export default {
         // Limpar o motivo
         this.despacho = "";
       } else {
-        this.dadosErro = resposta.data;
+        this.dadosErro = params;
         this.respostaErro = resposta;
         this.telaErro = true;
       }
@@ -1081,18 +987,6 @@ export default {
       -2 - Retorno de Subgrupo para NINT
       -3 - Retorno de usuário para subgrupo
        */
-
-      // Passo 01: Verificar se o cara tem ou não a carga
-      const params1 = {
-        codigo_sys_func: "20037",
-        cpf_log: this.store.login.cpf_log,
-      };
-
-      this.store.telaCarregamento(true);
-      const resposta = await api.post("/consulta", params1);
-      this.store.telaCarregamento(false);
-
-      this.quemEhVc = resposta.data;
 
       switch (tipoDespacho) {
         case 1:
@@ -1141,7 +1035,7 @@ export default {
             tipo: -3,
             idCaso: this.caso.id,
             dipc: false,
-            caption: "",
+            caption: this.subGrupos.find((s) => s.id == id).nome_subgrupo,
             idGrupo: null,
             idSubGrupo: id,
             idUsuario: null,
@@ -1149,12 +1043,27 @@ export default {
           break;
 
         case -1:
+          this.destinoCarga = {
+            tipo: -1,
+            idCaso: this.caso.id,
+            dipc: true,
+            caption: "DIPC",
+            idGrupo: id,
+            idSubGrupo: null,
+            idUsuario: null,
+          };
           break;
 
         case -2:
-          break;
-
-        case -3:
+          this.destinoCarga = {
+            tipo: -2,
+            idCaso: this.caso.id,
+            dipc: false,
+            caption: this.grupos.find((s) => s.id == id).nome_grupo,
+            idGrupo: id,
+            idSubGrupo: null,
+            idUsuario: null,
+          };
           break;
 
         default:
@@ -1206,6 +1115,168 @@ export default {
       this.policialSelecionado = null;
 
       this.telaPolicial = true;
+    },
+
+    retornarCarga() {
+      if (!this.tramitacoes) {
+        this.store.alerta("Ainda não há tramitações para esse caso ");
+        return false;
+      }
+
+      if (!this.estaComACarga()) {
+        this.store.alerta("Esse usuário não está com a carga");
+        return false;
+      }
+
+      if (this.podeRetornarCarga()) {
+        let id;
+        let tipo;
+
+        if (this.carga.tipo == 2) {
+          tipo = -1;
+
+          id = null;
+
+          this.origemCarga = {
+            idCaso: this.caso.id,
+            dipc: false,
+            caption: this.quemEhVc.nome_grupo,
+            idGrupo: this.carga.id,
+            idSubGrupo: null,
+            idUsuario: null,
+          };
+        } else {
+          tipo = -2;
+
+          const tramit = this.tramitacoes.reduce((mId, obj) => {
+            return obj.id > mId ? obj : mId;
+          });
+
+          id = tramit.id_grupo_origem;
+
+          this.origemCarga = {
+            idCaso: this.caso.id,
+            dipc: false,
+            caption: this.quemEhVc.nome_subgrupo,
+            idGrupo: null,
+            idSubGrupo: this.carga.id,
+            idUsuario: null,
+          };
+        }
+
+        this.despachar(tipo, id);
+      } else {
+        this.store.alerta(
+          "Somente NINTs e seus Subgrupos podem retornar cargas que ainda não foram tramitadas"
+        );
+      }
+    },
+
+    podeRetornarCarga() {
+      const tramit = this.tramitacoes.reduce((maiorId, objetoAtual) => {
+        return objetoAtual.id > maiorId.id ? objetoAtual : maiorId;
+      });
+
+      if ([2, 3].includes(this.carga.tipo)) {
+        if (this.carga.tipo == 3) {
+          if (tramit.id_usuario_origem) {
+            return false;
+          } else if (tramit.id_grupo_origem) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          if (tramit.dipc_origem) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      } else {
+        return false;
+      }
+    },
+
+    telaMotivoFinalizacao() {
+      if (![2, 3].includes(this.carga.tipo)) {
+        this.store.alerta(
+          "Somente NINTs e seus respectivos subgrupos podem finalizar um caso."
+        );
+        return false;
+      }
+
+      if (!this.estaComACarga()) {
+        this.store.alerta("Esse usuário não está com a carga");
+        return false;
+      }
+
+      this.telaFinalizacao = true;
+    },
+
+    async finalizarCaso() {
+      if (!this.motivoFinalizacao || this.motivoFinalizacao == "") {
+        this.store.alerta("Favor preencher o motivo");
+        return false;
+      }
+
+      const params = {
+        codigo_sys_func: "20041",
+        cpf_log: this.store.login.cpf_log,
+        tipo_crud: 1,
+        id_caso: this.caso.id,
+        motivo: this.motivoFinalizacao,
+      };
+
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params);
+      this.store.telaCarregamento(false);
+
+      if (resposta.data.status_ret == 0) {
+        // Recarregar os dados
+        this.carregaDados();
+        this.telaFinalizacao = false;
+      } else {
+        this.dadosErro = params;
+        this.respostaErro = resposta;
+        this.telaErro = true;
+      }
+    },
+
+    async reabrirCaso() {
+      if (!this.estaComACarga()) {
+        this.store.alerta(
+          "Somente o NINT ou subgrupo que está com a carga pode reabrir o caso"
+        );
+        return false;
+      }
+      Dialog.create({
+        title: "Reabrir o Caso",
+        message: "Deseja reabrir o caso ? ",
+        cancel: true,
+        persistent: true,
+      }).onOk(async () => {
+        const params = {
+          codigo_sys_func: "20041",
+          cpf_log: this.store.login.cpf_log,
+          tipo_crud: 2,
+          id_caso: this.caso.id,
+          motivo: null,
+        };
+
+        this.store.telaCarregamento(true);
+        const resposta = await api.post("/consulta", params);
+        this.store.telaCarregamento(false);
+
+        if (resposta.data.status_ret == 0) {
+          // Recarregar os dados
+          this.carregaDados();
+        } else {
+          this.dadosErro = params;
+          this.respostaErro = resposta;
+          this.telaErro = true;
+        }
+      });
     },
   },
 };

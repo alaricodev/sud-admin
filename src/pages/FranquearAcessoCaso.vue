@@ -608,7 +608,6 @@ export default {
       this.store.telaCarregamento(false);
 
       this.dados = resposta.data.casos[0];
-      console.log(this.dados);
 
       if (this.dados.status_ret == 1) {
         this.store.alerta(this.dados.retorno);
@@ -634,7 +633,6 @@ export default {
           tratado: this.infoTratadaSub,
         };
 
-        console.log(params);
         this.store.telaCarregamento(true);
         const resposta = await api.post("/consulta", params);
 
@@ -668,7 +666,6 @@ export default {
           tratado: true,
         };
 
-        console.log(params);
         this.store.telaCarregamento(true);
         const resposta = await api.post("/consulta", params);
 
@@ -771,7 +768,7 @@ export default {
     },
     subGruposDoGrupo(id) {
       let retorno = [];
-      console.log(this.casosSubGrupo);
+
       if (this.casosSubGrupo) {
         retorno = this.casosSubGrupo.filter((a) => a.id_grupo === id);
       } else {

@@ -85,7 +85,7 @@
               <q-item
                 clickable
                 @click="$router.push(item.rota)"
-                v-if="item.liberado"
+                v-if="liberaMenu(item.rota, item.liberado)"
               >
                 <q-item-section avatar>
                   <q-icon :color="item.corIcone" :name="item.icone" />
@@ -97,7 +97,7 @@
               </q-item>
 
               <q-separator
-                v-if="item.separador && item.liberado"
+                v-if="item.separador && liberaMenu(item.rota, item.liberado)"
                 color="primary"
               />
             </div>
@@ -123,7 +123,7 @@
               <q-item
                 clickable
                 @click="$router.push(item.rota)"
-                v-if="item.liberado"
+                v-if="liberaMenu(item.rota, item.liberado)"
               >
                 <q-item-section avatar>
                   <q-icon :color="item.corIcone" :name="item.icone" />
@@ -135,6 +135,14 @@
             </div>
           </div>
         </q-list>
+      </div>
+      <div
+        class="text-grey-7 text-center q-ma-sm"
+        v-if="!store.layout.miniState"
+      >
+        <div @click="store.alerta(`<pre>${this.store.login}</pre>`)">
+          {{ this.store.login.nome_usuario }}
+        </div>
       </div>
       <div
         class="text-grey-7 text-center flex flex-center column"
@@ -199,6 +207,20 @@ export default defineComponent({
     versao() {
       return `Versão ${this.pack.version}`;
     },
+    liberaMenu(rota, liberado) {
+      if (rota == "/cadwhatsapp" && this.store.login.dipc) {
+        return true;
+      }
+      if (rota == "/denunciasarquivadas" && this.store.login.dipc) {
+        return true;
+      }
+
+      if (rota == "/configsud" && this.store.login.nint) {
+        return true;
+      }
+
+      return liberado;
+    },
   },
 
   data() {
@@ -223,15 +245,15 @@ export default defineComponent({
           separador: true,
           liberado: false,
         },
-        {
-          icone: "fa-solid fa-box-archive",
-          corIcone: "primary",
-          texto: "Denúncias Arquivadas",
-          corTexto: "white",
-          rota: "/denunciasarquivadas",
-          separador: true,
-          liberado: true,
-        },
+        // {
+        //   icone: "fa-solid fa-box-archive",
+        //   corIcone: "primary",
+        //   texto: "Denúncias Arquivadas",
+        //   corTexto: "white",
+        //   rota: "/denunciasarquivadas",
+        //   separador: true,
+        //   liberado: true,
+        // },
         {
           icone: "fa-solid fa-gears",
           corIcone: "primary",
@@ -329,15 +351,12 @@ export default defineComponent({
         if (event.data.tokenWizard) {
           store.tokenWizard = event.data.tokenWizard;
           store.token = await checkToken(store.tokenWizard);
-          api.defaults.headers.common[
-            "authorization"
-          ] = `Bearer ${store.token}`;
+          api.defaults.headers.common["authorization"] = `${store.token}`;
+          api.defaults.headers.common["cpf"] = `${userData.cpf}`;
           // Refresh no token a cada 10 minutos (10 minutos * 60 segundos * 1000 milisegundos)
           setInterval(async () => {
             store.token = await checkToken(store.tokenWizard);
-            api.defaults.headers.common[
-              "authorization"
-            ] = `Bearer ${store.token}`;
+            api.defaults.headers.common["authorization"] = `${store.token}`;
           }, 10 * 60 * 1000);
         }
       }

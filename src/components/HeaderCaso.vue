@@ -50,6 +50,11 @@
       msg="arquivado"
       :tipo="1"
     />
+    <label-carimbo
+      v-if="dados.casos[0].finalizado == true"
+      msg="Finalizado"
+      :tipo="4"
+    />
     <q-space />
     <q-btn
       color="primary"

@@ -96,6 +96,11 @@ export default {
       return `https://getin.pc.sc.gov.br/get_files_imgUser/${foto}`;
     },
     async remover(id_usuario, idGrupo, idSubGrupo) {
+      if (!idSubGrupo && this.store.login.nint) {
+        this.store.alerta("Somente DIPC");
+        return false;
+      }
+
       Dialog.create({
         title: "Remoção do Grupo",
         message: "Deseja remover esse usuário do Grupo ? ",

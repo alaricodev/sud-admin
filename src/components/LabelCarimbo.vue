@@ -2,6 +2,7 @@
   <span v-if="tipo == 1" class="q-ml-xl stamp is-nope">{{ msg }}</span>
   <span v-if="tipo == 2" class="q-ml-xl stamp is-approved">{{ msg }}</span>
   <span v-if="tipo == 3" class="q-ml-xl stamp is-draft">{{ msg }}</span>
+  <span v-if="tipo == 4" class="q-ml-xl stamp is-end">{{ msg }}</span>
 </template>
 
 <script>
@@ -59,6 +60,15 @@ export default {
   border: 0.5rem solid #0a9928;
   -webkit-mask-position: 13rem 6rem;
   transform: rotate(-14deg);
+  border-radius: 0;
+}
+
+.is-end {
+  color: #0a9928;
+  border: 0.4rem solid #0a9928;
+  -webkit-mask-position: 13rem 6rem;
+  transform: rotate(-10deg);
+  font-size: 1.5rem;
   border-radius: 0;
 }
 

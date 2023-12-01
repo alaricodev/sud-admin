@@ -285,14 +285,14 @@
             /></q-item-section>
             <q-item-section>Classificar a informação </q-item-section>
           </q-item>
-          <q-separator />
+          <!-- <q-separator />
 
           <q-item clickable @click="franquearAcesso()">
             <q-item-section avatar
               ><q-icon color="grey-8" name="fa-solid fa-user-check"
             /></q-item-section>
             <q-item-section>Franquear acesso à informação</q-item-section>
-          </q-item>
+          </q-item> -->
         </q-list>
       </q-menu>
     </q-btn>

@@ -1,6 +1,6 @@
 we
 <template>
-  <div v-if="store.login.nivel >= 3" class="flex flex-center q-pa-md">
+  <div class="flex flex-center q-pa-md">
     <div
       class="bg-white flex column"
       style="
@@ -66,13 +66,21 @@ we
                 </q-tab-panel>
 
                 <q-tab-panel name="2">
-                  <div class="flex flex-center">
+                  <div v-if="store.login.nivel >= 3" class="flex flex-center">
                     <config-blacklist />
+                  </div>
+                  <div v-else class="flex flex-center text-h1">
+                    Nível 3 necessário
                   </div>
                 </q-tab-panel>
 
                 <q-tab-panel name="3">
-                  <config-usuario />
+                  <div v-if="store.login.nivel >= 3">
+                    <config-usuario />
+                  </div>
+                  <div class="flex flex-center text-h1" v-else>
+                    Nível 3 necessário
+                  </div>
                 </q-tab-panel>
               </q-tab-panels>
             </q-card>
@@ -80,9 +88,6 @@ we
         </div>
       </div>
     </div>
-  </div>
-  <div class="flex flex-center" v-else>
-    <div class="flex flex-center text-h4">Nível 3 necessário</div>
   </div>
 </template>
 
