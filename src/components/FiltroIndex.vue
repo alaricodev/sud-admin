@@ -22,7 +22,7 @@
       </q-card-section>
       <q-card-section>
         <div class="text-subtitle1 text-bold text-grey-8 full-width">
-          Filtro Básico
+          Filtro de Carga
         </div>
         <q-separator color="primary" />
         <div>
@@ -34,7 +34,7 @@
       </q-card-section>
       <q-card-section>
         <div class="text-subtitle1 text-bold text-grey-8 full-width">
-          Casos finalizados
+          Status do Caso
         </div>
         <q-separator color="primary" />
         <div>
@@ -72,35 +72,35 @@
             unchecked-icon="panorama_fish_eye"
             v-model="store.filtros.tipo"
             val="TODOS"
-            label="TODOS"
+            label="Todos"
           />
           <q-radio
             checked-icon="task_alt"
             unchecked-icon="panorama_fish_eye"
             v-model="store.filtros.tipo"
             val="SUD"
-            label="Denúncia Anônima"
+            label="Denúncia Online"
           />
           <q-radio
             checked-icon="task_alt"
             unchecked-icon="panorama_fish_eye"
             v-model="store.filtros.tipo"
             val="SOS_ESCOLA"
-            label="SOS ESCOLA"
+            label="SOS Escola"
           />
           <q-radio
             checked-icon="task_alt"
             unchecked-icon="panorama_fish_eye"
             v-model="store.filtros.tipo"
             val="DISQUE_DENUNCIA"
-            label="DISQUE DENÚNCIA"
+            label="Disque Denúncia"
           />
           <q-radio
             checked-icon="task_alt"
             unchecked-icon="panorama_fish_eye"
             v-model="store.filtros.tipo"
             val="WHATSAPP"
-            label="WHATSAPP"
+            label="Whatsapp"
           />
         </div>
       </q-card-section>

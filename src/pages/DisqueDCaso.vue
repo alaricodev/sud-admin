@@ -94,6 +94,7 @@ export default {
   created() {
     this.carregarCaso(this.$route.params.id);
   },
+
   setup() {
     const store = useStore();
 

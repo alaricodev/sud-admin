@@ -259,6 +259,11 @@
 
       <q-card-section>
         <q-scroll-area style="height: 400px; width: 450px">
+          <div v-if="subGruposFiltrados.length == 0">
+            <div class="flex flex-center">
+              Não existe subgrupos cadastrados para esse NINT
+            </div>
+          </div>
           <div
             v-for="subGrupo in subGruposFiltrados"
             :key="subGrupo.id"
@@ -284,6 +289,7 @@
           </div>
         </q-scroll-area>
       </q-card-section>
+
       <q-separator color="primary" />
       <q-card-actions align="right">
         <q-btn flat label="Cancelar" color="red" v-close-popup></q-btn>
@@ -375,6 +381,90 @@
     </q-card>
   </q-dialog>
 
+  <!-- Tela de escolha de policial para acesso -->
+  <q-dialog v-model="telaPolicialAcesso" persistent>
+    <q-card>
+      <q-bar>
+        <q-icon name="fa-solid fa-user-check" />
+        <div class="text-body1">Escolha o Policial</div>
+        <q-space />
+        <q-btn flat icon="close" size="sm" v-close-popup></q-btn>
+      </q-bar>
+      <q-card-section>
+        <div class="full-width">
+          <q-input
+            outlined
+            dense
+            v-model="nomePesPolicial"
+            label="Nome do Policial"
+            @keyup.enter="pesquisarPolicial(nomePesPolicial)"
+          >
+            <template v-slot:after>
+              <q-btn
+                round
+                dense
+                flat
+                icon="search"
+                color="black"
+                @click="pesquisarPolicial(nomePesPolicial)"
+              />
+            </template>
+            <template v-slot:hint> Field Hint</template>
+          </q-input>
+        </div>
+      </q-card-section>
+      <q-separator color="primary" />
+      <q-card-section>
+        <q-scroll-area style="height: 400px; width: 450px">
+          <div
+            class="q-pa-sm"
+            v-for="policial in dadosPolicial"
+            :key="policial.id"
+          >
+            <q-item
+              clickable
+              style="
+                background-color: rgb(247, 246, 246);
+                border-radius: 5px;
+                border: 1px solid rgb(201, 198, 198);
+              "
+              @click="
+                policialSelecionado = policial;
+                acessoAvulso(policial);
+              "
+            >
+              <q-item-section avatar>
+                <q-avatar>
+                  <img :src="retornaFoto(policial.foto)" />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ policial.nome }}</q-item-label>
+                <q-item-label caption>
+                  Matricula: {{ policial.matricula }} CPF: {{ policial.cpf }}
+                </q-item-label>
+                <q-item-label caption>
+                  Cargo: {{ policial.cargo }}
+                </q-item-label>
+              </q-item-section>
+
+              <q-item-section side top>
+                <q-badge
+                  :color="store.corAcesso(policial.nivel_acesso)"
+                  :label="policial.nivel_acesso"
+                />
+              </q-item-section>
+            </q-item>
+          </div>
+        </q-scroll-area>
+      </q-card-section>
+      <q-separator color="primary" />
+      <q-card-actions align="right">
+        <q-btn flat label="Cancelar" color="red" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
   <q-page v-if="dadosCarregados">
     <div class="full-width q-mb-md" style="display: flex">
       <div style="width: 4%">
@@ -411,6 +501,12 @@
                   <q-icon name="fa-regular fa-calendar-xmark" />
                 </q-item-section>
                 <q-item-section>Finalizar Caso</q-item-section>
+              </q-item>
+              <q-item clickable @click="franquearAcesso()">
+                <q-item-section avatar>
+                  <q-icon name="fa-solid fa-person" />
+                </q-item-section>
+                <q-item-section>Permitir visualização</q-item-section>
               </q-item>
               <q-separator />
               <q-item clickable @click="prompt = true">
@@ -460,9 +556,21 @@
         </template>
         <template v-slot:after>
           <div class="q-ml-md">
-            <div class="full-width">
-              <div class="text-overline">Acessos: {{ nodoSelecionado }}</div>
-            </div>
+            <q-toolbar dense class="grey">
+              <div class="text-overline">Acessos</div>
+
+              <q-space />
+
+              <q-btn
+                flat
+                dense
+                icon="delete"
+                label="remover acesso"
+                v-if="validarBtnRemover() && store.login.dipc"
+                @click="removerAcesso()"
+              />
+            </q-toolbar>
+
             <q-tree
               class="q-mt-md"
               :nodes="arvore"
@@ -551,6 +659,7 @@ export default {
       origemCarga: {},
       destinoCarga: {},
 
+      telaPolicialAcesso: false,
       telaPolicial: false,
       nomePesPolicial: null,
       dadosPolicial: null,
@@ -697,10 +806,11 @@ export default {
 
     criarArvore() {
       let temp = [];
+      let temp_subgrupo_acesso = [];
 
-      if (!this.acessosubGrupos) {
-        this.acessoSubGrupos = [];
-      }
+      // if (!this.acessosubGrupos) {
+      //   this.acessoSubGrupos = [];
+      // }
 
       temp.push({
         id: "G",
@@ -711,11 +821,14 @@ export default {
 
       if (this.acessoGrupos) {
         for (let obj_grupo of this.acessoGrupos) {
-          let temp_subgrupo_acesso = this.acessoSubGrupos.filter(
-            (o) => o.id_grupo == obj_grupo.id_grupo
-          );
+          if (this.acessoSubGrupos) {
+            temp_subgrupo_acesso = this.acessoSubGrupos.filter(
+              (o) => o.id_grupo == obj_grupo.id_grupo
+            );
+          }
 
           let filho = [];
+
           if (this.acessoSubGrupos) {
             for (let obj of temp_subgrupo_acesso) {
               filho.push({
@@ -1277,6 +1390,75 @@ export default {
           this.telaErro = true;
         }
       });
+    },
+    validarBtnRemover() {
+      if (this.nodoSelecionado) {
+        return this.nodoSelecionado.slice(0, 2) == "U#";
+      } else {
+        return false;
+      }
+    },
+    async removerAcesso() {
+      const idUsuario = this.nodoSelecionado.split("#")[1];
+
+      if (this.carga.id == idUsuario) {
+        this.store.alerta(
+          "Não se pode revogar o acesso do usuário que está com a carga !"
+        );
+        return false;
+      }
+
+      Dialog.create({
+        title: "Revogar Acesso",
+        message: `Deseja remover o acesso  ? `,
+        cancel: true,
+        persistent: true,
+      }).onOk(async () => {
+        const params = {
+          codigo_sys_func: "20043",
+          cpf_log: this.store.login.cpf_log,
+          id_caso: this.caso.id,
+          id_usuario: idUsuario,
+        };
+
+        this.store.telaCarregamento(true);
+        const resposta = await api.post("/consulta", params);
+        this.store.telaCarregamento(false);
+
+        if (resposta.data.status_ret == 0) {
+          // Recarregar os dados
+          this.carregaDados();
+          this.store.alerta(resposta.data.retorno);
+        } else {
+          this.store.alerta(resposta.data.retorno);
+        }
+      });
+    },
+
+    franquearAcesso() {
+      this.telaPolicialAcesso = true;
+    },
+
+    async acessoAvulso(policial) {
+      const params = {
+        codigo_sys_func: "20044",
+        cpf_log: this.store.login.cpf_log,
+        id_caso: this.caso.id,
+        id_usuario: policial.id,
+      };
+
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params);
+      this.store.telaCarregamento(false);
+
+      if (resposta.data.status_ret == 0) {
+        // Recarregar os dados
+        this.carregaDados();
+        this.telaPolicialAcesso = false;
+        this.store.alerta(resposta.data.retorno);
+      } else {
+        this.store.alerta(resposta.data.retorno);
+      }
     },
   },
 };

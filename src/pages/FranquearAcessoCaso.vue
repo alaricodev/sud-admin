@@ -766,6 +766,7 @@ export default {
     voltar(tipo, id) {
       this.$router.push(this.store.rotaCaso(tipo, id));
     },
+
     subGruposDoGrupo(id) {
       let retorno = [];
 

@@ -1,4 +1,46 @@
 <template>
+  <q-dialog persistent v-model="telaEditarRelato" style="width: 600px">
+    <q-card>
+      <q-card-section>
+        <q-item>
+          <q-item-section top avatar>
+            <q-avatar>
+              <img :src="store.retornaFoto(store.login.foto_usuario)" />
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label
+              ><b>{{ store.login.nome_usuario }}</b></q-item-label
+            >
+            <q-item-label
+              >Alteração da transcrição original:
+              <b> {{ dataAtual }} </b>
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-card-section>
+      <q-separator color="primary" />
+      <q-card-section>
+        <div class="q-pa-md" style="width: 500px; height: 450px">
+          <textarea
+            id="story"
+            v-model="relato"
+            name="story"
+            rows="20"
+            cols="62"
+            class="q-pa-sm"
+          >
+          </textarea>
+        </div>
+      </q-card-section>
+      <q-separator color="primary" />
+      <q-card-actions align="right">
+        <q-btn flat label="Atualizar" @click="atualizaRelato()" />
+        <q-btn flat label="Cancelar" color="red" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
   <div class="q-pa-md">
     <div class="text-h5">Relato da Denúncia</div>
   </div>
@@ -7,8 +49,9 @@
     <div class="q-pa-md" style="max-width: 90%">
       <!-- <div v-html="dados.casos[0].relato" /> -->
       <pre class="pre-container">
-        {{ dados.casos[0].relato }}
+        {{ relatoView }}
       </pre>
+      <q-btn flat icon="edit" label="editar" @click="telaEditarRelato = true" />
     </div>
     <div class="q-pa-md" style="width: 100%">
       <div class="text-h5">Palavras mais usadas</div>
@@ -56,14 +99,26 @@ import { api } from "boot/axios";
 import { ref } from "vue";
 import { getTopWords } from "../utils/util";
 import { useStore } from "src/stores/store";
+import { formatarDataExtenso } from "src/utils/util";
 export default {
   name: "DisqueDAudio",
   created() {
     this.recebeAudio();
+    this.relatoView = this.dados.casos[0].relato;
+  },
+  computed: {
+    dataAtual() {
+      var dataAtual = new Date();
+      var timestamp = dataAtual.getTime();
+      return formatarDataExtenso(timestamp);
+    },
   },
   data() {
     return {
       audioCarregado: false,
+      telaEditarRelato: false,
+      relato: null,
+      relatoView: null,
     };
   },
   setup() {
@@ -80,6 +135,14 @@ export default {
     dados: {
       type: Object,
       required: true,
+    },
+  },
+
+  watch: {
+    telaEditarRelato() {
+      if (this.telaEditarRelato) {
+        this.relato = this.dados.casos[0].relato;
+      }
     },
   },
 
@@ -102,6 +165,29 @@ export default {
       } catch (error) {
         this.store.telaCarregamento(false);
         console.error(error);
+      }
+    },
+
+    async atualizaRelato() {
+      const params = {
+        codigo_sys_func: "20042",
+        cpf_log: this.store.login.cpf_log,
+        id_caso: this.dados.casos[0].id,
+        relato: this.relato,
+        relato_antigo: this.dados.casos[0].relato,
+      };
+
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params);
+      this.store.telaCarregamento(false);
+
+      if (resposta.data.status_ret == 0) {
+        // Recarregar os dados
+        this.telaEditarRelato = false;
+        this.relatoView = this.relato;
+        this.store.alerta(resposta.data.retorno);
+      } else {
+        console.error(resposta);
       }
     },
   },

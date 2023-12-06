@@ -36,7 +36,7 @@
 
   <!-- Código principal começa aqui   -->
 
-  <q-card class="my-card q-my-sm" flat bordered style="border-radius: 10px">
+  <q-card class="q-my-sm" flat bordered style="border-radius: 10px">
     <q-badge v-if="!dados.data_recebimento" color="green" floating
       >NOVO</q-badge
     >
@@ -98,6 +98,17 @@
 
         <q-item-section class="text-subtitle2">
           {{ formatarDataGrid(dados.data_caso) }}
+        </q-item-section>
+
+        <q-item-section>
+          <div class="row">
+            <div class="col-2">
+              <q-icon name="fa-solid fa-dolly" size="sm" color="grey-7" />
+            </div>
+            <div class="col q-pt-xm text-grey-7">
+              {{ labelCarga }}
+            </div>
+          </div>
         </q-item-section>
 
         <q-item-section>
@@ -237,6 +248,21 @@ export default {
   },
 
   computed: {
+    labelCarga() {
+      if (this.dados.carga_dipc) {
+        return "DINT";
+      }
+      if (this.dados.id_grupo_carga) {
+        return "NINT";
+      }
+      if (this.dados.id_subgrupo_carga) {
+        return "Subgrupo";
+      }
+      if (this.dados.id_usuario_carga) {
+        return "Policial";
+      }
+      return "";
+    },
     avatar() {
       if (this.dados.tipo == "WHATSAPP") {
         return {
@@ -292,11 +318,6 @@ export default {
 </script>
 
 <style>
-.my-card {
-  width: 100%;
-  max-width: 100%;
-}
-
 .text-container {
   width: 800px; /* Defina a largura do contêiner conforme necessário */
 }

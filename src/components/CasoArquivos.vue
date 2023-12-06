@@ -1,43 +1,93 @@
 <template>
-  <!-- mostrar midias -->
-  <q-dialog v-model="telaMidia" full-width full-height>
-    <q-card>
-      <q-card-section>
-        <div class="text-h6">Full Width</div>
-      </q-card-section>
-
-      <q-card-section class="q-pt-none">
-        <div v-if="arquivoSelecionado.tipo.toUpperCase() == 'IMAGEM'">
-          <q-img
+  <!-- Dialogo Vídeo -->
+  <q-dialog
+    persistent
+    ref="dialogRef"
+    @hide="onDialogHide"
+    transition-show="slide-up"
+    transition-hide="slide-down"
+    class="dialog_video"
+    v-model="telaMidiaVideo"
+  >
+    <div class="div_size_video">
+      <div class="div_video no-shadow">
+        <video width="100" controls>
+          <source
             :src="`${url}/downloadmidia/${arquivoSelecionado.nome}`"
-            :ratio="4 / 3"
-            class="flex flex-center"
-            style="width: 40%; height: 40%"
+            :type="'video/' + arquivoSelecionado.extensao"
           />
-        </div>
-        <div v-if="arquivoSelecionado.tipo.toUpperCase() == 'VÍDEO'">
-          <video controls width="640" height="360">
-            <source
-              :src="`${url}/downloadmidia/${arquivoSelecionado.nome}`"
-              type="video/mp4"
-            />
-            Seu navegador não suporta o elemento de vídeo.
-          </video>
-        </div>
-        <div v-if="arquivoSelecionado.tipo.toUpperCase() == 'AUDIO'">
-          <q-audio controls>
-            <source
-              :src="`${url}/downloadmidia/${arquivoSelecionado.nome}`"
-              type="audio/mp3"
-            />
-          </q-audio>
-        </div>
-      </q-card-section>
+        </video>
+      </div>
+      <q-btn
+        class="btn-close"
+        color="white"
+        icon="close"
+        size="md"
+        flat
+        round
+        dense
+        v-close-popup
+      />
+    </div>
+  </q-dialog>
 
-      <q-card-actions align="right" class="bg-white text-teal">
-        <q-btn flat label="OK" v-close-popup />
-      </q-card-actions>
-    </q-card>
+  <!-- Dialogo de Áudio -->
+  <q-dialog
+    persistent
+    ref="dialogRef"
+    @hide="onDialogHide"
+    transition-show="slide-up"
+    transition-hide="slide-down"
+    class="dialog_audio"
+    v-model="telaMidiaAudio"
+  >
+    <div class="div_size_audio">
+      <div class="div_audio no-shadow">
+        <audio controls controlsList="nodownload">
+          <source
+            :src="`${url}/downloadmidia/${arquivoSelecionado.nome}`"
+            :type="'audio/' + arquivoSelecionado.extensao"
+          />
+        </audio>
+      </div>
+      <q-btn
+        class="btn-close"
+        color="white"
+        icon="close"
+        size="md"
+        flat
+        round
+        dense
+        v-close-popup
+      />
+    </div>
+  </q-dialog>
+
+  <!-- Dialogo da Imagem -->
+  <q-dialog
+    persistent
+    ref="dialogRef"
+    @hide="onDialogHide"
+    transition-show="slide-up"
+    transition-hide="slide-down"
+    class="dialog_image"
+    v-model="telaMidiaImagem"
+  >
+    <div class="div_size_image">
+      <div class="div_image no-shadow">
+        <img :src="`${url}/downloadmidia/${arquivoSelecionado.nome}`" />
+      </div>
+      <q-btn
+        class="btn-close-img"
+        color="white"
+        icon="close"
+        size="md"
+        flat
+        round
+        dense
+        v-close-popup
+      />
+    </div>
   </q-dialog>
 
   <!-- Tela principal -->
@@ -93,7 +143,6 @@ export default {
   name: "CasoArquivos",
 
   created() {
-    console.log(this.arquivos);
     this.url = api.defaults.baseURL;
   },
 
@@ -106,7 +155,9 @@ export default {
 
   data() {
     return {
-      telaMidia: false,
+      telaMidiaImagem: false,
+      telaMidiaVideo: false,
+      telaMidiaAudio: false,
       arquivoSelecionado: null,
       url: null,
     };
@@ -129,13 +180,22 @@ export default {
           return "fa-solid fa-table";
         case "AUDIO":
           return "headphones";
+        case "IMAGEM":
+          return "fa-regular fa-file-image";
         default:
           return "fa-regular fa-file";
       }
     },
     mostraArquivo(arquivo) {
       this.arquivoSelecionado = arquivo;
-      this.telaMidia = true;
+
+      if (this.arquivoSelecionado.tipo.toUpperCase() == "IMAGEM") {
+        this.telaMidiaImagem = true;
+      } else if (this.arquivoSelecionado.tipo.toUpperCase() == "AUDIO") {
+        this.telaMidiaAudio = true;
+      } else if (this.arquivoSelecionado.tipo.toUpperCase() == "VÍDEO") {
+        this.telaMidiaVideo = true;
+      }
     },
     downloadFile(arquivo) {
       if (arquivo.nome.trim() !== "") {
@@ -167,9 +227,95 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
-.my-card
-  width: 100%
-  max-width: 250px
-  max-height: 380px
+<style>
+.my-card {
+  width: 100%;
+  max-width: 250px;
+  max-height: 380px;
+}
+.div_size_image {
+  max-width: 100vw !important;
+  width: max-content !important;
+  height: max-content !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  position: relative;
+  padding: 0 40px;
+}
+
+.div_size_image .q-btn--dense.q-btn--round {
+  width: auto;
+  height: auto;
+}
+
+.div_image {
+  height: max-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.div_image img {
+  width: 770px;
+  height: 770px;
+  object-fit: contain;
+  border-radius: 8px;
+  max-height: 100vh;
+  max-width: 100vw;
+}
+
+.div_size_audio {
+  max-width: 100vw !important;
+  width: max-content !important;
+  height: max-content !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  position: relative;
+  padding: 30px;
+}
+
+.div_size_audio .q-btn--dense.q-btn--round {
+  width: auto;
+  height: auto;
+}
+
+.div_audio {
+  height: max-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+}
+
+.div_audio audio {
+  width: 500px;
+}
+
+.div_size_video {
+  max-width: 100vw !important;
+  width: max-content !important;
+  height: max-content !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  position: relative;
+  padding: 0 40px;
+}
+
+.div_size_video .q-btn--dense.q-btn--round {
+  width: auto;
+  height: auto;
+}
+
+.div_video {
+  height: max-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.div_video video {
+  width: 100vh;
+  border-radius: 8px;
+}
 </style>

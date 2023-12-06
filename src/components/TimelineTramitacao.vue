@@ -50,13 +50,6 @@
                   </q-avatar>
                   {{ dadosUsuario(tramitacao.id_usuario, 1) }}
                 </q-chip>
-
-                <q-btn
-                  v-if="tramitacao.id_usuario == store.login.id_usuario"
-                  flat
-                  icon="edit"
-                  color="primary"
-                />
               </q-card-section>
               <q-separator color="primary" />
               <q-card-section>
