@@ -98,7 +98,7 @@ export default defineComponent({
 
     // Inicia a função de consulta a cada segundo quando o componente é criado
     // Somente envia notificações caso o sistema esteja em produção
-    // e o usuário seja da DIPC
+    // e o usuário seja da DINT
   },
 
   methods: {

@@ -41,6 +41,7 @@
           />
         </div>
       </q-card-section>
+
       <q-card-actions align="right">
         <q-btn
           flat
@@ -255,6 +256,7 @@
             v-if="!caso.data_arquivamento"
             clickable
             @click="telaArquivamento = true"
+            :disable="!store.login.dipc"
           >
             <q-item-section avatar
               ><q-icon color="grey-8" name="inventory_2"
@@ -272,7 +274,11 @@
             <q-item-section>Desarquivar Denúncia</q-item-section>
           </q-item>
           <q-separator />
-          <q-item clickable @click="telaSigilo = true">
+          <q-item
+            clickable
+            @click="telaSigilo = true"
+            :disable="!store.login.dipc"
+          >
             <q-item-section avatar
               ><q-icon color="grey-8" name="fa-solid fa-user-secret"
             /></q-item-section>
@@ -419,11 +425,9 @@ export default {
     async alterarClassificacao() {
       const params = {
         cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "20002",
-        tipo_crud: 3,
-        id: this.caso.id,
-        qualidade_info: this.classificacao,
-        arquivamento: null,
+        codigo_sys_func: "20045",
+        id_caso: this.caso.id,
+        qualidade: this.classificacao,
       };
 
       const resposta = await api.post("/consulta", params);

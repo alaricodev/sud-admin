@@ -97,8 +97,6 @@ export default defineComponent({
 
       const resposta = await api.post("/consulta", params);
 
-      //denuncias.value = store.filtroCasos(resposta.data);
-      //denunciasFiltrada.value = paginacao(denuncias.value, 30, 1);
       denuncias.value = resposta.data;
       denunciasFiltrada.value = paginacao(denuncias.value, 30, 1);
       if (denuncias.value) {
@@ -146,7 +144,7 @@ export default defineComponent({
   created() {
     // Inicia a função de consulta a cada segundo quando o componente é criado
     // Somente envia notificações caso o sistema esteja em produção
-    // e o usuário seja da DIPC
+    // e o usuário seja da DINT
     if (!process.env.DEV && this.store.login.dipc) {
       this.iniciarConsultaPeriodica();
     }

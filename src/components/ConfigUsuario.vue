@@ -121,7 +121,7 @@
         <div>
           <label-data
             class="q-ma-sm"
-            label="DIPC:"
+            label="DINT:"
             :texto="policialSelecionado.usuario_dipc ? 'SIM' : 'NÃO'"
             :cor="policialSelecionado.usuario_dipc ? 'green' : 'red'"
           />
@@ -165,7 +165,7 @@
             >
               <q-tab name="1" label="Casos" icon="fa-regular fa-newspaper" />
               <q-tab name="2" label="Acesso" icon="fa-solid fa-list-ol" />
-              <q-tab name="3" label="DIPC" icon="fa-solid fa-building-shield" />
+              <q-tab name="3" label="DINT" icon="fa-solid fa-building-shield" />
             </q-tabs>
             <q-separator color="primary" />
             <q-tab-panels v-model="tab" animated>
@@ -210,7 +210,7 @@
 
               <q-tab-panel name="3" style="height: 450px">
                 <div class="text-h6">DIPC</div>
-                Aqui você pode tornar ou retirar o usuário como membro DIPC.
+                Aqui você pode tornar ou retirar o usuário como membro DINT.
 
                 <div
                   v-if="!policialSelecionado.usuario_dipc"
@@ -222,7 +222,7 @@
                     rounded
                     class="width: 100%"
                     color="primary"
-                    label="Tornar Esse usuário membro da DIPC"
+                    label="Tornar Esse usuário membro da DINT"
                     @click="membroDIPC(true, policialSelecionado)"
                   />
                 </div>
@@ -232,7 +232,7 @@
                     rounded
                     class="width: 100%"
                     color="red"
-                    label="Retirar esse usuário da DIPC"
+                    label="Retirar esse usuário da DINT"
                     @click="membroDIPC(false, policialSelecionado)"
                   />
                 </div>

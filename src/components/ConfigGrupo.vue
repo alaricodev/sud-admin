@@ -571,7 +571,7 @@ export default {
 
     addUsuGrupos() {
       if (!this.idSubGrupo && this.store.login.nint) {
-        this.store.alerta("Somente DIPC");
+        this.store.alerta("Somente DINT");
         return false;
       }
 

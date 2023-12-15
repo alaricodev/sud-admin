@@ -276,7 +276,7 @@
                   class="q-mx-sm"
                 />
                 <q-btn
-                  label="DESPACHAR"
+                  label="TRAMITAR"
                   flat
                   color="grey-8"
                   icon="fa-regular fa-share-from-square"

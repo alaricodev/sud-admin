@@ -66,20 +66,6 @@
         <q-item-section>
           <div class="row">
             {{ dados.protocolo }}
-            <!-- <q-icon
-              v-if="dados.encaminhado_nint"
-              class="q-ml-md"
-              name="fa-regular fa-share-from-square"
-              color="amber-9"
-            >
-              <q-tooltip
-                :delay="500"
-                class="bg-primary text-body2"
-                :offset="[10, 10]"
-              >
-                Informação encaminhada: NINT
-              </q-tooltip>
-            </q-icon> -->
           </div>
         </q-item-section>
         <q-item-section>
@@ -94,7 +80,6 @@
             />
           </div>
         </q-item-section>
-        <!-- <q-item-section> {{ dados.protocolo }} </q-item-section> -->
 
         <q-item-section class="text-subtitle2">
           {{ formatarDataGrid(dados.data_caso) }}
@@ -197,19 +182,7 @@
                   </q-scroll-area>
 
                 </pre>
-
-                <!-- <p :class="abertoDesc ? '' : 'text-overflow'">
-                  {{ dados.relato }}
-                </p> -->
               </div>
-
-              <!-- <div>
-                <q-btn
-                  flat
-                  :label="abertoDesc ? 'ler menos...' : 'ler mais...'"
-                  @click="abertoDesc = !abertoDesc"
-                />
-              </div> -->
             </q-card-section>
           </q-card>
         </div>

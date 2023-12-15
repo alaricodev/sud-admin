@@ -97,7 +97,7 @@ export default {
     },
     async remover(id_usuario, idGrupo, idSubGrupo) {
       if (!idSubGrupo && this.store.login.nint) {
-        this.store.alerta("Somente DIPC");
+        this.store.alerta("Somente DINT");
         return false;
       }
 

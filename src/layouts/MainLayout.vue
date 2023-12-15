@@ -1,4 +1,44 @@
 <template>
+  <!-- Bypass -->
+  <q-dialog v-model="promptByPass" persistent>
+    <q-card style="min-width: 350px">
+      <q-card-section>
+        <div class="text-h6">CPF</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <q-input
+          dense
+          v-model="cpfNovoLogin"
+          autofocus
+          @keyup.enter="trocarLogin()"
+        />
+      </q-card-section>
+
+      <q-card-actions align="right" class="text-primary">
+        <q-btn flat label="Cancel" v-close-popup />
+        <q-btn flat label="byPass" @click="trocarLogin()" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="telaAjuda" persistent full-height full-width>
+    <sud-ajuda />
+  </q-dialog>
+
+  <q-dialog v-model="telaDados" persistent>
+    <q-card style="min-width: 350px">
+      <q-card-section>
+        <pre>{{ store.login }}</pre>
+      </q-card-section>
+      <q-separator color="primary" />
+      <q-card-actions>
+        <q-btn flat label="fechar" v-close-popup />
+        <q-btn flat label="By Pass" @click="promptByPass = true" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
   <q-layout view="lHh Lpr lFf" class="bg-grey-4">
     <!-- <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-black"> -->
     <q-drawer
@@ -67,7 +107,7 @@
           <q-separator color="primary" />
           <div v-if="store.login.dipc">
             <div v-for="item in itemsMenu" :key="item">
-              <q-item clickable @click="$router.push(item.rota)">
+              <q-item clickable @click="executaLink(item)">
                 <q-item-section avatar>
                   <q-icon :color="item.corIcone" :name="item.icone" />
                 </q-item-section>
@@ -84,7 +124,7 @@
             <div v-for="item in itemsMenu" :key="item">
               <q-item
                 clickable
-                @click="$router.push(item.rota)"
+                @click="executaLink(item)"
                 v-if="liberaMenu(item.rota, item.liberado)"
               >
                 <q-item-section avatar>
@@ -122,7 +162,7 @@
             <div v-for="item in itemsMenu" :key="item">
               <q-item
                 clickable
-                @click="$router.push(item.rota)"
+                @click="executaLink(item)"
                 v-if="liberaMenu(item.rota, item.liberado)"
               >
                 <q-item-section avatar>
@@ -136,11 +176,12 @@
           </div>
         </q-list>
       </div>
+
       <div
         class="text-grey-7 text-center q-ma-sm"
         v-if="!store.layout.miniState"
       >
-        <div @click="store.alerta(`<pre>${this.store.login}</pre>`)">
+        <div @click="telaDados = true">
           {{ this.store.login.nome_usuario }}
         </div>
       </div>
@@ -194,11 +235,12 @@ import { useStore } from "src/stores/store";
 import { api } from "boot/axios";
 import axios from "axios";
 import pack from "../../package.json";
+import SudAjuda from "src/components/SudAjuda.vue";
 
 export default defineComponent({
   name: "MainLayout",
 
-  components: {},
+  components: { SudAjuda },
 
   methods: {
     voltar() {
@@ -207,6 +249,36 @@ export default defineComponent({
     versao() {
       return `Versão ${this.pack.version}`;
     },
+    trocarLogin() {
+      //#bypass
+      this.promptByPass = false;
+      this.dadosUsuario(this.cpfNovoLogin);
+      this.cpfNovoLogin = "";
+    },
+
+    async dadosUsuario(cpf) {
+      const params = {
+        cpf: cpf,
+        cpf_log: cpf,
+        codigo_sys_func: "10007",
+      };
+
+      const resposta = await api.post("/consulta", params);
+
+      if (resposta.data) {
+        const infoUso = resposta.data[0];
+        this.store.login.cpf_log = infoUso.cpf;
+        this.store.login.id_usuario = infoUso.id;
+        this.store.login.nome_usuario = infoUso.nome;
+        this.store.login.foto_usuario = infoUso.foto;
+        this.store.login.dipc = infoUso.usuario_dipc;
+        this.store.login.nint = infoUso.usuario_nint;
+        this.store.login.nivel = infoUso.nivel_acesso;
+      } else {
+        this.store.alerta("Usuário não localizado  !");
+      }
+    },
+
     liberaMenu(rota, liberado) {
       if (rota == "/cadwhatsapp" && this.store.login.dipc) {
         return true;
@@ -221,11 +293,22 @@ export default defineComponent({
 
       return liberado;
     },
+    executaLink(item) {
+      if (item.erota) {
+        this.$router.push(item.rota);
+      } else {
+        this.telaAjuda = true;
+      }
+    },
   },
 
   data() {
     return {
+      telaAjuda: false,
+      telaDados: false,
       menuCarregado: false,
+      promptByPass: false,
+      cpfNovoLogin: null,
       itemsMenu: [
         {
           icone: "record_voice_over",
@@ -233,6 +316,7 @@ export default defineComponent({
           texto: "Denúncias",
           corTexto: "white",
           rota: "/",
+          erota: true,
           separador: true,
           liberado: true,
         },
@@ -242,26 +326,29 @@ export default defineComponent({
           texto: "Nova denúncia whatsapp",
           corTexto: "white",
           rota: "/cadwhatsapp",
+          erota: true,
           separador: true,
           liberado: false,
         },
-        // {
-        //   icone: "fa-solid fa-box-archive",
-        //   corIcone: "primary",
-        //   texto: "Denúncias Arquivadas",
-        //   corTexto: "white",
-        //   rota: "/denunciasarquivadas",
-        //   separador: true,
-        //   liberado: true,
-        // },
         {
           icone: "fa-solid fa-gears",
           corIcone: "primary",
           texto: "Configurações",
           corTexto: "white",
           rota: "/configsud",
+          erota: true,
           separador: true,
           liberado: false,
+        },
+        {
+          icone: "fa-solid fa-info",
+          corIcone: "primary",
+          texto: "Tutoriais",
+          corTexto: "white",
+          rota: "ajuda",
+          erota: false,
+          separador: true,
+          liberado: true,
         },
       ],
       drawer: false,
