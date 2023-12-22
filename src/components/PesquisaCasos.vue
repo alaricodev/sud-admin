@@ -21,6 +21,7 @@
           :rows-per-page-options="[10, 20, 30, 50, 100]"
           rows-per-page-label="Registros por página"
           @row-click="eventoGrid"
+          :loading="loading"
         >
           <template v-slot:top-right>
             <q-input
@@ -76,6 +77,7 @@ export default {
       filtro: "",
       rowsCasos: [],
       casoCaption: null,
+      loading: false,
       columnsCasos: [
         {
           name: "protocolo",
@@ -112,6 +114,7 @@ export default {
   },
   methods: {
     async retornaCasos() {
+      this.loading = true;
       const params = {
         cpf_log: this.store.login.cpf_log,
         codigo_sys_func: "10013",
@@ -127,6 +130,7 @@ export default {
       const resposta = await api.post("/consulta", params);
 
       resposta.data ? (this.rowsCasos = resposta.data) : (this.rowsCasos = []);
+      this.loading = false;
     },
 
     maisInfo(id, tipo) {
