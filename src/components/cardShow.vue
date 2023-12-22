@@ -88,7 +88,11 @@
         <q-item-section>
           <div class="row">
             <div class="col-2">
-              <q-icon name="fa-solid fa-dolly" size="sm" color="grey-7" />
+              <q-icon
+                name="fa-solid fa-dolly"
+                size="sm"
+                :color="labelCarga == 'DINT' ? 'orange' : 'grey-7'"
+              />
             </div>
             <div class="col q-pt-xm text-grey-7">
               {{ labelCarga }}

@@ -1,27 +1,4 @@
 <template>
-  <!-- Bypass -->
-  <q-dialog v-model="promptByPass" persistent>
-    <q-card style="min-width: 350px">
-      <q-card-section>
-        <div class="text-h6">CPF</div>
-      </q-card-section>
-
-      <q-card-section class="q-pt-none">
-        <q-input
-          dense
-          v-model="cpfNovoLogin"
-          autofocus
-          @keyup.enter="trocarLogin()"
-        />
-      </q-card-section>
-
-      <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" v-close-popup />
-        <q-btn flat label="byPass" @click="trocarLogin()" />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
-
   <q-dialog v-model="telaAjuda" persistent full-height full-width>
     <sud-ajuda />
   </q-dialog>
@@ -180,11 +157,7 @@
       <div
         class="text-grey-7 text-center q-ma-sm"
         v-if="!store.layout.miniState"
-      >
-        <div @click="telaDados = true">
-          {{ this.store.login.nome_usuario }}
-        </div>
-      </div>
+      ></div>
       <div
         class="text-grey-7 text-center flex flex-center column"
         style="
@@ -249,35 +222,6 @@ export default defineComponent({
     versao() {
       return `Versão ${this.pack.version}`;
     },
-    trocarLogin() {
-      //#bypass
-      this.promptByPass = false;
-      this.dadosUsuario(this.cpfNovoLogin);
-      this.cpfNovoLogin = "";
-    },
-
-    async dadosUsuario(cpf) {
-      const params = {
-        cpf: cpf,
-        cpf_log: cpf,
-        codigo_sys_func: "10007",
-      };
-
-      const resposta = await api.post("/consulta", params);
-
-      if (resposta.data) {
-        const infoUso = resposta.data[0];
-        this.store.login.cpf_log = infoUso.cpf;
-        this.store.login.id_usuario = infoUso.id;
-        this.store.login.nome_usuario = infoUso.nome;
-        this.store.login.foto_usuario = infoUso.foto;
-        this.store.login.dipc = infoUso.usuario_dipc;
-        this.store.login.nint = infoUso.usuario_nint;
-        this.store.login.nivel = infoUso.nivel_acesso;
-      } else {
-        this.store.alerta("Usuário não localizado  !");
-      }
-    },
 
     liberaMenu(rota, liberado) {
       if (rota == "/cadwhatsapp" && this.store.login.dipc) {
@@ -340,6 +284,16 @@ export default defineComponent({
           separador: true,
           liberado: false,
         },
+        // {
+        //   icone: "fa-solid fa-chart-line",
+        //   corIcone: "primary",
+        //   texto: "Estatísticas",
+        //   corTexto: "white",
+        //   rota: "/estatisticas",
+        //   erota: true,
+        //   separador: true,
+        //   liberado: false,
+        // },
         {
           icone: "fa-solid fa-info",
           corIcone: "primary",

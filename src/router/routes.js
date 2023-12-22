@@ -57,6 +57,13 @@ const routes = [
     ],
   },
   {
+    path: "/estatisticas",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      { path: "", component: () => import("pages/SudEstatisticas.vue") },
+    ],
+  },
+  {
     path: "/configsud",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/ConfigSud.vue") }],

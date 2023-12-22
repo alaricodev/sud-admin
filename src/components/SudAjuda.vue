@@ -31,14 +31,11 @@
                 <div class="text-overline">Sem vídeo disponível</div>
               </div>
               <div v-else>
-                <iframe
-                  width="560"
-                  height="315"
-                  :src="`https://www.youtube.com/embed/VIDEO_ID`"
-                  frameborder="0"
-                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen
-                ></iframe>
+                <video width="900" controls class="q-pa-sm">
+                  <source :src="topico.video" type="video/mp4" />
+                  O seu navegador não suporta esse vídeo. Altere para o Google
+                  Chrome.
+                </video>
               </div>
             </q-card-section>
           </q-card>
@@ -49,55 +46,24 @@
 </template>
 
 <script>
+import { api } from "src/boot/axios";
+import { useStore } from "src/stores/store";
 export default {
   name: "SudAjuda",
+  setup() {
+    const store = useStore();
+    return { store };
+  },
   created() {},
   data() {
     return {
-      topicos: [
-        {
-          id: 1,
-          titulo: "Introdução ao Sistema",
-          tags: ["introdução", "sistema", "iniciante"],
-          video: "https://www.youtube.com/watch?v=U9w8zx49EcY",
-        },
-        {
-          id: 2,
-          titulo: "Como Criar um Novo Caso",
-          tags: ["caso", "criação", "tutorial"],
-          video: "https://www.youtube.com/watch?v=bXD9eVxoICg",
-        },
-        {
-          id: 3,
-          titulo: "Gestão de Usuários e Permissões",
-          tags: ["gestão", "usuários", "permissões"],
-          video: "https://www.youtube.com/watch?v=abc123",
-        },
-        {
-          id: 4,
-          titulo: "Relatórios de Desempenho Mensal",
-          tags: ["relatório", "desempenho", "dados"],
-          video: "https://www.youtube.com/watch?v=def456",
-        },
-        {
-          id: 5,
-          titulo: "Configurações de Conta e Perfil",
-          tags: ["configurações", "conta", "perfil", "sistema"],
-          video: "https://www.youtube.com/watch?v=ghi789",
-        },
-        {
-          id: 6,
-          titulo: "Como tramitar um caso",
-          tags: ["tramitar", "tramitação", "franquear", "acesso"],
-          video: "",
-        },
-      ],
+      topicos: null,
       topicoFiltrado: [],
       filtro: null,
     };
   },
   created() {
-    this.topicoFiltrado = this.topicos;
+    this.carregaTopicos();
   },
 
   watch: {
@@ -120,11 +86,29 @@ export default {
   props: {},
   methods: {
     exibeTag(tags) {
+      //const vetor = tags.split(" ");
       let str = "";
       for (let item of tags) {
         str += `#${item} `;
       }
       return str;
+    },
+    async carregaTopicos() {
+      const params = {
+        cpf_log: this.store.login.cpf_log,
+        codigo_sys_func: "10039",
+      };
+
+      this.store.telaCarregamento(true);
+      const resposta = await api.post("/consulta", params);
+      this.store.telaCarregamento(false);
+
+      this.topicos = resposta.data.map((item) => ({
+        ...item,
+        tags: item.tags.split(" "), // Dividir a string de tags em um array de palavras
+      }));
+
+      this.topicoFiltrado = this.topicos;
     },
   },
 };

@@ -1,12 +1,31 @@
 [
   {
+    "versao": "Versão 2.0.1",
+    "data": "22 de dezembro de 2023",
+    "alteracao": [
+      "Troca de COR do ícone da DINT na tela Principal",
+      "Módulo de Pesquisa introduzido"
+    ]
+  },
+  {
     "versao": "Versão 2.0.0",
     "data": "15 de dezembro de 2023",
     "alteracao": [
       "Reestruturação completa das tramitações das denúncias",
-      "",
+      "Introdução de tutoriais",
       "retirada do acesso do caso por usuário, somente por grupo",
-      "Trava de somente as os DINT e os NINTs poderem franquear informações"
+      "Trava de somente as os DINT e os NINTs poderem franquear informações",
+      "Mudanças no Layout da tela principal",
+      "Mudança das configurações de Grupos e Subgrupo",
+      "Mudanças de Cadastro na Blacklist",
+      "Implementação do cadastro de usuários em grupos e subgrupos",
+      "Implementação de novos filtros",
+      "Mudança de paradigma: casos arquivados e finalizados",
+      "Retirada do franqueamento de acesso e mudado para somente permitir a visualização avulsa do caso",
+      "Visualização de arquivos sem a necessidade de fazer o download (apenas para áudio, vídeo e fotos)",
+      "Possibilidade de inserir imagem da área de transferência nos acompanhamentos",
+      "Agora todos policiais que tem acesso ao caso podem qualificar a qualidade da informação",
+      ""
     ]
   },
   {

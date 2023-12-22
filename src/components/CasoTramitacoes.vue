@@ -799,9 +799,9 @@ export default {
       let temp = [];
       let temp_subgrupo_acesso = [];
 
-      // if (!this.acessosubGrupos) {
-      //   this.acessoSubGrupos = [];
-      // }
+      //if (!this.acessosubGrupos) {
+      //  this.acessoSubGrupos = [];
+      //}
 
       temp.push({
         id: "G",
@@ -1048,6 +1048,15 @@ export default {
       if (resposta.data.status_ret == 0) {
         // Recarregar os dados
         this.carregaDados();
+
+        //Enviar os emails caso estiver em produção.
+        if (!process.env.DEV) {
+          this.enviaEmail(
+            this.destinoCarga.idGrupo,
+            this.destinoCarga.idSubGrupo,
+            this.destinoCarga.idUsuario
+          );
+        }
 
         // Fechar todas as telas
         this.telaDespacho = false;
@@ -1529,6 +1538,55 @@ export default {
         this.quemEhVc.usuario_nint ||
         this.quemEhVc.nome_subgrupo
       );
+    },
+
+    async enviaEmail(idGrupo, idSubGrupo, idUsuario) {
+      let codigo_sys_func = "";
+      let id = 0;
+
+      if (idGrupo) {
+        codigo_sys_func = "10036";
+        id = idGrupo;
+      }
+
+      if (idSubGrupo) {
+        codigo_sys_func = "10037";
+        id = idSubGrupo;
+      }
+
+      if (idUsuario) {
+        codigo_sys_func = "10038";
+        id = idUsuario;
+      }
+
+      const param = {
+        codigo_sys_func: codigo_sys_func,
+        cpf_log: this.store.login.cpf_log,
+        id: id,
+      };
+
+      const resposta = await api.post("/consulta", param);
+
+      let params = this.parametroEmail(resposta.data);
+      params["protocolo"] = this.caso.protocolo;
+      params["tipo"] = this.caso.tipo;
+      const resposta2 = await api.post("/sendmail", params);
+    },
+
+    parametroEmail(dados) {
+      let to = "";
+      let cc = "";
+      if (dados.length > 0) {
+        to = dados[0].email_funcional;
+        dados.shift();
+        const emails = dados.map((item) => item.email_funcional);
+
+        cc = emails.join(",");
+      } else {
+        to = dados[0].email_funcional;
+        cc = "";
+      }
+      return { to: to, cc: cc };
     },
   },
 };

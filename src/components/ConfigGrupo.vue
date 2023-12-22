@@ -179,6 +179,7 @@
               </div>
 
               <q-tree
+                v-if="grupos.length"
                 :nodes="grupos"
                 node-key="id"
                 selected-color="primary"

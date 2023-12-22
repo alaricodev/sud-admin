@@ -1,4 +1,7 @@
 <template>
+  <q-dialog v-model="telaPesquisa" persistent full-height full-width>
+    <pesquisa-casos :funcao="fechaTelaPesquisa" />
+  </q-dialog>
   <div class="q-pa-md bg-grey-4">
     <div>
       <div>
@@ -15,6 +18,12 @@
               <span class="text-grey-6">{{ store.filtros.totalCasos }}</span>
             </div>
             <q-space />
+            <q-btn
+              label="Pesquisa"
+              icon="fa-solid fa-magnifying-glass"
+              color="primary"
+              @click="telaPesquisa = true"
+            />
           </div>
         </div>
         <q-separator color="primary" class="q-mb-md" />
@@ -55,10 +64,16 @@ import {
   paginacao,
   totalPaginasArray,
 } from "src/utils/util";
+import PesquisaCasos from "src/components/PesquisaCasos.vue";
 
 export default defineComponent({
-  components: { FiltroIndex, CardShow },
+  components: { FiltroIndex, CardShow, PesquisaCasos },
   name: "IndexPage",
+  data() {
+    return {
+      telaPesquisa: false,
+    };
+  },
   setup() {
     const $q = useQuasar();
     const store = useStore();
@@ -151,6 +166,9 @@ export default defineComponent({
   },
 
   methods: {
+    fechaTelaPesquisa() {
+      this.telaPesquisa = false;
+    },
     async buscarDenuncias() {
       const params = {
         cpf_log: this.store.login.cpf_log,
