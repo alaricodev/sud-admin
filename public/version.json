@@ -1,5 +1,22 @@
 [
   {
+    "versao": "Versão 2.0.3",
+    "data": "08 de janeiro de 2024",
+    "alteracao": [
+      "Aplicação da descrição do grupo na pesquisa de tramitação da DINT para os Grupos NINTs",
+      "Correção de nomemclatura na timeline de tramitações. De DIPC para DINT"
+    ]
+  },
+  {
+    "versao": "Versão 2.0.2",
+    "data": "05 de janeiro de 2024",
+    "alteracao": [
+      "Nos casos de cadastro direto via WhatsApp, o limite de arquivos foi alterado para 30.",
+      "Corrigido BUG: agora, quando um usuário faz parte de dois grupos, ele consegue tramitar o caso corretamente.",
+      "Novos vídeos tutoriais foram adicionados."
+    ]
+  },
+  {
     "versao": "Versão 2.0.1",
     "data": "22 de dezembro de 2023",
     "alteracao": [

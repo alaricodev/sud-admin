@@ -107,7 +107,7 @@ export default {
       let id;
 
       if (tramitacao.dipc_origem) {
-        return "DIPC";
+        return "DINT";
       }
 
       if (tramitacao.id_grupo_origem) {
@@ -128,14 +128,14 @@ export default {
         return user.nome;
       }
 
-      return "Passou reto pai !";
+      return "Passou reto !";
     },
 
     retornaDestino(tramitacao) {
       let id;
 
       if (tramitacao.dipc_destino) {
-        return "DIPC";
+        return "DINT";
       }
 
       if (tramitacao.id_grupo_destino) {

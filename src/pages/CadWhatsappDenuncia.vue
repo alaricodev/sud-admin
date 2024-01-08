@@ -50,7 +50,7 @@
             outlined
             counter
             :counter-label="counterLabelFn"
-            max-files="10"
+            max-files="30"
             multiple
           >
             <template v-slot:prepend>

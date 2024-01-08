@@ -386,8 +386,6 @@ export default defineComponent({
           lotacao_ibge,
         }))(object);
 
-        dadosUsuario(userData.cpf);
-
         //Registra o token wizard na api para validação do backend, sem esse token o backend irá recusar a requisição.
         if (event.data.tokenWizard) {
           store.tokenWizard = event.data.tokenWizard;
@@ -395,6 +393,7 @@ export default defineComponent({
           api.defaults.headers.common["authorization"] = `${store.token}`;
           api.defaults.headers.common["cpf"] = `${userData.cpf}`;
           // Refresh no token a cada 10 minutos (10 minutos * 60 segundos * 1000 milisegundos)
+          dadosUsuario(userData.cpf);
           setInterval(async () => {
             store.token = await checkToken(store.tokenWizard);
             api.defaults.headers.common["authorization"] = `${store.token}`;

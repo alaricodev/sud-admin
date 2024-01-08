@@ -624,7 +624,9 @@ export default {
       telaFinalizacao: false,
 
       telaShareGrupo: false,
+
       shareGrupo: null,
+
       gruposFiltrados: null,
       telaDespacho: false,
       despacho: null,
@@ -633,6 +635,7 @@ export default {
       cargaAtual: null,
 
       prompt: false,
+
       cpfNovoLogin: null,
 
       telaSubGrupo: false,
@@ -696,11 +699,16 @@ export default {
   watch: {
     shareGrupo() {
       const needle = this.shareGrupo.toLowerCase();
+
       if (this.shareGrupo.length == 0) {
         this.gruposFiltrados = this.grupos;
       } else {
+        //this.gruposFiltrados = this.buscaGrupoNint(this.grupos);
         this.gruposFiltrados = this.grupos.filter(
-          (item) => item.nome_grupo.toLowerCase().indexOf(needle) > -1
+          (item) =>
+            `${item.nome_grupo.toLowerCase()} ${item.desc_grupo.toLowerCase()}`.indexOf(
+              needle
+            ) > -1
         );
       }
     },
@@ -712,6 +720,11 @@ export default {
   },
 
   methods: {
+    buscaGrupoNint(grupos) {
+      console.log(grupos);
+      return grupos;
+    },
+
     async carregaDados() {
       this.store.telaCarregamento(true);
 

@@ -48,6 +48,7 @@
 <script>
 import { api } from "src/boot/axios";
 import { useStore } from "src/stores/store";
+import tutorial from "../../public/tutorial.json";
 export default {
   name: "SudAjuda",
   setup() {
@@ -94,20 +95,25 @@ export default {
       return str;
     },
     async carregaTopicos() {
-      const params = {
-        cpf_log: this.store.login.cpf_log,
-        codigo_sys_func: "10039",
-      };
+      // const params = {
+      //   cpf_log: this.store.login.cpf_log,
+      //   codigo_sys_func: "10039",
+      // };
 
-      this.store.telaCarregamento(true);
-      const resposta = await api.post("/consulta", params);
-      this.store.telaCarregamento(false);
+      // this.store.telaCarregamento(true);
+      // const resposta = await api.post("/consulta", params);
+      // this.store.telaCarregamento(false);
 
-      this.topicos = resposta.data.map((item) => ({
+      // this.topicos = resposta.data.map((item) => ({
+      //   ...item,
+      //   tags: item.tags.split(" "), // Dividir a string de tags em um array de palavras
+      // }));
+
+      // this.topicoFiltrado = this.topicos;
+      this.topicos = tutorial.map((item) => ({
         ...item,
-        tags: item.tags.split(" "), // Dividir a string de tags em um array de palavras
+        tags: item.tags.split(" "),
       }));
-
       this.topicoFiltrado = this.topicos;
     },
   },
